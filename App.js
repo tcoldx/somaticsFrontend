@@ -6,6 +6,7 @@ import Home from "./pages/Home/home";
 import CreateAccount from "./pages/CreateAccount/createaccount";
 import Login from "./pages/Login/login";
 import LandingPage from "./pages/Landing/landingpage";
+import InfoSlides from "./pages/InfoSlides/InfoSlides";
 
 export default function App() {
   const [loginName, setLoginName] = useState("");
@@ -18,6 +19,7 @@ export default function App() {
       <View style={styles.container}>
         <StatusBar style="auto" />
         <Routes>
+          <Route exact path="/info" element={<InfoSlides />} />
           <Route exact path="/" element={<LandingPage />} />
           <Route
             exact
