@@ -32,6 +32,26 @@ export const home = (width: number, height: number) =>
       alignItems: "center",
     },
 
+    leftHeader: {
+      gap: 10,
+    },
+
+    subheading: {
+      width: "90%",
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginTop: 27,
+    },
+
+    rightNotif: {
+      borderWidth: 1,
+      borderColor: "rgba(128,128,128, .2)",
+      borderRadius: 10,
+      padding: 6,
+    },
+
     headerone: {
       color: "gray",
       fontWeight: "bold",
@@ -89,6 +109,30 @@ export const header = StyleSheet.create({
     justifyContent: "center",
     alignItems: "flex-start",
     marginTop: 15,
+  },
+
+  options: {
+    backgroundColor: "#242424",
+    borderRadius: 5,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 25,
+    width: 60,
+  },
+
+  selectedOption: {
+    backgroundColor: "#EF6F13",
+    borderRadius: 5,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 25,
+    width: 60,
+  },
+
+  currentselect: {
+    color: "black",
   },
 
   content: {

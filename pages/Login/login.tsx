@@ -108,11 +108,11 @@ const Login = (): JSX.Element => {
           colors={["rgb(255, 200, 124)", "rgb(252, 251, 121)"]}
           style={login.linearGradient}
         >
-          <Pressable>
+          <View>
             <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
               Log in
             </Text>
-          </Pressable>
+          </View>
         </LinearGradient>
       </View>
       <View

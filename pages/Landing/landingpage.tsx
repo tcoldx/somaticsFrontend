@@ -1,86 +1,54 @@
-import React from "react";
-import {
-  ImageBackground,
-  View,
-  SafeAreaView,
-  Image,
-  Text,
-  Pressable,
-} from "react-native";
-import { Link } from "react-router-native";
-import Legacy from "./IMG-2284.png";
+import React, { useRef, useState } from "react";
+import { FlatList, Animated, View } from "react-native";
 import { styles } from "./landingpage.styles";
-function LandingPage() {
-  const _renderItem = (props: any) => (
-    <Image style={{ flex: 1, resizeMode: "cover" }} source={props.image} />
-  );
+import LandingItem from "../../assets/landingItem";
+import Slides from "../../assets/landing";
+import LandingFooter from "../../components/LandingFooter/LandingFooter";
+import Pagination from "../../assets/pagination";
+interface navProp {
+  navigation: any;
+}
+function LandingPage({ navigation }) {
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const [count, setCount] = useState(0);
+  const handleOnScroll = (event: any) => {
+    Animated.event(
+      [
+        {
+          nativeEvent: {
+            contentOffset: {
+              x: scrollX,
+            },
+          },
+        },
+      ],
+      { useNativeDriver: false }
+    )(event);
+  };
+  const handleOnViewChange = useRef(({ viewableItems }) => {
+    setCount(viewableItems[0].index);
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+  }).current;
   return (
     <>
-      <ImageBackground source={Legacy} style={styles.backgroundVideo}>
-        <View style={styles.container}></View>
-        <SafeAreaView
-          style={{
-            position: "absolute",
-            bottom: "10%",
-            width: "90%",
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "flex-start",
-            gap: 20,
-          }}
-        >
-          <View>
-            <Text style={{ fontSize: 45, fontWeight: "bold", color: "white" }}>
-              Somatics
-            </Text>
-            <Text style={{ fontSize: 30, fontWeight: "600", color: "gray" }}>
-              Want to become the warrior{"\n"}you were always meant to be?
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              gap: 10,
-              width: "100%",
-            }}
-          >
-            <Link to="/create">
-              <View
-                style={{
-                  borderWidth: 1,
-                  borderColor: "yellow",
-                  width: 140,
-                  height: 50,
-                  borderRadius: 20,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "white" }}>Join Me</Text>
-              </View>
-            </Link>
-            <Link to="/login">
-              <View
-                style={{
-                  backgroundColor: "yellow",
-                  width: 140,
-                  height: 50,
-                  borderRadius: 20,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "black", fontWeight: "500" }}>
-                  Sign in Champ!
-                </Text>
-              </View>
-            </Link>
-          </View>
-        </SafeAreaView>
-      </ImageBackground>
+      <FlatList
+        data={Slides}
+        renderItem={({ item }) => <LandingItem item={item} />}
+        horizontal
+        pagingEnabled
+        onScroll={handleOnScroll}
+        snapToAlignment="center"
+        showsHorizontalScrollIndicator={false}
+        onViewableItemsChanged={handleOnViewChange}
+        viewabilityConfig={viewabilityConfig}
+      />
+      <View style={styles.footer}>
+        <LandingFooter navigation={navigation} />
+        <Pagination data={Slides} scrollX={scrollX} index={count} />
+      </View>
     </>
   );
 }
