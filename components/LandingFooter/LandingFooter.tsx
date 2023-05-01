@@ -1,10 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-const LandingFooter = (): JSX.Element => {
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Link } from "react-router-native";
+interface navProp {
+  navigation: any;
+}
+const LandingFooter = ({ navigation }: navProp): JSX.Element => {
   return (
-    <View style={styles.contain}>
+    <TouchableOpacity
+      onPress={() => navigation.navigate("home")}
+      style={styles.contain}
+    >
       <Text style={styles.text}>Get Started</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 

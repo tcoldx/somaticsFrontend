@@ -3,10 +3,12 @@ import { FlatList, Animated, View } from "react-native";
 import { styles } from "./landingpage.styles";
 import LandingItem from "../../assets/landingItem";
 import Slides from "../../assets/landing";
-import LandingFooter from "../../components/Navbar/LandingFooter/LandingFooter";
+import LandingFooter from "../../components/LandingFooter/LandingFooter";
 import Pagination from "../../assets/pagination";
-
-function LandingPage() {
+interface navProp {
+  navigation: any;
+}
+function LandingPage({ navigation }) {
   const scrollX = useRef(new Animated.Value(0)).current;
   const [count, setCount] = useState(0);
   const handleOnScroll = (event: any) => {
@@ -44,7 +46,7 @@ function LandingPage() {
         viewabilityConfig={viewabilityConfig}
       />
       <View style={styles.footer}>
-        <LandingFooter />
+        <LandingFooter navigation={navigation} />
         <Pagination data={Slides} scrollX={scrollX} index={count} />
       </View>
     </>
