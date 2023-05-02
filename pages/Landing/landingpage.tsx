@@ -8,7 +8,7 @@ import Pagination from "../../assets/pagination";
 interface navProp {
   navigation: any;
 }
-function LandingPage({ navigation }) {
+function LandingPage({ navigation }: navProp) {
   const scrollX = useRef(new Animated.Value(0)).current;
   const [count, setCount] = useState(0);
   const handleOnScroll = (event: any) => {

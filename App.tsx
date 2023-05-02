@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./pages/Home/home";
 import LandingPage from "./pages/Landing/landingpage";
 import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
+import InfoSlides from "./pages/InfoSlides/InfoSlides";
 
 export default function App() {
   const [loginName, setLoginName] = useState("Tredis Ingram");
@@ -17,6 +18,12 @@ export default function App() {
   const handleWorkoutDetail = (item: string) => {
     setWorkoutDetail(item);
   };
+
+  const MyTheme = {
+    colors: {
+      primary: "black",
+    },
+  };
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -27,6 +34,9 @@ export default function App() {
           }}
         >
           {(props) => <LandingPage {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="userInit" options={{ headerShown: false }}>
+          {(props) => <InfoSlides {...props} />}
         </Stack.Screen>
         <Stack.Screen
           name="home"
