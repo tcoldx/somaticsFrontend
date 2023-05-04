@@ -6,6 +6,7 @@ import Home from "./pages/Home/home";
 import LandingPage from "./pages/Landing/landingpage";
 import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
 import InfoSlides from "./pages/InfoSlides/InfoSlides";
+import Statistics from "./pages/Statistics/statistics";
 
 export default function App() {
   const [loginName, setLoginName] = useState("Tredis Ingram");
@@ -59,6 +60,14 @@ export default function App() {
           }}
         >
           {(props) => <WorkoutDetails {...props} name={workoutDetail} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="stats"
+          options={{
+            headerShown: false,
+          }}
+        >
+          {(props) => <Statistics {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

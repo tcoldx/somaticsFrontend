@@ -7,7 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { footer, home, header } from "./home.styles";
+import { home, header } from "./home.styles";
 import {
   boxingWorkouts,
   HIIT,
@@ -18,6 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign } from "@expo/vector-icons";
 import SearchBar from "../../components/Searchbar/Searchbar";
 import CollectionList from "../../components/CollectionList/CollectionList";
+import FooterNav from "../../components/FooterNav/footernav";
 
 interface props {
   name: string;
@@ -152,24 +153,7 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
           navigation={navigation}
         />
       </ScrollView>
-      <LinearGradient
-        colors={["rgba(15,15,15,0.5)", "rgba(115,115,115,0.5)"]}
-        style={footer.linearGradient}
-        start={[0.0, 0.5]}
-        end={[1.0, 0.5]}
-      >
-        <View style={footer.footContainer}>
-          <AntDesign name="home" size={24} color="white" />
-          <AntDesign name="barschart" size={24} color="white" />
-
-          <AntDesign
-            name="setting"
-            size={24}
-            color="white"
-            onPress={() => navigation.navigate("landing")}
-          />
-        </View>
-      </LinearGradient>
+      <FooterNav navigation={navigation} />
     </SafeAreaView>
   );
 };
