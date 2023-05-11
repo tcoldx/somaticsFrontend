@@ -1,5 +1,16 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ImageBackground,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+} from "react-native";
+import { styleDetail } from "./collectionlist.styles";
+import Legacy from "../../assets/legacy.png";
 import React from "react";
+import { LinearGradient } from "expo-linear-gradient";
 interface WorkoutProps {
   list: object[];
   itemRetrievalFunc: any;
@@ -18,43 +29,74 @@ const CollectionList = ({
   return (
     <View
       style={{
-        height: 1000,
         display: "flex",
-        flexDirection: "column",
-        gap: 10,
+        flexDirection: "row",
+        gap: 20,
+        width: "90%",
       }}
     >
       {list.map((item: any) => {
         return (
-          <View key={item.id}>
-            <TouchableOpacity
-              style={{
-                width: "100%",
-                borderRadius: 10,
-                backgroundColor: "#242424",
-                display: "flex",
-                justifyContent: "center",
-                height: 70,
+          <TouchableOpacity
+            key={item.id}
+            onPress={() => handleSelect(item.name)}
+          >
+            <ImageBackground
+              style={styleDetail.imageContain}
+              source={item.img}
+              imageStyle={{
+                borderRadius: 13,
               }}
-              onPress={() => handleSelect(item.name)}
+              key={item.id}
             >
-              <Text
-                key={item.id}
+              <View style={styleDetail.programHeaderOne}>
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  {item.difficulty}
+                </Text>
+              </View>
+              <View style={styleDetail.programHeaderTwo}>
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  Boxing
+                </Text>
+              </View>
+              <View
                 style={{
-                  color: "white",
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  marginLeft: 10,
+                  position: "absolute",
+                  bottom: 20,
+                  zIndex: 3,
+                  left: 30,
+                  display: "flex",
+                  gap: 10,
                 }}
               >
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          </View>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    color: "white",
+                    fontSize: 20,
+                  }}
+                >
+                  {item.name}
+                </Text>
+                <Text style={{ color: "gray" }}>{item.tasks} Task</Text>
+              </View>
+              <View style={styles.lineargradient} />
+            </ImageBackground>
+          </TouchableOpacity>
         );
       })}
     </View>
   );
 };
+const { width, height } = Dimensions.get("screen");
+export const styles = StyleSheet.create({
+  lineargradient: {
+    height: 410,
+    borderRadius: 13,
+    width: 300,
+    position: "absolute",
+    backgroundColor: "rgba(0,0,0,0.7)",
+  },
+});
 
 export default CollectionList;

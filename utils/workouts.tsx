@@ -1,35 +1,35 @@
+import boxImg from "./mebox.jpg";
+import Legacy from "../assets/legacy.png";
+import kick from "./kickman.jpg";
 export const boxingWorkouts = [
-  { name: "Boxing Jab", id: 1 },
-  { name: "Boxing combo Burpees", id: 2 },
-  { name: "box-jump Burpees", id: 3 },
-  { name: "Tiger Combo", id: 4 },
+  { name: "Combo Kicks", id: 1, difficulty: "Medium", img: boxImg, tasks: 8 },
+  {
+    name: "box-jump thai combos",
+    id: 2,
+    difficulty: "Basic",
+    img: Legacy,
+    tasks: 3,
+  },
+  {
+    name: "Dragon Combo",
+    id: 3,
+    difficulty: "Advanced",
+    img: kick,
+    tasks: 2,
+  },
+  { name: "Check and Kicks", id: 4, difficulty: "Easy", img: boxImg, tasks: 5 },
 ];
 
 export const muayThaiWorkouts = [
-  { name: "Combo Kicks", id: 1 },
-  { name: "box-jump thai combos", id: 2 },
-  { name: "Dragon Combo", id: 3 },
-  { name: "Check and Kicks", id: 4 },
+  { name: "Combo Kicks", id: 1, difficulty: "Medium", img: Legacy },
+  { name: "box-jump thai combos", id: 2, difficulty: "Basic", img: boxImg },
+  { name: "Dragon Combo", id: 3, difficulty: "Advanced", img: kick },
+  { name: "Check and Kicks", id: 4, difficulty: "Easy", img: boxImg },
 ];
 
 export const HIIT = [
-  { name: "Jail Burpees", id: 1 },
-  { name: "Pull-up Pushups", id: 2 },
-  { name: "Sit-ups and planks", id: 3 },
-  { name: "Rockers", id: 4 },
-];
-
-export const All = [
-  { name: "Boxing Jab", id: 1 },
-  { name: "Boxing combo Burpees", id: 2 },
-  { name: "box-jump Burpees", id: 3 },
-  { name: "Tiger Combo", id: 4 },
-  { name: "Combo Kicks", id: 5 },
-  { name: "box-jump thai combos", id: 6 },
-  { name: "Dragon Combo", id: 7 },
-  { name: "Check and Kicks", id: 8 },
-  { name: "Jail Burpees", id: 9 },
-  { name: "Pull-up Pushups", id: 10 },
-  { name: "Sit-ups and planks", id: 11 },
-  { name: "Rockers", id: 12 },
+  { name: "Combo Kicks", id: 1, difficulty: "Medium", img: kick },
+  { name: "box-jump thai combos", id: 2, difficulty: "Basic", img: boxImg },
+  { name: "Dragon Combo", id: 3, difficulty: "Advanced", img: Legacy },
+  { name: "Check and Kicks", id: 4, difficulty: "Easy", img: boxImg },
 ];

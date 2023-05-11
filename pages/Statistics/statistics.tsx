@@ -1,5 +1,7 @@
 import { View, Text, SafeAreaView } from "react-native";
 import { styles } from "./statistics.styles";
+import { Skeleton } from "@rneui/themed";
+
 import {
   FontAwesome5,
   Feather,
@@ -105,6 +107,24 @@ const Statistics = ({ navigation }: statProps) => {
             </Text>
           </View>
         </View>
+      </View>
+      <View style={styles.history}>
+        <Text style={{ fontWeight: "bold", fontSize: 18, color: "white" }}>
+          Previous Workouts
+        </Text>
+      </View>
+      <View style={styles.historyContainer}>
+        <Text
+          style={{
+            marginBottom: 20,
+            color: "white",
+            fontSize: 20,
+            fontWeight: "bold",
+          }}
+        >
+          No Data
+        </Text>
+        <Skeleton animation="wave" width={100} height={20} />
       </View>
       <FooterNav navigation={navigation} />
     </SafeAreaView>

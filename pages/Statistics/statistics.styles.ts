@@ -18,6 +18,23 @@ export const styles = StyleSheet.create({
     height: "100%",
   },
 
+  historyContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 200,
+    marginTop: 30,
+    width: "93%",
+  },
+
+  history: {
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "center",
+    width: "93%",
+    marginTop: 30,
+  },
+
   statHeaders: {
     marginTop: 20,
     display: "flex",

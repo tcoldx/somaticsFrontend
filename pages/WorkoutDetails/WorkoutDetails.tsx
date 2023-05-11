@@ -4,15 +4,34 @@ import {
   Text,
   ActivityIndicator,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
+import React, { useState } from "react";
 import { styles } from "./WorkoutDetails.styles";
 import { AntDesign } from "@expo/vector-icons";
+import WorkoutActive from "../../components/WorkoutActive/workoutactive";
 
 interface DetailProps {
   name: string;
   navigation: any;
 }
 const WorkoutDetails = ({ name, navigation }: DetailProps): JSX.Element => {
+  const [open, setOpen] = useState<boolean>(false);
+  const [position, setPosition] = useState<number>(0);
+
+  const handleStart = () => {
+    setOpen(true);
+  };
+
+  const handleStep = () => {
+    if (position === 3) {
+      setPosition(0);
+      navigation.navigate("home");
+      return;
+    }
+    setPosition(position + 1);
+  };
+
   return (
     <SafeAreaView
       style={{
@@ -24,7 +43,14 @@ const WorkoutDetails = ({ name, navigation }: DetailProps): JSX.Element => {
         backgroundColor: "black",
       }}
     >
-      <View style={{ width: "100%" }}>
+      <SafeAreaView
+        style={{
+          position: "absolute",
+          top: 50,
+          left: 20,
+          width: "100%",
+        }}
+      >
         <View
           style={{
             backgroundColor: "#101010",
@@ -47,7 +73,7 @@ const WorkoutDetails = ({ name, navigation }: DetailProps): JSX.Element => {
             />
           </View>
         </View>
-      </View>
+      </SafeAreaView>
       <View
         style={{
           position: "absolute",
@@ -60,97 +86,101 @@ const WorkoutDetails = ({ name, navigation }: DetailProps): JSX.Element => {
       >
         <ActivityIndicator size="large" color="#EF6F13" />
       </View>
-      <View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          position: "absolute",
-          height: 500,
-          width: "100%",
-          borderRadius: 8,
-          bottom: 0,
-          backgroundColor: "#101010",
-        }}
-      >
-        <View style={styles.workoutNameContainer}>
-          <Text style={styles.nameText}>Workout: {name}</Text>
-        </View>
-        <View style={styles.workoutHeader}>
-          <View style={styles.workoutHeaderDetail}>
-            <Text style={{ color: "gray", fontWeight: "bold" }}>Cals</Text>
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 30 }}>
-              330
-            </Text>
+      {!open ? (
+        <View style={styles.contentContainerBefore}>
+          <View style={styles.navTouchBar}></View>
+          <View style={styles.workoutNameContainer}>
+            <Text style={styles.nameText}>Workout: {name}</Text>
           </View>
-          <View style={styles.workoutHeaderDetail}>
-            <Text style={{ color: "gray", fontWeight: "bold" }}>Duration</Text>
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 30 }}>
-              1:30
-            </Text>
+          <View style={styles.workoutHeader}>
+            <View style={styles.workoutHeaderDetail}>
+              <Text style={{ color: "gray", fontWeight: "bold" }}>Cals</Text>
+              <Text
+                style={{ color: "white", fontWeight: "bold", fontSize: 30 }}
+              >
+                330
+              </Text>
+            </View>
+            <View style={styles.workoutHeaderDetail}>
+              <Text style={{ color: "gray", fontWeight: "bold" }}>
+                Duration
+              </Text>
+              <Text
+                style={{ color: "white", fontWeight: "bold", fontSize: 30 }}
+              >
+                1:30
+              </Text>
+            </View>
+            <View style={styles.workoutHeaderDetail}>
+              <Text style={{ color: "gray", fontWeight: "bold", fontSize: 15 }}>
+                Difficulty
+              </Text>
+              <Text
+                style={{ color: "white", fontWeight: "bold", fontSize: 30 }}
+              >
+                Ronin
+              </Text>
+            </View>
           </View>
-          <View style={styles.workoutHeaderDetail}>
-            <Text style={{ color: "gray", fontWeight: "bold", fontSize: 15 }}>
-              Difficulty
-            </Text>
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 30 }}>
-              Ronin
-            </Text>
+          <View style={styles.descriptionContainer}>
+            <View
+              style={{
+                width: "89%",
+              }}
+            >
+              <Text style={{ color: "white" }}>Description:</Text>
+            </View>
+            <ScrollView
+              style={{
+                width: "89%",
+                marginTop: 20,
+                height: 300,
+              }}
+            >
+              <Text style={{ color: "gray" }}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+                nulla pariatur. Lorem ipsum dolor sit amet, consectetur
+                adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                consequat. Duis aute irure dolor in reprehenderit in voluptate
+                velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum
+                dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                aliquip ex ea commodo consequat. Duis aute irure dolor in
+                reprehenderit in voluptate velit esse cillum dolore eu fugiat
+                nulla pariatur.
+              </Text>
+            </ScrollView>
           </View>
-        </View>
-        <View style={styles.descriptionContainer}>
-          <View
-            style={{
-              width: "89%",
-            }}
+          <TouchableOpacity
+            style={styles.trainingButtonContainer}
+            onPress={handleStart}
           >
-            <Text style={{ color: "white" }}>Description:</Text>
-          </View>
-          <ScrollView
-            style={{
-              width: "89%",
-              marginTop: 20,
-              height: 300,
-            }}
-          >
-            <Text style={{ color: "gray" }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing
-              elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-              aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-              laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-              dolor in reprehenderit in voluptate velit esse cillum dolore eu
-              fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-              exercitation ullamco laboris nisi ut aliquip ex ea commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate
-              velit esse cillum dolore eu fugiat nulla pariatur.
+            <Text style={{ color: "white", fontWeight: "bold" }}>
+              Start Training
             </Text>
-          </ScrollView>
+          </TouchableOpacity>
         </View>
-        <View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            marginBottom: 50,
-            borderRadius: 10,
-            width: "90%",
-            height: 50,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#EF6F13",
-          }}
-        >
-          <Text style={{ color: "white", fontWeight: "bold" }}>
-            Start Training
-          </Text>
+      ) : (
+        <View style={styles.contentContainerAfter}>
+          <View style={styles.navTouchBar}></View>
+          <WorkoutActive position={position} />
+          <TouchableOpacity
+            style={styles.trainingButtonContainer}
+            onPress={handleStep}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>
+              {position === 3 ? "Finish Workout" : "Next Workout"}
+            </Text>
+          </TouchableOpacity>
         </View>
-      </View>
+      )}
     </SafeAreaView>
   );
 };

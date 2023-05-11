@@ -18,12 +18,16 @@ type itemProps = {
   id: number;
   options: any;
   navigation: any;
+  index: number;
+  indexFunc: Function;
 };
 const OnboardingItem = ({
   title,
   id,
   options,
   navigation,
+  index,
+  indexFunc,
 }: itemProps): JSX.Element => {
   const [selected, setSelected] = useState(false);
   const [select, setSelect] = useState([]);
@@ -164,9 +168,17 @@ const OnboardingItem = ({
               placeholderTextColor="rgba(240,99,19,255)"
             />
           </View>
-          <View style={styles.button}>
+          <TouchableOpacity
+            onPress={() => {
+              if (index === 3) {
+                return indexFunc(0);
+              }
+              indexFunc(index + 1);
+            }}
+            style={styles.button}
+          >
             <Text style={styles.buttonText}>Next step</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
@@ -210,9 +222,17 @@ const OnboardingItem = ({
               placeholderTextColor="rgba(240,99,19,255)"
             />
           </View>
-          <View style={styles.button}>
+          <TouchableOpacity
+            onPress={() => {
+              if (index === 3) {
+                return indexFunc(0);
+              }
+              indexFunc(index + 1);
+            }}
+            style={styles.button}
+          >
             <Text style={styles.buttonText}>Next step</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
@@ -249,9 +269,17 @@ const OnboardingItem = ({
               placeholderTextColor="rgba(240,99,19,255)"
             />
           </View>
-          <View style={styles.button}>
+          <TouchableOpacity
+            onPress={() => {
+              if (index === 3) {
+                return indexFunc(0);
+              }
+              indexFunc(index + 1);
+            }}
+            style={styles.button}
+          >
             <Text style={styles.buttonText}>Next step</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     );

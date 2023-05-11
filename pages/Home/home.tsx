@@ -8,12 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { home, header } from "./home.styles";
-import {
-  boxingWorkouts,
-  HIIT,
-  muayThaiWorkouts,
-  All,
-} from "../../utils/workouts";
+import { boxingWorkouts, HIIT, muayThaiWorkouts } from "../../utils/workouts";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign } from "@expo/vector-icons";
 import SearchBar from "../../components/Searchbar/Searchbar";
@@ -32,14 +27,14 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
   const height = Dimensions.get("window").height;
 
   useEffect(() => {
-    setWorkoutList(All);
+    setWorkoutList(HIIT);
   }, []);
 
   const handleSelect = (curr: string) => {
     setCurrentSelect(curr);
 
     if (curr === "All") {
-      setWorkoutList(All);
+      setWorkoutList(HIIT);
     }
 
     if (curr === "Boxing") {
@@ -137,7 +132,7 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
       >
         <View>
           <Text style={{ color: "white", fontWeight: "bold", fontSize: 23 }}>
-            Collection
+            Programs
           </Text>
         </View>
         <View>
@@ -146,7 +141,15 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
           </Text>
         </View>
       </View>
-      <ScrollView style={{ display: "flex", marginTop: 20, width: "90%" }}>
+      <ScrollView
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          marginTop: 20,
+          width: "90%",
+        }}
+        bounces={false}
+      >
         <CollectionList
           itemRetrievalFunc={handleItem}
           list={workoutList}

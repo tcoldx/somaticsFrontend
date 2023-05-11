@@ -7,6 +7,7 @@ import LandingPage from "./pages/Landing/landingpage";
 import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
 import InfoSlides from "./pages/InfoSlides/InfoSlides";
 import Statistics from "./pages/Statistics/statistics";
+import WorkoutActive from "./components/WorkoutActive/workoutactive";
 
 export default function App() {
   const [loginName, setLoginName] = useState("Tredis Ingram");
@@ -20,11 +21,6 @@ export default function App() {
     setWorkoutDetail(item);
   };
 
-  const MyTheme = {
-    colors: {
-      primary: "black",
-    },
-  };
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -36,7 +32,10 @@ export default function App() {
         >
           {(props) => <LandingPage {...props} />}
         </Stack.Screen>
-        <Stack.Screen name="userInit" options={{ headerShown: false }}>
+        <Stack.Screen
+          name="userInit"
+          options={{ headerShown: false, gestureEnabled: false }}
+        >
           {(props) => <InfoSlides {...props} />}
         </Stack.Screen>
         <Stack.Screen
@@ -53,10 +52,12 @@ export default function App() {
             />
           )}
         </Stack.Screen>
+
         <Stack.Screen
           name="details"
           options={{
             headerShown: false,
+            gestureEnabled: false,
           }}
         >
           {(props) => <WorkoutDetails {...props} name={workoutDetail} />}
@@ -65,6 +66,7 @@ export default function App() {
           name="stats"
           options={{
             headerShown: false,
+            animation: "none",
           }}
         >
           {(props) => <Statistics {...props} />}
