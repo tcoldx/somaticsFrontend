@@ -7,7 +7,7 @@ interface navProp {
 const LandingFooter = ({ navigation }: navProp): JSX.Element => {
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate("home")}
+      onPress={() => navigation.navigate("userInit")}
       style={styles.contain}
     >
       <Text style={styles.text}>Get Started</Text>
@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
   contain: {
     backgroundColor: "rgba(240,99,19,255)",
     width: 140,
+    marginLeft: 20,
     height: 50,
     borderRadius: 20,
     display: "flex",

@@ -5,6 +5,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./pages/Home/home";
 import LandingPage from "./pages/Landing/landingpage";
 import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
+import InfoSlides from "./pages/InfoSlides/InfoSlides";
+import Statistics from "./pages/Statistics/statistics";
+import WorkoutActive from "./components/WorkoutActive/workoutactive";
 
 export default function App() {
   const [loginName, setLoginName] = useState("Tredis Ingram");
@@ -17,6 +20,7 @@ export default function App() {
   const handleWorkoutDetail = (item: string) => {
     setWorkoutDetail(item);
   };
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -27,6 +31,12 @@ export default function App() {
           }}
         >
           {(props) => <LandingPage {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="userInit"
+          options={{ headerShown: false, gestureEnabled: false }}
+        >
+          {(props) => <InfoSlides {...props} />}
         </Stack.Screen>
         <Stack.Screen
           name="home"
@@ -42,13 +52,24 @@ export default function App() {
             />
           )}
         </Stack.Screen>
+
         <Stack.Screen
           name="details"
           options={{
             headerShown: false,
+            gestureEnabled: false,
           }}
         >
           {(props) => <WorkoutDetails {...props} name={workoutDetail} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="stats"
+          options={{
+            headerShown: false,
+            animation: "none",
+          }}
+        >
+          {(props) => <Statistics {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

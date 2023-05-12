@@ -7,17 +7,13 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { footer, home, header } from "./home.styles";
-import {
-  boxingWorkouts,
-  HIIT,
-  muayThaiWorkouts,
-  All,
-} from "../../utils/workouts";
+import { home, header } from "./home.styles";
+import { boxingWorkouts, HIIT, muayThaiWorkouts } from "../../utils/workouts";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign } from "@expo/vector-icons";
 import SearchBar from "../../components/Searchbar/Searchbar";
 import CollectionList from "../../components/CollectionList/CollectionList";
+import FooterNav from "../../components/FooterNav/footernav";
 
 interface props {
   name: string;
@@ -31,14 +27,14 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
   const height = Dimensions.get("window").height;
 
   useEffect(() => {
-    setWorkoutList(All);
+    setWorkoutList(HIIT);
   }, []);
 
   const handleSelect = (curr: string) => {
     setCurrentSelect(curr);
 
     if (curr === "All") {
-      setWorkoutList(All);
+      setWorkoutList(HIIT);
     }
 
     if (curr === "Boxing") {
@@ -136,7 +132,7 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
       >
         <View>
           <Text style={{ color: "white", fontWeight: "bold", fontSize: 23 }}>
-            Collection
+            Programs
           </Text>
         </View>
         <View>
@@ -145,31 +141,22 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
           </Text>
         </View>
       </View>
-      <ScrollView style={{ display: "flex", marginTop: 20, width: "90%" }}>
+      <ScrollView
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          marginTop: 20,
+          width: "90%",
+        }}
+        bounces={false}
+      >
         <CollectionList
           itemRetrievalFunc={handleItem}
           list={workoutList}
           navigation={navigation}
         />
       </ScrollView>
-      <LinearGradient
-        colors={["rgba(15,15,15,0.5)", "rgba(115,115,115,0.5)"]}
-        style={footer.linearGradient}
-        start={[0.0, 0.5]}
-        end={[1.0, 0.5]}
-      >
-        <View style={footer.footContainer}>
-          <AntDesign name="home" size={24} color="white" />
-          <AntDesign name="barschart" size={24} color="white" />
-
-          <AntDesign
-            name="setting"
-            size={24}
-            color="white"
-            onPress={() => navigation.navigate("landing")}
-          />
-        </View>
-      </LinearGradient>
+      <FooterNav navigation={navigation} />
     </SafeAreaView>
   );
 };
