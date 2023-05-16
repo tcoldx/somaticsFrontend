@@ -110,7 +110,8 @@ export const header = StyleSheet.create({
   },
 
   currentselect: {
-    color: "black",
+    color: "white",
+    fontWeight: "bold",
   },
 
   content: {

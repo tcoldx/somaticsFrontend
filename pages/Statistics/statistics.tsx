@@ -40,7 +40,7 @@ const Statistics = ({ navigation }: statProps) => {
             }}
           >
             <Text style={{ fontWeight: "bold", fontSize: 15, color: "white" }}>
-              110
+              220
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 13, color: "gray" }}>
               KCal Burnt
@@ -68,7 +68,7 @@ const Statistics = ({ navigation }: statProps) => {
             }}
           >
             <Text style={{ fontWeight: "bold", fontSize: 15, color: "white" }}>
-              30m
+              45m
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 13, color: "gray" }}>
               Total Time
@@ -100,7 +100,7 @@ const Statistics = ({ navigation }: statProps) => {
             }}
           >
             <Text style={{ fontWeight: "bold", fontSize: 15, color: "white" }}>
-              0
+              1
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 13, color: "gray" }}>
               Workouts

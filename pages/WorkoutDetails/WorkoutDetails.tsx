@@ -5,28 +5,59 @@ import {
   ActivityIndicator,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
+import StepIndicator from "react-native-step-indicator";
 import React, { useState } from "react";
 import { styles } from "./WorkoutDetails.styles";
 import { AntDesign } from "@expo/vector-icons";
 import WorkoutActive from "../../components/WorkoutActive/workoutactive";
+import { data, labels } from "../../utils/workouts";
+import LevelUpPopUp from "../../components/LevelUpPopup/levelupPopUp";
 
 interface DetailProps {
-  name: string;
+  details: any;
   navigation: any;
 }
-const WorkoutDetails = ({ name, navigation }: DetailProps): JSX.Element => {
+const { width, height } = Dimensions.get("screen");
+const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [open, setOpen] = useState<boolean>(false);
   const [position, setPosition] = useState<number>(0);
+  const [start, setStart] = useState<boolean>(false);
+  const [stop, setStop] = useState<boolean>(false);
 
+  const customStyles = {
+    stepIndicatorSize: 25,
+    currentStepIndicatorSize: 25,
+    separatorStrokeWidth: 2,
+    currentStepStrokeWidth: 3,
+    stepStrokeCurrentColor: "#fe7013",
+    stepStrokeWidth: 3,
+    stepStrokeFinishedColor: "#fe7013",
+    stepStrokeUnFinishedColor: "#fe7013",
+    separatorFinishedColor: "#fe7013",
+    separatorUnFinishedColor: "#aaaaaa",
+    stepIndicatorFinishedColor: "#fe7013",
+    stepIndicatorUnFinishedColor: "#ffffff",
+    stepIndicatorCurrentColor: "#ffffff",
+    stepIndicatorLabelFontSize: 13,
+    currentStepIndicatorLabelFontSize: 13,
+    stepIndicatorLabelCurrentColor: "#fe7013",
+    stepIndicatorLabelFinishedColor: "#ffffff",
+    stepIndicatorLabelUnFinishedColor: "#aaaaaa",
+    labelColor: "#999999",
+    labelSize: 13,
+    currentStepLabelColor: "#aaaaaa",
+  };
   const handleStart = () => {
     setOpen(true);
+    setStart(true);
   };
 
   const handleStep = () => {
     if (position === 3) {
       setPosition(0);
-      navigation.navigate("home");
+      setStop(true);
       return;
     }
     setPosition(position + 1);
@@ -43,6 +74,7 @@ const WorkoutDetails = ({ name, navigation }: DetailProps): JSX.Element => {
         backgroundColor: "black",
       }}
     >
+      {stop && <LevelUpPopUp navigation={navigation} />}
       <SafeAreaView
         style={{
           position: "absolute",
@@ -89,77 +121,126 @@ const WorkoutDetails = ({ name, navigation }: DetailProps): JSX.Element => {
       {!open ? (
         <View style={styles.contentContainerBefore}>
           <View style={styles.navTouchBar}></View>
-          <View style={styles.workoutNameContainer}>
-            <Text style={styles.nameText}>Workout: {name}</Text>
-          </View>
-          <View style={styles.workoutHeader}>
-            <View style={styles.workoutHeaderDetail}>
-              <Text style={{ color: "gray", fontWeight: "bold" }}>Cals</Text>
-              <Text
-                style={{ color: "white", fontWeight: "bold", fontSize: 30 }}
-              >
-                330
-              </Text>
+          <ScrollView
+            contentContainerStyle={{
+              alignItems: "center",
+              height: height,
+            }}
+            style={styles.contentContainerScrolled}
+            horizontal={false}
+            bounces={false}
+          >
+            <View style={styles.workoutNameContainer}>
+              <Text style={styles.nameText}>Workout: {details.name}</Text>
             </View>
-            <View style={styles.workoutHeaderDetail}>
-              <Text style={{ color: "gray", fontWeight: "bold" }}>
-                Duration
-              </Text>
-              <Text
-                style={{ color: "white", fontWeight: "bold", fontSize: 30 }}
-              >
-                1:30
-              </Text>
+            <View style={styles.workoutHeader}>
+              <View style={styles.workoutHeaderDetail}>
+                <View style={styles.workoutHeaderWrap}>
+                  <Text style={{ color: "gray", fontWeight: "bold" }}>Day</Text>
+                  <Text
+                    style={{ color: "white", fontWeight: "bold", fontSize: 25 }}
+                  >
+                    1
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.workoutHeaderDetail}>
+                <View style={styles.workoutHeaderWrap}>
+                  <Text style={{ color: "gray", fontWeight: "bold" }}>
+                    Duration
+                  </Text>
+                  <Text
+                    style={{ color: "white", fontWeight: "bold", fontSize: 25 }}
+                  >
+                    {details.time}m
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.workoutHeaderDetail}>
+                <View style={styles.workoutHeaderWrap}>
+                  <Text
+                    style={{ color: "gray", fontWeight: "bold", fontSize: 15 }}
+                  >
+                    Difficulty
+                  </Text>
+                  <Text
+                    style={{ color: "white", fontWeight: "bold", fontSize: 25 }}
+                  >
+                    {details.difficulty}
+                  </Text>
+                </View>
+              </View>
             </View>
-            <View style={styles.workoutHeaderDetail}>
-              <Text style={{ color: "gray", fontWeight: "bold", fontSize: 15 }}>
-                Difficulty
-              </Text>
-              <Text
-                style={{ color: "white", fontWeight: "bold", fontSize: 30 }}
+            <View style={styles.descriptionContainer}>
+              <View
+                style={{
+                  width: "89%",
+                }}
               >
-                Ronin
-              </Text>
+                <Text style={{ color: "white" }}>Description:</Text>
+              </View>
+              <ScrollView
+                style={{
+                  width: "89%",
+                  marginTop: 20,
+                }}
+              >
+                <Text style={{ color: "gray" }}>{details.desc}</Text>
+              </ScrollView>
             </View>
-          </View>
-          <View style={styles.descriptionContainer}>
             <View
               style={{
-                width: "89%",
+                width: "90%",
+                display: "flex",
+                marginTop: 10,
+                gap: 10,
               }}
             >
-              <Text style={{ color: "white" }}>Description:</Text>
+              <Text style={{ color: "white" }}>Target Groups: </Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                  gap: 10,
+                }}
+              >
+                {details.targets.map((item: string) => {
+                  return (
+                    <View
+                      style={{
+                        backgroundColor: "#242424",
+                        borderRadius: 8,
+                        width: 100,
+                        height: 30,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: "white", fontWeight: "bold" }}>
+                        {item}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+              <View
+                style={{
+                  marginTop: 80,
+                  width: "100%",
+                  gap: 40,
+                  display: "flex",
+                }}
+              >
+                <Text style={{ color: "#ffffff" }}>Overview: </Text>
+                <StepIndicator customStyles={customStyles} labels={labels} />
+              </View>
             </View>
-            <ScrollView
-              style={{
-                width: "89%",
-                marginTop: 20,
-                height: 300,
-              }}
-            >
-              <Text style={{ color: "gray" }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate
-                velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum
-                dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                aliquip ex ea commodo consequat. Duis aute irure dolor in
-                reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur.
-              </Text>
-            </ScrollView>
-          </View>
+          </ScrollView>
           <TouchableOpacity
-            style={styles.trainingButtonContainer}
+            activeOpacity={1}
+            style={styles.trainingButtonContainerBefore}
             onPress={handleStart}
           >
             <Text style={{ color: "white", fontWeight: "bold" }}>
@@ -170,15 +251,46 @@ const WorkoutDetails = ({ name, navigation }: DetailProps): JSX.Element => {
       ) : (
         <View style={styles.contentContainerAfter}>
           <View style={styles.navTouchBar}></View>
-          <WorkoutActive position={position} />
-          <TouchableOpacity
-            style={styles.trainingButtonContainer}
-            onPress={handleStep}
+          <WorkoutActive
+            position={position}
+            timeStart={start}
+            stopTime={stop}
+            data={data}
+            labels={labels}
+          />
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-evenly",
+              position: "absolute",
+              bottom: 0,
+              marginBottom: 35,
+              width: "90%",
+            }}
           >
-            <Text style={{ color: "white", fontWeight: "bold" }}>
-              {position === 3 ? "Finish Workout" : "Next Workout"}
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.prevStep}
+              onPress={() => {
+                if (position > 0) {
+                  setPosition(position - 1);
+                }
+              }}
+            >
+              <AntDesign name="left" size={30} color="#EF6F13" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.trainingButtonContainer}
+              onPress={handleStep}
+            >
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                {position === 3 ? "Finish Workout" : "Next Workout"}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </SafeAreaView>

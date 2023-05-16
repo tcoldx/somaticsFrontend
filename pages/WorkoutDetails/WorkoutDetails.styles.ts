@@ -1,4 +1,5 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+const { width, height } = Dimensions.get("screen");
 export const styles = StyleSheet.create({
   workoutHeader: {
     display: "flex",
@@ -13,11 +14,15 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     position: "absolute",
-    height: 500,
+    height: height - 110,
     width: "100%",
     borderRadius: 8,
     bottom: 0,
     backgroundColor: "#101010",
+  },
+  contentContainerScrolled: {
+    display: "flex",
+    width: "100%",
   },
   iconContainer: {
     backgroundColor: "#101010",
@@ -33,6 +38,18 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
+  trainingButtonContainerBefore: {
+    position: "absolute",
+    bottom: 0,
+    marginBottom: 35,
+    borderRadius: 10,
+    height: 50,
+    display: "flex",
+    width: "90%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#EF6F13",
+  },
 
   contentContainerAfter: {
     flex: 1,
@@ -40,9 +57,21 @@ export const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     borderRadius: 8,
-    height: 800,
+    height: 600,
     bottom: 0,
     backgroundColor: "#101010",
+  },
+
+  prevStep: {
+    borderWidth: 2,
+    borderRadius: 10,
+    borderColor: "#EF6F13",
+    backgroundColor: "white",
+    width: 50,
+    height: 50,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   workoutHeaderDetail: {
@@ -57,7 +86,15 @@ export const styles = StyleSheet.create({
     height: 100,
   },
 
+  workoutHeaderWrap: {
+    display: "flex",
+    alignItems: "center",
+    height: "70%",
+    gap: 2,
+  },
+
   navTouchBar: {
+    zIndex: 4,
     backgroundColor: "white",
     width: 80,
     borderRadius: 10,
@@ -67,13 +104,10 @@ export const styles = StyleSheet.create({
   },
 
   trainingButtonContainer: {
-    position: "absolute",
-    bottom: 0,
-    marginBottom: 50,
     borderRadius: 10,
-    width: "90%",
     height: 50,
     display: "flex",
+    width: "80%",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#EF6F13",
@@ -81,7 +115,7 @@ export const styles = StyleSheet.create({
 
   descriptionContainer: {
     width: "100%",
-    flex: 0.5,
+    display: "flex",
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",

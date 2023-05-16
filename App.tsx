@@ -17,7 +17,7 @@ export default function App() {
   };
   const Stack = createNativeStackNavigator();
 
-  const handleWorkoutDetail = (item: string) => {
+  const handleWorkoutDetail = (item: any) => {
     setWorkoutDetail(item);
   };
 
@@ -60,13 +60,14 @@ export default function App() {
             gestureEnabled: false,
           }}
         >
-          {(props) => <WorkoutDetails {...props} name={workoutDetail} />}
+          {(props) => <WorkoutDetails {...props} details={workoutDetail} />}
         </Stack.Screen>
         <Stack.Screen
           name="stats"
           options={{
             headerShown: false,
-            animation: "none",
+            animation: "default",
+            gestureEnabled: false,
           }}
         >
           {(props) => <Statistics {...props} />}
