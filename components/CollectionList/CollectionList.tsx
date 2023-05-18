@@ -5,12 +5,9 @@ import {
   ImageBackground,
   StyleSheet,
   Dimensions,
-  ScrollView,
 } from "react-native";
 import { styleDetail } from "./collectionlist.styles";
-import Legacy from "../../assets/legacy.png";
 import React from "react";
-import { LinearGradient } from "expo-linear-gradient";
 interface WorkoutProps {
   list: object[];
   itemRetrievalFunc: any;
@@ -21,7 +18,7 @@ const CollectionList = ({
   itemRetrievalFunc,
   navigation,
 }: WorkoutProps): JSX.Element => {
-  const handleSelect = (item: string) => {
+  const handleSelect = (item: any) => {
     itemRetrievalFunc(item);
     navigation.navigate("details");
   };
@@ -37,10 +34,7 @@ const CollectionList = ({
     >
       {list.map((item: any) => {
         return (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => handleSelect(item.name)}
-          >
+          <TouchableOpacity key={item.id} onPress={() => handleSelect(item)}>
             <ImageBackground
               style={styleDetail.imageContain}
               source={item.img}
@@ -56,7 +50,7 @@ const CollectionList = ({
               </View>
               <View style={styleDetail.programHeaderTwo}>
                 <Text style={{ color: "white", fontWeight: "bold" }}>
-                  Boxing
+                  {item.category}
                 </Text>
               </View>
               <View
@@ -88,7 +82,7 @@ const CollectionList = ({
     </View>
   );
 };
-const { width, height } = Dimensions.get("screen");
+
 export const styles = StyleSheet.create({
   lineargradient: {
     height: 410,

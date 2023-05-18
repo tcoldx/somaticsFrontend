@@ -2,7 +2,6 @@ import { StyleSheet, Dimensions } from "react-native";
 const { width, height } = Dimensions.get("screen");
 export const styles = StyleSheet.create({
   container: {
-    marginTop: 30,
     display: "flex",
   },
 
@@ -11,6 +10,11 @@ export const styles = StyleSheet.create({
     padding: 10,
     width: width - 50,
     height: height - 457,
+  },
+
+  stepIndContainer: {
+    marginTop: 5,
+    height: height - 500,
   },
 
   label: {

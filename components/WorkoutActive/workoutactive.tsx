@@ -1,49 +1,22 @@
-import { View, Text } from "react-native";
+import { View, Text, ScrollView, ViewBase } from "react-native";
+import { Stopwatch } from "react-native-stopwatch-timer";
 import React, { useState } from "react";
 import StepIndicator from "react-native-step-indicator";
 import { styles } from "./workoutactive.styles";
 interface workoutProps {
   position: number;
+  timeStart: boolean;
+  stopTime: boolean;
+  labels: any;
+  data: any;
 }
-const WorkoutActive = ({ position }: workoutProps) => {
-  const data = [
-    {
-      label: "Double Jab",
-      sets: "Sets: 4 sets",
-      reps: "Reps: 20-25 reps",
-      status: "Active",
-      done: "Finished",
-    },
-    {
-      label: "Jab Straight",
-      sets: "Sets: 4 sets",
-      reps: "Reps: 20-25 reps",
-      status: "Active",
-      done: "finished",
-    },
-    {
-      label: "Jab Straight Hook",
-      sets: "Sets: 4 sets",
-      reps: "Reps: 20-25 reps",
-      status: "Active",
-      done: "Finished",
-    },
-    {
-      label: "Jab Straight Hook Uppercut",
-      sets: "Sets: 4 sets",
-      reps: "Reps: 20-25 reps",
-      status: "Active",
-      done: "Finished",
-    },
-  ];
-
-  const labels = [
-    "Double Jab",
-    "Jab Straight",
-    "Jab Straight Hook",
-    "Jab Straight Hook Uppercut",
-  ];
-
+const WorkoutActive = ({
+  position,
+  timeStart,
+  stopTime,
+  labels,
+  data,
+}: workoutProps) => {
   const customStyles = {
     stepIndicatorSize: 50,
     currentStepIndicatorSize: 30,
@@ -70,32 +43,73 @@ const WorkoutActive = ({ position }: workoutProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
-        <StepIndicator
-          customStyles={customStyles}
-          currentPosition={position}
-          direction="vertical"
-          labels={labels}
-          stepCount={4}
-          renderLabel={({ position, label, currentPosition, stepStatus }) => {
-            return (
-              <View style={styles.labelContainer}>
-                <Text style={styles.label}>{data[position].label}</Text>
-                <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
-                  {data[position].sets}
-                </Text>
-                <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
-                  {data[position].reps}
-                </Text>
-                <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
-                  {data[position].status}
-                </Text>
-              </View>
-            );
+        <View style={styles.stepIndContainer}>
+          <StepIndicator
+            customStyles={customStyles}
+            currentPosition={position}
+            direction="vertical"
+            labels={labels}
+            stepCount={4}
+            renderLabel={({ position, label, currentPosition, stepStatus }) => {
+              return (
+                <View style={styles.labelContainer}>
+                  <Text style={styles.label}>{data[position].label}</Text>
+                  <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
+                    {data[position].sets}
+                  </Text>
+                  <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
+                    {data[position].reps}
+                  </Text>
+                  <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
+                    {data[position].status}
+                  </Text>
+                </View>
+              );
+            }}
+          />
+        </View>
+        <View
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+            width: "100%",
+            marginTop: 35,
+            gap: 3,
           }}
-        />
+        >
+          <View
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: 100,
+              backgroundColor: "red",
+            }}
+          ></View>
+          <Text style={{ color: "white", fontWeight: "bold" }}>Time: </Text>
+
+          <Stopwatch
+            start={timeStart}
+            options={options}
+            reset={stopTime}
+            startTime={0}
+          />
+        </View>
       </View>
     </View>
   );
+};
+
+const options = {
+  container: {
+    backgroundColor: "transparent",
+  },
+  text: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 17,
+  },
 };
 
 export default WorkoutActive;
