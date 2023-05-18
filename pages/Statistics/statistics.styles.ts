@@ -9,6 +9,7 @@ export const styles = StyleSheet.create({
     width: width,
     height: height,
   },
+
   linearGradient: {
     position: "absolute",
     bottom: 0,
@@ -16,6 +17,66 @@ export const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: "100%",
+  },
+
+  workoutContainer: {
+    backgroundColor: "#242424",
+    width: width - 30,
+    marginTop: 20,
+    display: "flex",
+    paddingLeft: 10,
+    paddingRight: 10,
+    height: 50,
+    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  coverBlur: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: "100%",
+    height: 1000,
+    zIndex: 2,
+  },
+  deletionContainer: {
+    position: "absolute",
+    top: "35%",
+    left: "15%",
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#242424",
+    borderRadius: 10,
+    width: "70%",
+    height: 275,
+    gap: 10,
+    zIndex: 4,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  deleteButton: {
+    display: "flex",
+    alignItems: "center",
+    borderRadius: 6,
+    marginTop: 10,
+    justifyContent: "center",
+    height: 40,
+    backgroundColor: "red",
+    width: "60%",
+  },
+  workoutHistoryContentWrap: {
+    display: "flex",
+    width: "100%",
+  },
+
+  workoutContainerText: {
+    color: "white",
+    fontWeight: "bold",
   },
 
   historyContainer: {

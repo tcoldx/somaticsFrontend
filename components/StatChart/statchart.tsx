@@ -53,7 +53,7 @@ const StatChart = () => {
           labels: ["M", "T", "W", "T", "F", "S", "S"],
           datasets: [
             {
-              data: [12, 20, 23, 22, 21, 10, 40],
+              data: [0, 0, 0, 0, 0, 0, 0],
             },
           ],
         }}

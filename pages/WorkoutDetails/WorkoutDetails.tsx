@@ -14,6 +14,7 @@ import { AntDesign } from "@expo/vector-icons";
 import WorkoutActive from "../../components/WorkoutActive/workoutactive";
 import { data, labels } from "../../utils/workouts";
 import LevelUpPopUp from "../../components/LevelUpPopup/levelupPopUp";
+import { auth, db, firebase } from "../../firebase";
 
 interface DetailProps {
   details: any;
@@ -25,7 +26,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [position, setPosition] = useState<number>(0);
   const [start, setStart] = useState<boolean>(false);
   const [stop, setStop] = useState<boolean>(false);
-
+  const [workoutDB, setWorkoutDB] = useState<any>([]);
   const customStyles = {
     stepIndicatorSize: 25,
     currentStepIndicatorSize: 25,
@@ -62,6 +63,24 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     }
     setPosition(position + 1);
   };
+  const workoutRef = firebase.firestore().collection("programs");
+
+  const timeStamp = firebase.firestore.FieldValue.serverTimestamp();
+
+  const handleDone = (): void => {
+    if (details) {
+      const data = {
+        header: details,
+        createdAt: timeStamp,
+      };
+      workoutRef
+        .add(data)
+        .then(() => {
+          setWorkoutDB([]);
+        })
+        .catch((err) => console.log(err));
+    }
+  };
 
   return (
     <SafeAreaView
@@ -74,7 +93,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         backgroundColor: "black",
       }}
     >
-      {stop && <LevelUpPopUp navigation={navigation} />}
+      {stop && <LevelUpPopUp navigation={navigation} handleDone={handleDone} />}
       <SafeAreaView
         style={{
           position: "absolute",

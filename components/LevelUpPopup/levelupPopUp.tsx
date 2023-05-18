@@ -2,10 +2,12 @@ import { SafeAreaView, TouchableOpacity, View, Text } from "react-native";
 import { styles } from "./levelupPopUp.styles";
 interface levelupProps {
   navigation: any;
+  handleDone: Function;
 }
-const LevelUpPopUp = ({ navigation }: levelupProps) => {
+const LevelUpPopUp = ({ navigation, handleDone }: levelupProps) => {
   const handleNav = () => {
     navigation.navigate("stats");
+    handleDone();
   };
   return (
     <SafeAreaView style={styles.container}>

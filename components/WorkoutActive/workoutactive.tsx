@@ -17,8 +17,6 @@ const WorkoutActive = ({
   labels,
   data,
 }: workoutProps) => {
-  const [timer, setTime] = useState("");
-
   const customStyles = {
     stepIndicatorSize: 50,
     currentStepIndicatorSize: 30,
@@ -78,9 +76,19 @@ const WorkoutActive = ({
             flexDirection: "row",
             width: "100%",
             marginTop: 35,
+            gap: 3,
           }}
         >
+          <View
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: 100,
+              backgroundColor: "red",
+            }}
+          ></View>
           <Text style={{ color: "white", fontWeight: "bold" }}>Time: </Text>
+
           <Stopwatch
             start={timeStart}
             options={options}

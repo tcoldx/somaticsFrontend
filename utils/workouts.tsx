@@ -64,6 +64,7 @@ export const HIIT = [
     targets: ["chest", "arms", "shoulders", "back"],
     difficulty: "Medium",
     img: Legacy,
+    time: "40-45",
     tasks: 2,
     desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
     `,
@@ -71,6 +72,7 @@ export const HIIT = [
   {
     name: "Army Fit",
     category: "HIIT",
+    time: "30-32",
     id: 2,
     difficulty: "Basic",
     img: boxImg,
