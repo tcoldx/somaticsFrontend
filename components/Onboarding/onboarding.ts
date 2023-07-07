@@ -1,18 +1,16 @@
 export default [
   {
     id: 1,
-    title: "Height",
+    title: "Gender",
   },
   {
     id: 2,
-    title: "Weight",
+    weight: "Weight",
+    age: "Age",
+    height: "Height",
   },
   {
     id: 3,
-    title: "Age",
-  },
-  {
-    id: 4,
     title: "What are your goals somatic?",
     options: [
       { name: "Lose Weight", id: 1 },
@@ -21,4 +19,5 @@ export default [
       { name: "Get Stronger", id: 4 },
     ],
   },
+  { id: 4, title: "Sign up" },
 ];

@@ -30,12 +30,18 @@ const Statistics = ({ navigation }: statProps): JSX.Element => {
     return workoutRef.onSnapshot((querySnapshot) => {
       const list = [];
       querySnapshot.forEach((doc) => {
-        list.push({ id: doc.id, name: doc.data().header.name });
+        list.push({
+          id: doc.id,
+          name: doc.data().header.name,
+          calories: doc.data().header.calsBurned,
+        });
       });
       setWorkoutHistory(list);
     });
   }, []);
-
+  const calories = workoutHistory.map((el) => el.calories);
+  let sum = 0;
+  const totalCalories = calories.reduce((acc, curr) => acc + curr, sum);
   const handleDelete = (id: string) => {
     setPanel(true);
     setId(id);
@@ -89,7 +95,7 @@ const Statistics = ({ navigation }: statProps): JSX.Element => {
             }}
           >
             <Text style={{ fontWeight: "bold", fontSize: 15, color: "white" }}>
-              0
+              {workoutHistory.length ? totalCalories : 0}
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 13, color: "gray" }}>
               KCal Burnt
@@ -179,12 +185,29 @@ const Statistics = ({ navigation }: statProps): JSX.Element => {
             {workoutHistory.map((workout: any) => {
               return (
                 <View style={styles.workoutContainer}>
-                  <Text style={styles.workoutContainerText}>
-                    {workout.name}
-                  </Text>
+                  <View
+                    style={{
+                      gap: 3,
+                      display: "flex",
+                      alignItems: "flex-start",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={styles.workoutContainerText}>
+                      {workout.name}
+                    </Text>
+                    <Text style={{ color: "gray", fontWeight: "bold" }}>
+                      Day: 1
+                    </Text>
+                  </View>
                   <AntDesign
                     name="closesquare"
-                    color="red"
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "#EF6F13",
+                      color: "whitesmoke",
+                      borderRadius: 4,
+                    }}
                     size={30}
                     onPress={() => handleDelete(workout.id)}
                   />

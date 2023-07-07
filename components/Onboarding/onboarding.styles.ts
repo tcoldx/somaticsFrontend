@@ -1,5 +1,44 @@
 import { StyleSheet } from "react-native";
 
+export const slideStyle = StyleSheet.create({
+  contContainer: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  genderSelectContainFilled: {
+    backgroundColor: "rgba(240,99,19,255)",
+    borderWidth: 1,
+    borderColor: "rgba(240,99,19,255)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 100,
+    width: 150,
+    height: 150,
+  },
+  genderSelectContain: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "rgba(240,99,19,255)",
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    justifyContent: "center",
+    borderRadius: 100,
+    width: 150,
+    height: 150,
+  },
+
+  genderSelectWrap: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 40,
+  },
+});
+
 export const styler = StyleSheet.create({
   optionContainer: {
     display: "flex",

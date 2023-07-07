@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, ViewBase } from "react-native";
+import { View, Text } from "react-native";
 import { Stopwatch } from "react-native-stopwatch-timer";
 import React, { useState } from "react";
 import StepIndicator from "react-native-step-indicator";
@@ -7,14 +7,14 @@ interface workoutProps {
   position: number;
   timeStart: boolean;
   stopTime: boolean;
-  labels: any;
+  workouts: any;
   data: any;
 }
 const WorkoutActive = ({
   position,
   timeStart,
   stopTime,
-  labels,
+  workouts,
   data,
 }: workoutProps) => {
   const customStyles = {
@@ -40,6 +40,7 @@ const WorkoutActive = ({
     labelSize: 13,
     currentStepLabelColor: "#fe7013",
   };
+  const labeler = workouts.map((el: any) => el.name);
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
@@ -48,20 +49,17 @@ const WorkoutActive = ({
             customStyles={customStyles}
             currentPosition={position}
             direction="vertical"
-            labels={labels}
-            stepCount={4}
+            labels={labeler}
+            stepCount={data.length}
             renderLabel={({ position, label, currentPosition, stepStatus }) => {
               return (
                 <View style={styles.labelContainer}>
-                  <Text style={styles.label}>{data[position].label}</Text>
+                  <Text style={styles.label}>{data[position].name}</Text>
                   <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
-                    {data[position].sets}
+                    sets: {data[position].sets}
                   </Text>
                   <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
-                    {data[position].reps}
-                  </Text>
-                  <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
-                    {data[position].status}
+                    reps: {data[position].reps}
                   </Text>
                 </View>
               );

@@ -18,6 +18,7 @@ const InfoSlides = ({ navigation }: infoProps): JSX.Element => {
   return (
     <FlatList
       ref={ref}
+      scrollEnabled={false}
       initialScrollIndex={0}
       data={slides}
       renderItem={({ item }) => (
