@@ -7,7 +7,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
 } from "react-native";
 import { AntDesign, Fontisto, Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
@@ -20,6 +19,7 @@ type itemProps = {
   id: number;
   options: any;
   navigation: any;
+  items: any;
   index: number;
   indexFunc: Function;
 };
@@ -27,6 +27,7 @@ const OnboardingItem = ({
   title,
   id,
   options,
+  items,
   navigation,
   index,
   indexFunc,
@@ -41,7 +42,6 @@ const OnboardingItem = ({
 
   const handleChange = (text: any) => {
     setName(text);
-    console.log(id);
   };
 
   const handleChangeEmail = (text: any) => {
@@ -123,7 +123,7 @@ const OnboardingItem = ({
           <View
             style={{
               backgroundColor: "rgba(240,99,19,255)",
-              height: "100%",
+              height: "90%",
               width: "45%",
               borderRadius: 20,
             }}
@@ -132,11 +132,12 @@ const OnboardingItem = ({
             colors={["rgba(240,99,19, 0.2)", "transparent"]}
             style={styles.linearGradient}
           />
-          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
-            {title}
-          </Text>
         </SafeAreaView>
         <View style={slideStyle.contContainer}>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+            {items.weight}
+            {items}
+          </Text>
           <TouchableOpacity
             onPress={() => {
               if (index !== 3) {

@@ -29,6 +29,7 @@ const InfoSlides = ({ navigation }: infoProps): JSX.Element => {
           navigation={navigation}
           index={index}
           indexFunc={setIndex}
+          items={item}
         />
       )}
       horizontal
