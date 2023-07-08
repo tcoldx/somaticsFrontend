@@ -12,8 +12,9 @@ import { AntDesign, Fontisto, Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
-import { slideStyle } from "./onboarding.styles";
+import { slideStyle, styler } from "./onboarding.styles";
 import { auth } from "../../firebase";
+import { styled } from "nativewind";
 type itemProps = {
   title: string;
   id: number;
@@ -32,17 +33,21 @@ const OnboardingItem = ({
   index,
   indexFunc,
 }: itemProps): JSX.Element => {
-  const [selected, setSelected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [chosen, setChosen] = useState(false);
   const [active, setActive] = useState(-1);
   const [password, setPassword] = useState("");
+  const [foot, setFoot] = useState("");
+  const [inch, setInch] = useState("");
+  const [weight, setWeight] = useState("");
+  const [age, setAge] = useState("");
 
   const handleChange = (text: any) => {
     setName(text);
   };
+
+  const handleSelect = (op) => {};
 
   const handleChangeEmail = (text: any) => {
     setEmail(text);
@@ -66,7 +71,8 @@ const OnboardingItem = ({
       navigation.navigate("home");
     }, 2500);
   };
-
+  const StyledView = styled(TextInput);
+  const StyledViewOne = styled(View);
   if (id === 3) {
     return (
       <SafeAreaView style={styles.container}>
@@ -91,10 +97,27 @@ const OnboardingItem = ({
           colors={["rgba(240,99,19, 0.2)", "transparent"]}
           style={styles.linearGradient}
         />
-        <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
-          {title}
-        </Text>
         <View style={slideStyle.contContainer}>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+            {title}
+          </Text>
+          <View style={styler.optionContainer}>
+            {options.map((option: any) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => handleSelect(option.id)}
+                  key={option.id}
+                  style={styler.optionSelect}
+                >
+                  <Text style={styler.text}>{option.name}</Text>
+
+                  <View style={slideStyle.selector}>
+                    <AntDesign name="checkcircleo" size={12} color="#242424" />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
           <TouchableOpacity
             onPress={() => {
               if (index !== 3) {
@@ -134,13 +157,77 @@ const OnboardingItem = ({
           />
         </SafeAreaView>
         <View style={slideStyle.contContainer}>
-          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
-            {items.weight}
-            {items}
-          </Text>
+          <StyledViewOne
+            style={{ width: "70%", display: "flex", alignItems: "center" }}
+            className="flex-1 w-23"
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 30,
+                marginBottom: 50,
+              }}
+            >
+              Details about where your body is at!
+            </Text>
+          </StyledViewOne>
+          <TextInput
+            style={slideStyle.details}
+            keyboardType="numeric"
+            placeholderTextColor="white"
+            placeholder={items.age}
+            maxLength={2}
+            onChangeText={(val) => {
+              setAge(val);
+            }}
+          />
+          <View
+            style={{
+              width: "70%",
+              display: "flex",
+              gap: 20,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <TextInput
+              placeholderTextColor="white"
+              style={slideStyle.heightDetails}
+              placeholder={"ft"}
+              maxLength={1}
+              keyboardType="numeric"
+              onChangeText={(val) => {
+                setFoot(val);
+              }}
+            />
+            <StyledView
+              className="flex-1 items-center w-full"
+              placeholderTextColor="white"
+              style={slideStyle.heightDetails}
+              placeholder="in"
+              keyboardType="numeric"
+              maxLength={1}
+              onChangeText={(val) => {
+                setInch(val);
+              }}
+            />
+          </View>
+          <TextInput
+            placeholderTextColor="white"
+            style={slideStyle.details}
+            placeholder={items.weight}
+            maxLength={3}
+            keyboardType="numeric"
+            onChangeText={(val) => {
+              setWeight(val);
+            }}
+          />
           <TouchableOpacity
             onPress={() => {
-              if (index !== 3) {
+              if (index !== 3 && foot && age && inch && weight.length > 2) {
+                console.log(foot, foot, inch, age, weight);
                 indexFunc(index + 1);
               }
             }}
