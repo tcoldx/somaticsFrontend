@@ -6,20 +6,21 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  FlatList,
 } from "react-native";
-import StepIndicator from "react-native-step-indicator";
 import React, { useState } from "react";
 import { styles } from "./WorkoutDetails.styles";
 import { AntDesign } from "@expo/vector-icons";
 import WorkoutActive from "../../components/WorkoutActive/workoutactive";
-import { data, labels } from "../../utils/workouts";
+import { Video, ResizeMode } from "expo-av";
 import LevelUpPopUp from "../../components/LevelUpPopup/levelupPopUp";
-import { auth, db, firebase } from "../../firebase";
+import { firebase } from "../../firebase";
 
 interface DetailProps {
   details: any;
   navigation: any;
 }
+
 const { width, height } = Dimensions.get("screen");
 const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [open, setOpen] = useState<boolean>(false);
@@ -27,44 +28,22 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [start, setStart] = useState<boolean>(false);
   const [stop, setStop] = useState<boolean>(false);
   const [workoutDB, setWorkoutDB] = useState<any>([]);
-  const customStyles = {
-    stepIndicatorSize: 25,
-    currentStepIndicatorSize: 25,
-    separatorStrokeWidth: 2,
-    currentStepStrokeWidth: 3,
-    stepStrokeCurrentColor: "#fe7013",
-    stepStrokeWidth: 3,
-    stepStrokeFinishedColor: "#fe7013",
-    stepStrokeUnFinishedColor: "#fe7013",
-    separatorFinishedColor: "#fe7013",
-    separatorUnFinishedColor: "#aaaaaa",
-    stepIndicatorFinishedColor: "#fe7013",
-    stepIndicatorUnFinishedColor: "#ffffff",
-    stepIndicatorCurrentColor: "#ffffff",
-    stepIndicatorLabelFontSize: 13,
-    currentStepIndicatorLabelFontSize: 13,
-    stepIndicatorLabelCurrentColor: "#fe7013",
-    stepIndicatorLabelFinishedColor: "#ffffff",
-    stepIndicatorLabelUnFinishedColor: "#aaaaaa",
-    labelColor: "#999999",
-    labelSize: 13,
-    currentStepLabelColor: "#aaaaaa",
-  };
+  const [day, setDay] = useState<number>(0);
   const handleStart = () => {
     setOpen(true);
     setStart(true);
   };
-
   const handleStep = () => {
-    if (position === 3) {
+    if (position === currentLabel.length) {
       setPosition(0);
+      setDay(day + 1);
       setStop(true);
       return;
     }
     setPosition(position + 1);
   };
+  const currentLabel = details.workouts[day].names;
   const workoutRef = firebase.firestore().collection("programs");
-
   const timeStamp = firebase.firestore.FieldValue.serverTimestamp();
 
   const handleDone = (): void => {
@@ -81,7 +60,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         .catch((err) => console.log(err));
     }
   };
-
+  console.log(currentLabel[1].vid);
   return (
     <SafeAreaView
       style={{
@@ -135,128 +114,226 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           justifyContent: "center",
         }}
       >
-        <ActivityIndicator size="large" color="#EF6F13" />
+        <Video
+          source={currentLabel[currentLabel.length - 1].vid}
+          style={{
+            display: "flex",
+            position: "absolute",
+            height: 400,
+            width: width,
+          }}
+          useNativeControls
+          isLooping
+          onLoadStart={() => console.log("on load start")}
+          onLoad={() => console.log("on load")}
+          resizeMode={ResizeMode.COVER}
+        />
       </View>
       {!open ? (
         <View style={styles.contentContainerBefore}>
           <View style={styles.navTouchBar}></View>
-          <ScrollView
-            contentContainerStyle={{
-              alignItems: "center",
-              height: height,
-            }}
-            style={styles.contentContainerScrolled}
-            horizontal={false}
-            bounces={false}
-          >
-            <View style={styles.workoutNameContainer}>
-              <Text style={styles.nameText}>Workout: {details.name}</Text>
-            </View>
-            <View style={styles.workoutHeader}>
-              <View style={styles.workoutHeaderDetail}>
-                <View style={styles.workoutHeaderWrap}>
-                  <Text style={{ color: "gray", fontWeight: "bold" }}>Day</Text>
-                  <Text
-                    style={{ color: "white", fontWeight: "bold", fontSize: 25 }}
-                  >
-                    1
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.workoutHeaderDetail}>
-                <View style={styles.workoutHeaderWrap}>
-                  <Text style={{ color: "gray", fontWeight: "bold" }}>
-                    Duration
-                  </Text>
-                  <Text
-                    style={{ color: "white", fontWeight: "bold", fontSize: 25 }}
-                  >
-                    {details.time}m
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.workoutHeaderDetail}>
-                <View style={styles.workoutHeaderWrap}>
-                  <Text
-                    style={{ color: "gray", fontWeight: "bold", fontSize: 15 }}
-                  >
-                    Difficulty
-                  </Text>
-                  <Text
-                    style={{ color: "white", fontWeight: "bold", fontSize: 25 }}
-                  >
-                    {details.difficulty}
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <View style={styles.descriptionContainer}>
-              <View
-                style={{
-                  width: "89%",
-                }}
-              >
-                <Text style={{ color: "white" }}>Description:</Text>
-              </View>
-              <ScrollView
-                style={{
-                  width: "89%",
-                  marginTop: 20,
-                }}
-              >
-                <Text style={{ color: "gray" }}>{details.desc}</Text>
-              </ScrollView>
-            </View>
-            <View
-              style={{
-                width: "90%",
-                display: "flex",
-                marginTop: 10,
-                gap: 10,
-              }}
-            >
-              <Text style={{ color: "white" }}>Target Groups: </Text>
-              <View
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  flexDirection: "row",
-                  gap: 10,
-                }}
-              >
-                {details.targets.map((item: string) => {
-                  return (
+          <View style={styles.workoutNameContainer}>
+            <Text style={styles.nameText}>Workout: {details.name}</Text>
+          </View>
+
+          <FlatList
+            horizontal
+            pagingEnabled={true}
+            scrollEnabled={true}
+            data={details.workouts}
+            keyExtractor={(item) => item.key}
+            renderItem={({ item, index }: any) => {
+              return (
+                <View
+                  style={{
+                    width: width,
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <View style={styles.workoutHeader}>
+                    <View style={styles.workoutHeaderDetail}>
+                      <View style={styles.workoutHeaderWrap}>
+                        <Text style={{ color: "gray", fontWeight: "bold" }}>
+                          Day
+                        </Text>
+                        <Text
+                          style={{
+                            color: "white",
+                            fontWeight: "bold",
+                            fontSize: 25,
+                          }}
+                        >
+                          {index === 0 ? "1" : index + 1}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.workoutHeaderDetail}>
+                      <View style={styles.workoutHeaderWrap}>
+                        <Text style={{ color: "gray", fontWeight: "bold" }}>
+                          Duration
+                        </Text>
+                        <Text
+                          style={{
+                            color: "white",
+                            fontWeight: "bold",
+                            fontSize: 25,
+                          }}
+                        >
+                          {details.time}m
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.workoutHeaderDetail}>
+                      <View style={styles.workoutHeaderWrap}>
+                        <Text
+                          style={{
+                            color: "gray",
+                            fontWeight: "bold",
+                            fontSize: 15,
+                          }}
+                        >
+                          Difficulty
+                        </Text>
+                        <Text
+                          style={{
+                            color: "white",
+                            fontWeight: "bold",
+                            fontSize: 25,
+                          }}
+                        >
+                          {details.difficulty}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={styles.descriptionContainer}>
                     <View
                       style={{
-                        backgroundColor: "#242424",
-                        borderRadius: 8,
-                        width: 100,
-                        height: 30,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        width: "89%",
                       }}
                     >
-                      <Text style={{ color: "white", fontWeight: "bold" }}>
-                        {item}
-                      </Text>
+                      <Text style={{ color: "white" }}>Description:</Text>
                     </View>
-                  );
-                })}
-              </View>
-              <View
-                style={{
-                  marginTop: 80,
-                  width: "100%",
-                  gap: 40,
-                  display: "flex",
-                }}
-              >
-                <Text style={{ color: "#ffffff" }}>Overview: </Text>
-                <StepIndicator customStyles={customStyles} labels={labels} />
-              </View>
-            </View>
-          </ScrollView>
+                    <ScrollView
+                      style={{
+                        width: "89%",
+                        marginTop: 20,
+                      }}
+                    >
+                      <Text style={{ color: "gray" }}>{details.desc}</Text>
+                    </ScrollView>
+                  </View>
+                  <View
+                    style={{
+                      width: "90%",
+                      display: "flex",
+                      marginTop: 10,
+                      gap: 10,
+                    }}
+                  >
+                    <Text style={{ color: "white" }}>Target Groups: </Text>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        flexDirection: "row",
+                        gap: 10,
+                      }}
+                    >
+                      {details?.targets?.map((item: string) => {
+                        return (
+                          <View
+                            style={{
+                              backgroundColor: "#242424",
+                              borderRadius: 8,
+                              width: 100,
+                              height: 30,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text
+                              style={{ color: "white", fontWeight: "bold" }}
+                            >
+                              {item}
+                            </Text>
+                          </View>
+                        );
+                      })}
+                    </View>
+                    <View
+                      style={{
+                        marginTop: 20,
+                        width: "100%",
+                        gap: 10,
+                        display: "flex",
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "flex-start",
+                        }}
+                      >
+                        <Text style={{ color: "#ffffff" }}>Overview: </Text>
+                      </View>
+                      <ScrollView
+                        contentContainerStyle={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                        }}
+                        style={{ height: height - 700, width: "100%" }}
+                        scrollsToTop={false}
+                        showsVerticalScrollIndicator={false}
+                      >
+                        {item.names?.map((item: any, index) => {
+                          return (
+                            <View
+                              style={{
+                                backgroundColor: "#242424",
+                                width: "100%",
+                                height: 60,
+                                borderRadius: 8,
+                                justifyContent: "center",
+                                gap: 1,
+                                paddingLeft: 20,
+                                alignItems: "flex-start",
+                                display: "flex",
+                              }}
+                            >
+                              <Text style={{ color: "white" }}>
+                                {item.name}
+                              </Text>
+                              <View
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  gap: 8,
+                                }}
+                              >
+                                <Text style={{ color: "gray" }}>
+                                  sets: {item.sets}
+                                </Text>
+                                <Text style={{ color: "gray" }}>
+                                  reps: {item.reps}
+                                </Text>
+                              </View>
+                            </View>
+                          );
+                        })}
+                      </ScrollView>
+                    </View>
+                  </View>
+                </View>
+              );
+            }}
+          />
           <TouchableOpacity
             activeOpacity={1}
             style={styles.trainingButtonContainerBefore}
@@ -274,8 +351,8 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
             position={position}
             timeStart={start}
             stopTime={stop}
-            data={data}
-            labels={labels}
+            data={currentLabel}
+            workouts={currentLabel}
           />
           <View
             style={{
@@ -306,7 +383,9 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
               onPress={handleStep}
             >
               <Text style={{ color: "white", fontWeight: "bold" }}>
-                {position === 3 ? "Finish Workout" : "Next Workout"}
+                {position === currentLabel.length
+                  ? "Finish Workout"
+                  : "Next Workout"}
               </Text>
             </TouchableOpacity>
           </View>

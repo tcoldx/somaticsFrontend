@@ -8,16 +8,19 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Fontisto, Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
-import { styler } from "./onboarding.styles";
+import { slideStyle, styler } from "./onboarding.styles";
+import { auth } from "../../firebase";
+import { styled } from "nativewind";
 type itemProps = {
   title: string;
   id: number;
   options: any;
   navigation: any;
+  items: any;
   index: number;
   indexFunc: Function;
 };
@@ -25,25 +28,290 @@ const OnboardingItem = ({
   title,
   id,
   options,
+  items,
   navigation,
   index,
   indexFunc,
 }: itemProps): JSX.Element => {
-  const [selected, setSelected] = useState(false);
-  const [select, setSelect] = useState([]);
   const [loading, setLoading] = useState(false);
-  const handleSelect = (item: any): void => {
-    setSelect(item);
-    setSelected(!selected);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [active, setActive] = useState(-1);
+  const [password, setPassword] = useState("");
+  const [foot, setFoot] = useState("");
+  const [inch, setInch] = useState("");
+  const [weight, setWeight] = useState("");
+  const [age, setAge] = useState("");
+
+  const handleChange = (text: any) => {
+    setName(text);
   };
-  const handleFinish = () => {
+
+  const handleSelect = (op) => {};
+
+  const handleChangeEmail = (text: any) => {
+    setEmail(text);
+  };
+
+  const handleChangePassword = (text: any) => {
+    setPassword(text);
+  };
+
+  const handleAuthentication = () => {
     setLoading(true);
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+      })
+      .catch((err) => console.log(err.message));
+
     setTimeout(() => {
       setLoading(false);
       navigation.navigate("home");
-    }, 3500);
+    }, 2500);
   };
+  const StyledView = styled(TextInput);
+  const StyledViewOne = styled(View);
+  if (id === 3) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <SafeAreaView
+          style={{
+            width: "90%",
+            borderRadius: 20,
+            backgroundColor: "black",
+            height: 8,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(240,99,19,255)",
+              height: "100%",
+              width: "75%",
+              borderRadius: 20,
+            }}
+          ></View>
+        </SafeAreaView>
+        <LinearGradient
+          colors={["rgba(240,99,19, 0.2)", "transparent"]}
+          style={styles.linearGradient}
+        />
+        <View style={slideStyle.contContainer}>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+            {title}
+          </Text>
+          <View style={styler.optionContainer}>
+            {options.map((option: any) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => handleSelect(option.id)}
+                  key={option.id}
+                  style={styler.optionSelect}
+                >
+                  <Text style={styler.text}>{option.name}</Text>
 
+                  <View style={slideStyle.selector}>
+                    <AntDesign name="checkcircleo" size={12} color="#242424" />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              if (index !== 3) {
+                indexFunc(index + 1);
+              }
+            }}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Next Step</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+  if (id === 2) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <SafeAreaView
+          style={{
+            width: "90%",
+            borderRadius: 20,
+            backgroundColor: "black",
+            height: 8,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(240,99,19,255)",
+              height: "90%",
+              width: "45%",
+              borderRadius: 20,
+            }}
+          ></View>
+          <LinearGradient
+            colors={["rgba(240,99,19, 0.2)", "transparent"]}
+            style={styles.linearGradient}
+          />
+        </SafeAreaView>
+        <View style={slideStyle.contContainer}>
+          <StyledViewOne
+            style={{ width: "70%", display: "flex", alignItems: "center" }}
+            className="flex-1 w-23"
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 30,
+                marginBottom: 50,
+              }}
+            >
+              Details about where your body is at!
+            </Text>
+          </StyledViewOne>
+          <TextInput
+            style={slideStyle.details}
+            keyboardType="numeric"
+            placeholderTextColor="white"
+            placeholder={items.age}
+            maxLength={2}
+            onChangeText={(val) => {
+              setAge(val);
+            }}
+          />
+          <View
+            style={{
+              width: "70%",
+              display: "flex",
+              gap: 20,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <TextInput
+              placeholderTextColor="white"
+              style={slideStyle.heightDetails}
+              placeholder={"ft"}
+              maxLength={1}
+              keyboardType="numeric"
+              onChangeText={(val) => {
+                setFoot(val);
+              }}
+            />
+            <StyledView
+              className="flex-1 items-center w-full"
+              placeholderTextColor="white"
+              style={slideStyle.heightDetails}
+              placeholder="in"
+              keyboardType="numeric"
+              maxLength={1}
+              onChangeText={(val) => {
+                setInch(val);
+              }}
+            />
+          </View>
+          <TextInput
+            placeholderTextColor="white"
+            style={slideStyle.details}
+            placeholder={items.weight}
+            maxLength={3}
+            keyboardType="numeric"
+            onChangeText={(val) => {
+              setWeight(val);
+            }}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              if (index !== 3 && foot && age && inch && weight.length > 2) {
+                console.log(foot, foot, inch, age, weight);
+                indexFunc(index + 1);
+              }
+            }}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Next Step</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (id === 1) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <SafeAreaView
+          style={{
+            width: "90%",
+            borderRadius: 20,
+            backgroundColor: "black",
+            height: 8,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(240,99,19,255)",
+              height: "100%",
+              width: "15%",
+              borderRadius: 20,
+            }}
+          ></View>
+          <LinearGradient
+            colors={["rgba(240,99,19, 0.2)", "transparent"]}
+            style={styles.linearGradient}
+          />
+        </SafeAreaView>
+        <View style={slideStyle.contContainer}>
+          <View style={{ marginBottom: 30 }}>
+            <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
+              Select your gender
+            </Text>
+          </View>
+          <View style={slideStyle.genderSelectWrap}>
+            <TouchableOpacity
+              style={
+                active === 0
+                  ? slideStyle.genderSelectContainFilled
+                  : slideStyle.genderSelectContain
+              }
+              onPress={() => {
+                setActive(0);
+              }}
+            >
+              <Ionicons name="male" size={50} color="white" />
+              <Text style={{ color: "white", fontWeight: "bold" }}>Male</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={
+                active === 1
+                  ? slideStyle.genderSelectContainFilled
+                  : slideStyle.genderSelectContain
+              }
+              onPress={() => {
+                setActive(1);
+              }}
+            >
+              <Ionicons name="female" size={50} color="white" />
+              <Text style={{ color: "white", fontWeight: "bold" }}>Female</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              if (index === 0 && (active === 0 || active === 1)) {
+                indexFunc(index + 1);
+              }
+            }}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Next Step</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
   if (id === 4) {
     return (
       <SafeAreaView style={styles.container}>
@@ -87,198 +355,80 @@ const OnboardingItem = ({
               borderRadius: 20,
             }}
           ></View>
+          <LinearGradient
+            colors={["rgba(240,99,19, 0.2)", "transparent"]}
+            style={styles.linearGradient}
+          />
         </SafeAreaView>
-        <LinearGradient
-          colors={["rgba(240,99,19, 0.2)", "transparent"]}
-          style={styles.linearGradient}
-        />
-        <View style={styles.innerContainer}>
-          <Text
-            style={{
-              color: "rgba(240,99,19,255)",
-              justifyContent: "center",
-              marginBottom: 12,
-              fontWeight: "bold",
-            }}
-          >
-            {title}
-          </Text>
-
-          <View style={styler.optionContainer}>
-            {options.map((option: any) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => handleSelect(option.id)}
-                  key={option.id}
-                  style={styler.optionSelect}
-                >
-                  <Text style={styler.text}>{option.name}</Text>
-
-                  <View
-                    style={
-                      selected && select === option.id
-                        ? styler.selectContainerSelected
-                        : styler.selectContainer
-                    }
-                  >
-                    <AntDesign name="checkcircleo" size={12} color="#242424" />
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          <TouchableOpacity onPress={handleFinish} style={styles.button}>
-            <Text style={styles.buttonText}>Finish</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-  if (id === 2) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <SafeAreaView
-          style={{
-            width: "93%",
-            borderRadius: 20,
-            backgroundColor: "black",
-            height: 8,
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "rgba(240,99,19,255)",
-              height: "100%",
-              width: "50%",
-              borderRadius: 20,
-            }}
-          ></View>
-        </SafeAreaView>
-        <LinearGradient
-          colors={["rgba(240,99,19, 0.2)", "transparent"]}
-          style={styles.linearGradient}
-        />
-        <View style={styles.innerContainer}>
-          <Text style={styles.title}>{title}</Text>
-          <View style={styles.inputContain}>
-            <TextInput
-              style={styles.inputz}
-              placeholder="lb"
-              placeholderTextColor="rgba(240,99,19,255)"
-            />
+        <View style={styles.loginContainer}>
+          <Text style={styles.loginTitle}>{title}</Text>
+          <View style={styles.loginColumns}>
+            <View
+              style={{
+                width: "90%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                borderBottomWidth: 1,
+                borderColor: "orange",
+              }}
+            >
+              <Fontisto name="person" color="white" size={15} />
+              <TextInput
+                style={styles.loginInput}
+                onChangeText={(e) => handleChange(e)}
+                value={name}
+                placeholder="Name"
+                placeholderTextColor="rgba(240,99,19,255)"
+              />
+            </View>
+            <View
+              style={{
+                width: "90%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                borderBottomWidth: 1,
+                borderColor: "orange",
+              }}
+            >
+              <AntDesign name="mail" color="white" size={15} />
+              <TextInput
+                style={styles.loginInput}
+                onChangeText={(e) => handleChangeEmail(e)}
+                placeholder="Email"
+                value={email}
+                placeholderTextColor="rgba(240,99,19,255)"
+              />
+            </View>
+            <View
+              style={{
+                width: "90%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                borderBottomWidth: 1,
+                borderColor: "orange",
+              }}
+            >
+              <AntDesign name="lock" color="white" size={15} />
+              <TextInput
+                style={styles.loginInput}
+                onChangeText={(e) => handleChangePassword(e)}
+                value={password}
+                placeholder="Password"
+                placeholderTextColor="rgba(240,99,19,255)"
+              />
+            </View>
           </View>
           <TouchableOpacity
-            onPress={() => {
-              if (index === 3) {
-                return indexFunc(0);
-              }
-              indexFunc(index + 1);
-            }}
+            onPress={handleAuthentication}
             style={styles.button}
           >
-            <Text style={styles.buttonText}>Next step</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-  if (id === 1) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <SafeAreaView
-          style={{
-            width: "93%",
-            borderRadius: 20,
-            backgroundColor: "black",
-            height: 8,
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "rgba(240,99,19,255)",
-              height: "100%",
-              width: "25%",
-              borderRadius: 20,
-            }}
-          ></View>
-        </SafeAreaView>
-        <LinearGradient
-          colors={["rgba(240,99,19, 0.2)", "transparent"]}
-          style={styles.linearGradient}
-        />
-        <View style={styles.innerContainer}>
-          <Text style={styles.title}>{title}</Text>
-          <View style={styles.inputContain}>
-            <TextInput
-              style={styles.inputz}
-              placeholder="ft"
-              placeholderTextColor="rgba(240,99,19,255)"
-            />
-
-            <TextInput
-              style={styles.inputz}
-              placeholder="in"
-              placeholderTextColor="rgba(240,99,19,255)"
-            />
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              if (index === 3) {
-                return indexFunc(0);
-              }
-              indexFunc(index + 1);
-            }}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Next step</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  } else {
-    return (
-      <SafeAreaView style={styles.container}>
-        <SafeAreaView
-          style={{
-            width: "93%",
-            borderRadius: 20,
-            backgroundColor: "black",
-            height: 8,
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "rgba(240,99,19,255)",
-              height: "100%",
-              width: "75%",
-              borderRadius: 20,
-            }}
-          ></View>
-        </SafeAreaView>
-        <LinearGradient
-          colors={["rgba(240,99,19, 0.2)", "transparent"]}
-          style={styles.linearGradient}
-        />
-        <View style={styles.innerContainer}>
-          <Text style={styles.title}>{title}</Text>
-          <View style={styles.inputContain}>
-            <TextInput
-              style={styles.inputz}
-              placeholder="Enter"
-              placeholderTextColor="rgba(240,99,19,255)"
-            />
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              if (index === 3) {
-                return indexFunc(0);
-              }
-              indexFunc(index + 1);
-            }}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Next step</Text>
+            <Text style={styles.buttonText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -306,6 +456,25 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
 
+  loginInput: {
+    width: "90%",
+    height: 60,
+    backgroundColor: "#242424",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "orange",
+    borderBottomWidth: 1,
+    paddingLeft: 10,
+  },
+
+  loginTitle: {
+    marginTop: 40,
+    color: "rgba(240,99,19,255)",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+
   title: {
     fontWeight: "bold",
     color: "rgba(240,99,19,255)",
@@ -321,6 +490,13 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
+  loginContainer: {
+    display: "flex",
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+  },
+
   buttonText: {
     color: "white",
   },
@@ -331,6 +507,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
     width: "40%",
+    gap: 10,
+  },
+
+  loginColumns: {
+    display: "flex",
+    flexDirection: "column",
+    height: "70%",
+    marginTop: 20,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
     gap: 10,
   },
 

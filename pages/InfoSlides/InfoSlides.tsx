@@ -18,6 +18,7 @@ const InfoSlides = ({ navigation }: infoProps): JSX.Element => {
   return (
     <FlatList
       ref={ref}
+      scrollEnabled={false}
       initialScrollIndex={0}
       data={slides}
       renderItem={({ item }) => (
@@ -28,6 +29,7 @@ const InfoSlides = ({ navigation }: infoProps): JSX.Element => {
           navigation={navigation}
           index={index}
           indexFunc={setIndex}
+          items={item}
         />
       )}
       horizontal

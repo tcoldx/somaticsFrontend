@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
   },
 
   contentContainerBefore: {
-    flex: 1,
+    display: "flex",
     alignItems: "center",
     position: "absolute",
     height: height - 110,

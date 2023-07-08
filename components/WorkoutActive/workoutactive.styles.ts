@@ -25,10 +25,9 @@ export const styles = StyleSheet.create({
   labelContainer: {
     display: "flex",
     alignItems: "flex-start",
-    marginTop: 50,
-    marginLeft: 10,
+    marginTop: 45,
+    marginLeft: 20,
     justifyContent: "center",
-    padding: 10,
     width: width,
   },
 });
