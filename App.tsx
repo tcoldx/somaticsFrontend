@@ -7,18 +7,20 @@ import LandingPage from "./pages/Landing/landingpage";
 import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
 import InfoSlides from "./pages/InfoSlides/InfoSlides";
 import Statistics from "./pages/Statistics/statistics";
-import WorkoutActive from "./components/WorkoutActive/workoutactive";
-
+import Settings from "./pages/Settings/settingPage";
+import Login from "./pages/Login/login";
 export default function App() {
-  const [loginName, setLoginName] = useState("Tredis Ingram");
   const [workoutDetail, setWorkoutDetail] = useState("");
-  const handleName = (name: string) => {
-    setLoginName(name);
-  };
+  const [id, setId] = useState("");
+  const [userData, setUserData] = useState({});
   const Stack = createNativeStackNavigator();
-
   const handleWorkoutDetail = (item: any) => {
     setWorkoutDetail(item);
+  };
+
+  const handleAuthenticatedLoginInfo = (item: any) => {
+    setId(item.id);
+    setUserData(item);
   };
 
   return (
@@ -47,12 +49,20 @@ export default function App() {
           {(props) => (
             <Home
               {...props}
-              name={loginName}
               workoutDetails={handleWorkoutDetail}
+              id={id}
+              userInfo={userData}
             />
           )}
         </Stack.Screen>
-
+        <Stack.Screen
+          name="settings"
+          options={{
+            headerShown: false,
+          }}
+        >
+          {(props) => <Settings {...props} userInfo={userData} />}
+        </Stack.Screen>
         <Stack.Screen
           name="details"
           options={{
@@ -63,6 +73,18 @@ export default function App() {
           {(props) => <WorkoutDetails {...props} details={workoutDetail} />}
         </Stack.Screen>
         <Stack.Screen
+          name="login"
+          options={{
+            headerShown: false,
+            animation: "default",
+            gestureEnabled: false,
+          }}
+        >
+          {(props) => (
+            <Login {...props} sendInfo={handleAuthenticatedLoginInfo} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen
           name="stats"
           options={{
             headerShown: false,
@@ -70,7 +92,7 @@ export default function App() {
             gestureEnabled: false,
           }}
         >
-          {(props) => <Statistics {...props} />}
+          {(props) => <Statistics {...props} userId={userData} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

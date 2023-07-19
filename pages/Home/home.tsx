@@ -14,7 +14,6 @@ import {
   All,
   muayThaiWorkouts,
 } from "../../utils/workouts";
-import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign } from "@expo/vector-icons";
 import SearchBar from "../../components/Searchbar/Searchbar";
 import CollectionList from "../../components/CollectionList/CollectionList";
@@ -22,16 +21,22 @@ import FooterNav from "../../components/FooterNav/footernav";
 import CurrentProgramList from "../../components/CurrentProgramList/currentprogramlist";
 
 interface props {
-  name: string;
   workoutDetails: any;
   navigation: any;
+  id: any;
+  userInfo: any;
 }
-const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
+const Home = ({
+  workoutDetails,
+  navigation,
+  id,
+  userInfo,
+}: props): JSX.Element => {
   const [workoutList, setWorkoutList] = useState<any[]>([]);
   const [currentSelect, setCurrentSelect] = useState<string>("All");
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
-
+  const { name } = userInfo;
   useEffect(() => {
     setWorkoutList(boxingWorkouts);
   }, []);

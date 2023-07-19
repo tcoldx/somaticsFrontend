@@ -13,11 +13,11 @@ export default [
     id: 3,
     title: "What are your goals somatic?",
     options: [
-      { name: "Lose Weight", id: 1 },
-      { name: "Get Shredded", id: 2 },
-      { name: "Gain Muscle", id: 3 },
-      { name: "Get Stronger", id: 4 },
+      { name: "Lose Weight", id: 1, selected: false },
+      { name: "Get Shredded", id: 2, selected: false },
+      { name: "Gain Muscle", id: 3, selected: false },
+      { name: "Get Stronger", id: 4, selected: false },
     ],
   },
-  { id: 4, title: "Sign up" },
+  { id: 4, title: "Get started and become Somatically Fit" },
 ];

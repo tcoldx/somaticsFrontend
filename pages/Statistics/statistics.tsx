@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "./statistics.styles";
-import { firebase } from "../../firebase";
+import { auth, firebase } from "../../firebase";
 import { Skeleton } from "@rneui/themed";
 import { BlurView } from "expo-blur";
 import {
@@ -20,24 +20,38 @@ import StatChart from "../../components/StatChart/statchart";
 import FooterNav from "../../components/FooterNav/footernav";
 interface statProps {
   navigation: any;
+  userId: any;
 }
-const Statistics = ({ navigation }: statProps): JSX.Element => {
+const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   const [workoutHistory, setWorkoutHistory] = useState<any>([]);
   const [panel, setPanel] = useState<boolean>(false);
   const [id, setId] = useState("");
   const workoutRef = firebase.firestore().collection("programs");
+
   useEffect(() => {
-    return workoutRef.onSnapshot((querySnapshot) => {
-      const list = [];
-      querySnapshot.forEach((doc) => {
-        list.push({
-          id: doc.id,
-          name: doc.data().header.name,
-          calories: doc.data().header.calsBurned,
-        });
-      });
-      setWorkoutHistory(list);
-    });
+    const getPrograms = async () => {
+      console.log("logged id: ", userId.id);
+      console.log("current: ", auth.currentUser.uid);
+      const userProgramRef = firebase
+        .firestore()
+        .collection("programs")
+        .doc(userId.id);
+      const programs = await userProgramRef.get();
+      setWorkoutHistory([programs.data().header]);
+    };
+    getPrograms();
+
+    // return workoutRef.onSnapshot((querySnapshot) => {
+    //   const list = [];
+    //   querySnapshot.forEach((doc) => {
+    //     list.push({
+    //       id: doc.id,
+    //       name: doc.data().header.name,
+    //       calories: doc.data().header.calsBurned,
+    //     });
+    //   });
+    //   setWorkoutHistory(list);
+    // });
   }, []);
   const calories = workoutHistory.map((el) => el.calories);
   let sum = 0;

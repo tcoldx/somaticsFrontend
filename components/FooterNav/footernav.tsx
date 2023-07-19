@@ -38,7 +38,7 @@ const FooterNav = ({ navigation }: FooterProps) => {
           name="setting"
           size={24}
           color="white"
-          onPress={() => navigation.navigate("landing")}
+          onPress={() => navigation.navigate("settings")}
         />
       </View>
     </LinearGradient>

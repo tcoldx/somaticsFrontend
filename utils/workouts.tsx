@@ -1,7 +1,11 @@
-import boxImg from "./mebox.jpg";
+import boxImg from "./glebBox.jpg";
 import Legacy from "../assets/legacy.png";
 import Abs from "./abs.mp4";
 import PullUps from "./pullups.mp4";
+import heavyBag from "./heavybag.jpg";
+import muayFit from "./muaythai.jpg";
+import armyFit from "./armyfit.jpg";
+import bodyCard from "./bodycard.jpg";
 
 export const boxingWorkouts = [
   {
@@ -161,7 +165,7 @@ export const muayThaiWorkouts = [
     targets: ["chest", "arms", "shoulders", "back"],
     id: 1,
     difficulty: "Medium",
-    img: Legacy,
+    img: heavyBag,
     time: "30-45",
     tasks: 2,
     calsBurned: 343,
@@ -207,7 +211,7 @@ export const muayThaiWorkouts = [
     targets: ["chest", "arms", "shoulders", "back"],
     difficulty: "Basic",
     time: "55-60",
-    img: boxImg,
+    img: muayFit,
     tasks: 2,
     calsBurned: 343,
 
@@ -254,7 +258,7 @@ export const HIIT = [
     id: 1,
     targets: ["chest", "arms", "shoulders", "back"],
     difficulty: "Medium",
-    img: Legacy,
+    img: bodyCard,
     time: "40-45",
     tasks: 2,
     calsBurned: 243,
@@ -315,7 +319,7 @@ export const HIIT = [
 
     id: 2,
     difficulty: "Basic",
-    img: boxImg,
+    img: armyFit,
     targets: ["chest", "arms", "shoulders", "back"],
     tasks: 2,
     desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
@@ -513,7 +517,7 @@ export const All = [
     difficulty: "Medium",
     time: "30-45",
     targets: ["chest", "arms", "shoulders", "back", "legs"],
-    img: Legacy,
+    img: bodyCard,
     calsBurned: 143,
 
     tasks: 2,
@@ -571,20 +575,60 @@ export const All = [
     id: 4,
     difficulty: "Basic",
     time: "30-45",
-    img: boxImg,
+    img: armyFit,
     tasks: 2,
     calsBurned: 143,
 
     targets: ["chest", "arms", "shoulders", "back", "legs"],
     desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
     `,
+    workouts: [
+      {
+        names: [
+          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          { name: "Push-Ups", sets: 4, reps: "max out" },
+          { name: "Pull ups", sets: 4, reps: "max out" },
+          { name: "Squats", sets: 4, reps: "12-15 reps" },
+          { name: "Lunges", sets: 4, reps: "12-15 reps per leg" },
+          { name: "Plank", sets: 4, reps: "1 minute" },
+          { name: "Running", sets: 1, reps: "20-30 minutes" },
+        ],
+      },
+      {
+        names: [
+          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          { name: "Burpees", sets: 5, reps: "10-12 reps" },
+          { name: "Push-Ups", sets: 5, reps: "10-15 reps" },
+          { name: "Sit-Ups", sets: 5, reps: "15-10 reps" },
+          { name: "Jumping Lunges", sets: 4, reps: "10-15 reps per leg" },
+          { name: "Running", sets: 1, reps: "20-30 minutes" },
+        ],
+      },
+      {
+        names: [
+          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          { name: "Moderate Running", sets: 1, reps: "45-60 minutes" },
+          { name: "Push-Ups", sets: 3, reps: "max-out" },
+          { name: "Squats", sets: 3, reps: "12-15 reps" },
+          { name: "Plank", sets: 3, reps: "30-60 seconds" },
+        ],
+      },
+      {
+        names: [
+          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          { name: "Battle Rope Slams", sets: 3, reps: "30 seconds" },
+          { name: "Medicine Ball Throws", sets: 3, reps: "10 reps" },
+          { name: "Farmers Carry", sets: 3, reps: "50-100 meters" },
+        ],
+      },
+    ],
   },
   {
     name: "Heavy bag training",
     category: "Muay Thai",
     id: 5,
     difficulty: "Medium",
-    img: Legacy,
+    img: heavyBag,
     time: "30-45",
     calsBurned: 143,
 
@@ -629,7 +673,7 @@ export const All = [
     category: "Muay Thai",
     id: 6,
     difficulty: "Basic",
-    img: boxImg,
+    img: muayFit,
     targets: ["chest", "arms", "shoulders", "back", "legs"],
     time: "55-60",
     tasks: 2,
