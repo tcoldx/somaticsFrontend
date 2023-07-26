@@ -11,10 +11,9 @@ import {
   Dimensions,
 } from "react-native";
 import LoginImg from "../../assets/legacy.png";
-import { AntDesign, Fontisto, Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { login } from "./styles.login";
 import SomaLogo from "../../assets/somaticLogo.png";
-import { LinearGradient } from "expo-linear-gradient";
 import { firebase } from "../../firebase";
 import { checkIfEmail } from "../../utils/checkEmail";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
@@ -26,7 +25,6 @@ interface loginProps {
 const { width, height } = Dimensions.get("screen");
 const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
   const [loading, setLoading] = useState(false);
-  const [value, setValue] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const auth = getAuth();

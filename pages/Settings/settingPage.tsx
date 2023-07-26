@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styles } from "./settingPage.styles";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -10,10 +10,29 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { auth } from "../../firebase";
+import { auth, firebase } from "../../firebase";
 const { width } = Dimensions.get("screen");
 const Settings = ({ navigation, userInfo }): JSX.Element => {
+  const [newEmail, setNewEmail] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newGender, setNewGender] = useState("");
   const { email, name, gender } = userInfo;
+
+  useEffect(() => {
+    async () => {
+      const user = auth.currentUser;
+      const userRef = firebase.firestore().collection("users").doc(user.uid);
+      const userData = await userRef.get();
+      const usersData = userData.data();
+      let backendName = usersData.name;
+      let backendEmail = usersData.email;
+      let backendGender = usersData.gender;
+      setNewEmail(backendEmail);
+      setNewName(backendName);
+      setNewGender(backendGender);
+    };
+  }, []);
+
   const handleClick = (val: string): void => {
     if (val === "Log out") {
       auth.signOut();
@@ -22,9 +41,9 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
   };
 
   const settingsContent = [
-    { title: "Email", subTitle: email },
-    { title: "Username", subTitle: name },
-    { title: "Gender", subTitle: gender },
+    { title: "Email", subTitle: email ? email : newEmail },
+    { title: "Username", subTitle: name ? name : newName },
+    { title: "Gender", subTitle: gender ? gender : newGender },
     { title: "Workout goals", subTitle: null },
     { title: "About You", subTitle: null },
     { title: "Language", subTitle: null },

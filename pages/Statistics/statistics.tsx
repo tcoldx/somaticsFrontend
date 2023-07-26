@@ -25,43 +25,43 @@ interface statProps {
 const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   const [workoutHistory, setWorkoutHistory] = useState<any>([]);
   const [panel, setPanel] = useState<boolean>(false);
-  const [id, setId] = useState("");
+  const [tempId, setTempId] = useState<string>("");
   const workoutRef = firebase.firestore().collection("programs");
+  const getPrograms = async () => {
+    let usersId = auth.currentUser.uid;
+    const list = [];
+    const snapShot = await workoutRef.where("id", "==", usersId).get();
+    snapShot.forEach((doc: any) => {
+      list.push({
+        name: doc.data().header.name,
+        calories: doc.data().header.calsBurned,
+        id: doc.id,
+        workoutId: doc.data().workoutId,
+      });
+    });
+    setWorkoutHistory(list);
+  };
 
   useEffect(() => {
-    const getPrograms = async () => {
-      console.log("logged id: ", userId.id);
-      console.log("current: ", auth.currentUser.uid);
-      const userProgramRef = firebase
-        .firestore()
-        .collection("programs")
-        .doc(userId.id);
-      const programs = await userProgramRef.get();
-      setWorkoutHistory([programs.data().header]);
-    };
     getPrograms();
+  }, [workoutHistory]);
 
-    // return workoutRef.onSnapshot((querySnapshot) => {
-    //   const list = [];
-    //   querySnapshot.forEach((doc) => {
-    //     list.push({
-    //       id: doc.id,
-    //       name: doc.data().header.name,
-    //       calories: doc.data().header.calsBurned,
-    //     });
-    //   });
-    //   setWorkoutHistory(list);
-    // });
-  }, []);
   const calories = workoutHistory.map((el) => el.calories);
   let sum = 0;
   const totalCalories = calories.reduce((acc, curr) => acc + curr, sum);
   const handleDelete = (id: string) => {
     setPanel(true);
-    setId(id);
+    console.log(id);
+    setTempId(id);
     if (panel) {
-      workoutRef.doc(id).delete();
-      setPanel(false);
+      return workoutRef.onSnapshot((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          if (id === doc.data().workoutId) {
+            doc.ref.delete();
+          }
+        });
+        setPanel(false);
+      });
     }
   };
   return (
@@ -78,7 +78,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
           <Text style={{ color: "white" }}>this entire workout?</Text>
           <TouchableOpacity
             style={styles.deleteButton}
-            onPress={() => handleDelete(id)}
+            onPress={() => handleDelete(tempId)}
           >
             <Text style={{ color: "white", fontWeight: "bold" }}>Delete</Text>
           </TouchableOpacity>
@@ -198,7 +198,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
           <ScrollView contentContainerStyle={styles.workoutHistoryContentWrap}>
             {workoutHistory.map((workout: any) => {
               return (
-                <View style={styles.workoutContainer}>
+                <View style={styles.workoutContainer} key={workout.id}>
                   <View
                     style={{
                       gap: 3,
@@ -223,7 +223,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
                       borderRadius: 4,
                     }}
                     size={30}
-                    onPress={() => handleDelete(workout.id)}
+                    onPress={() => handleDelete(workout.workoutId)}
                   />
                 </View>
               );

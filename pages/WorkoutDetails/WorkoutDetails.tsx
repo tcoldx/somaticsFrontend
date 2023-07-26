@@ -2,7 +2,6 @@ import {
   View,
   SafeAreaView,
   Text,
-  ActivityIndicator,
   ScrollView,
   TouchableOpacity,
   Dimensions,
@@ -49,18 +48,18 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
 
   const handleDone = (): void => {
     if (details) {
+      const userId = auth.currentUser.uid;
       const data = {
         header: details,
+        id: userId,
         createdAt: timeStamp,
+        workoutId: `${Math.random()}-${Math.random()}`,
       };
-      const userId = auth.currentUser.uid;
-      const workoutRef = firebase
-        .firestore()
-        .collection("programs")
-        .doc(userId);
+
+      const workoutRef = firebase.firestore().collection("programs");
 
       workoutRef
-        .set(data)
+        .add(data)
         .then(() => {
           setWorkoutDB([]);
         })

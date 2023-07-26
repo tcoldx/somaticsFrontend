@@ -18,6 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { slideStyle, styler } from "./onboarding.styles";
 import SomaLogo from "../../assets/somaticLogo.png";
 import { auth, db } from "../../firebase";
+import { Picker } from "@react-native-picker/picker";
 import { styled } from "nativewind";
 type itemProps = {
   title: string;
@@ -26,6 +27,7 @@ type itemProps = {
   navigation: any;
   items: any;
   index: number;
+  username: Function;
   indexFunc: Function;
 };
 const OnboardingItem = ({
@@ -36,19 +38,20 @@ const OnboardingItem = ({
   navigation,
   index,
   indexFunc,
+  username,
 }: itemProps): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [active, setActive] = useState(-1);
   const [password, setPassword] = useState("");
-  const [foot, setFoot] = useState("");
-  const [inch, setInch] = useState("");
   const [weight, setWeight] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [select, setSelect] = useState(options);
   const [goals, setGoals] = useState<Object[]>([]);
+  const [selectedInch, setSelectedInch] = useState("");
+  const [selectedFoot, setSelectedFoot] = useState("");
   const handleChange = async (text: any) => {
     setName(text);
     await AsyncStorage.mergeItem(
@@ -58,7 +61,7 @@ const OnboardingItem = ({
       })
     );
   };
-
+  const { width, height } = Dimensions.get("window");
   const handleSelect = async (data: any) => {
     let newMap = select.map((val: any) => {
       if (val.id === data.id) {
@@ -94,21 +97,22 @@ const OnboardingItem = ({
 
   const handleAuthentication = async () => {
     const objVal = await AsyncStorage.getItem("user2");
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then(async (userCredential) => {
-        const user = userCredential.user;
-        await db.collection("users").doc(user.uid).set(JSON.parse(objVal));
-      })
-      .catch((err) => console.log(err.message));
-
-    setLoading(true);
-
     if (checkIfEmail(email) && password && name && objVal) {
-      setTimeout(() => {
-        setLoading(false);
-        navigation.navigate("home");
-      }, 1500);
+      setLoading(true);
+      username(name);
+      auth
+        .createUserWithEmailAndPassword(email, password)
+        .then(async (userCredential) => {
+          const user = userCredential.user;
+          await db.collection("users").doc(user.uid).set(JSON.parse(objVal));
+        })
+
+        .catch((err) => {
+          console.log(err.message);
+          setLoading(false);
+        });
+      setLoading(false);
+      navigation.navigate("home");
     }
   };
   const StyledViewOne = styled(View);
@@ -190,6 +194,18 @@ const OnboardingItem = ({
     );
   }
   if (id === 2) {
+    const createArray = (length: number) => {
+      const arr = [];
+      let i = 0;
+      while (i < length) {
+        arr.push(i.toString());
+        i += 1;
+      }
+      return arr;
+    };
+
+    const AVAILABLE_FEET = createArray(8);
+    const AVAILABLE_INCHES = createArray(13);
     return (
       <SafeAreaView style={styles.container}>
         <SafeAreaView
@@ -250,28 +266,86 @@ const OnboardingItem = ({
               justifyContent: "space-between",
             }}
           >
-            <TextInput
-              placeholderTextColor="white"
-              style={slideStyle.heightDetails}
-              placeholder={"ft"}
-              maxLength={1}
-              keyboardType="numeric"
-              value={foot}
-              onChangeText={(val) => {
-                setFoot(val);
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-            />
-            <TextInput
-              placeholderTextColor="white"
-              style={slideStyle.heightDetails}
-              maxLength={1}
-              placeholder="in"
-              value={inch}
-              keyboardType="numeric"
-              onChangeText={(val) => {
-                setInch(val);
+            >
+              <Text
+                style={{
+                  position: "absolute",
+                  zIndex: 2,
+                  left: 10,
+                  color: "white",
+                }}
+              >
+                Ft
+              </Text>
+              <Picker
+                style={{
+                  flex: 1,
+                  maxWidth: 140,
+                  maxHeight: height,
+                }}
+                itemStyle={{
+                  color: "white",
+                  fontSize: 20,
+                  backgroundColor: "orange",
+                  height: height / 23,
+                  borderRadius: 10,
+                }}
+                selectedValue={selectedFoot}
+                onValueChange={(itemValue, itemIndex) => {
+                  setSelectedFoot(itemValue);
+                }}
+              >
+                {AVAILABLE_FEET.map((el: any) => {
+                  return <Picker.Item key={el} label={el} value={el} />;
+                })}
+              </Picker>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-            />
+            >
+              <Text
+                style={{
+                  position: "absolute",
+                  zIndex: 2,
+                  left: 10,
+                  color: "white",
+                }}
+              >
+                In
+              </Text>
+              <Picker
+                style={{
+                  flex: 1,
+                  maxWidth: 140,
+                  maxHeight: height,
+                }}
+                itemStyle={{
+                  color: "white",
+                  fontSize: 20,
+                  backgroundColor: "orange",
+                  height: height / 24,
+                  borderRadius: 10,
+                }}
+                selectedValue={selectedInch}
+                onValueChange={(itemValue, itemIndex) => {
+                  setSelectedInch(itemValue);
+                }}
+              >
+                {AVAILABLE_INCHES.map((el: any) => {
+                  return <Picker.Item key={el} label={el} value={el} />;
+                })}
+              </Picker>
+            </View>
           </View>
           <TextInput
             placeholderTextColor="white"
@@ -285,13 +359,19 @@ const OnboardingItem = ({
           />
           <TouchableOpacity
             onPress={async () => {
-              if (index !== 3 && foot && age && inch && weight.length > 2) {
+              if (
+                index !== 3 &&
+                selectedFoot &&
+                age &&
+                selectedInch &&
+                weight.length > 2
+              ) {
                 await AsyncStorage.mergeItem(
                   "user2",
                   JSON.stringify({
                     age: age,
                     weight: weight,
-                    height: `${foot}"${inch}`,
+                    height: `${selectedFoot}"${selectedInch}`,
                   })
                 );
                 indexFunc(index + 1);
@@ -436,7 +516,6 @@ const OnboardingItem = ({
           <View
             style={{
               width: "100%",
-              marginTop: 30,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -534,13 +613,10 @@ const OnboardingItem = ({
               />
             </View>
           </View>
-          <TouchableOpacity
-            onPress={handleAuthentication}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
         </View>
+        <TouchableOpacity onPress={handleAuthentication} style={styles.button}>
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     );
   }
@@ -602,9 +678,9 @@ const styles = StyleSheet.create({
 
   loginContainer: {
     display: "flex",
-    height: "100%",
     width: "100%",
     alignItems: "center",
+    justifyContent: "center",
   },
 
   buttonText: {
@@ -623,17 +699,16 @@ const styles = StyleSheet.create({
   loginColumns: {
     display: "flex",
     flexDirection: "column",
-    height: "70%",
-    marginTop: 20,
+    height: "60%",
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    gap: 30,
+    gap: 20,
   },
 
   button: {
     position: "absolute",
-    bottom: 0,
+    bottom: 35,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

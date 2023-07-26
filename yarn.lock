@@ -2405,7 +2405,7 @@
   "resolved" "https://registry.npmjs.org/@react-native-community/masked-view/-/masked-view-0.1.11.tgz"
   "version" "0.1.11"
 
-"@react-native-picker/picker@2.4.10":
+"@react-native-picker/picker@^2.4.10":
   "integrity" "sha512-EvAlHmPEPOwvbP6Pjg/gtDV3XJzIjIxr10fXFNlX5r9HeHw582G1Zt2o8FLyB718nOttgj8HYUTGxvhu4N65sQ=="
   "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.4.10.tgz"
   "version" "2.4.10"

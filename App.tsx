@@ -13,6 +13,7 @@ export default function App() {
   const [workoutDetail, setWorkoutDetail] = useState("");
   const [id, setId] = useState("");
   const [userData, setUserData] = useState({});
+  const [newUser, setNewUser] = useState("");
   const Stack = createNativeStackNavigator();
   const handleWorkoutDetail = (item: any) => {
     setWorkoutDetail(item);
@@ -21,6 +22,10 @@ export default function App() {
   const handleAuthenticatedLoginInfo = (item: any) => {
     setId(item.id);
     setUserData(item);
+  };
+
+  const handleUserName = (item: string) => {
+    setNewUser(item);
   };
 
   return (
@@ -38,12 +43,13 @@ export default function App() {
           name="userInit"
           options={{ headerShown: false, gestureEnabled: false }}
         >
-          {(props) => <InfoSlides {...props} />}
+          {(props) => <InfoSlides {...props} usersName={handleUserName} />}
         </Stack.Screen>
         <Stack.Screen
           name="home"
           options={{
             headerShown: false,
+            gestureEnabled: false,
           }}
         >
           {(props) => (
@@ -52,6 +58,7 @@ export default function App() {
               workoutDetails={handleWorkoutDetail}
               id={id}
               userInfo={userData}
+              newUsersName={newUser}
             />
           )}
         </Stack.Screen>

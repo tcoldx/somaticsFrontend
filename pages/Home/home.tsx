@@ -25,20 +25,22 @@ interface props {
   navigation: any;
   id: any;
   userInfo: any;
+  newUsersName: string;
 }
 const Home = ({
   workoutDetails,
   navigation,
   id,
+  newUsersName,
   userInfo,
 }: props): JSX.Element => {
   const [workoutList, setWorkoutList] = useState<any[]>([]);
-  const [currentSelect, setCurrentSelect] = useState<string>("All");
+  const [currentSelect, setCurrentSelect] = useState<any>("All");
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
   const { name } = userInfo;
   useEffect(() => {
-    setWorkoutList(boxingWorkouts);
+    setWorkoutList(All);
   }, []);
 
   const handleSelect = (curr: string) => {
@@ -90,7 +92,7 @@ const Home = ({
           </View>
           <View>
             <Text style={{ fontSize: 20, color: "white", fontWeight: "bold" }}>
-              {name}!
+              {name ? name : newUsersName}!
             </Text>
           </View>
         </View>

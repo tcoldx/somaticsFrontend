@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { Stopwatch } from "react-native-stopwatch-timer";
-import React, { useState } from "react";
+import React from "react";
 import StepIndicator from "react-native-step-indicator";
 import { styles } from "./workoutactive.styles";
 interface workoutProps {
