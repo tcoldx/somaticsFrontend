@@ -19,9 +19,9 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
   const { email, name, gender } = userInfo;
 
   useEffect(() => {
-    async () => {
-      const user = auth.currentUser;
-      const userRef = firebase.firestore().collection("users").doc(user.uid);
+    const user = auth.currentUser;
+    const userRef = firebase.firestore().collection("users").doc(user.uid);
+    const fetchUserData = async () => {
       const userData = await userRef.get();
       const usersData = userData.data();
       let backendName = usersData.name;
@@ -31,6 +31,7 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
       setNewName(backendName);
       setNewGender(backendGender);
     };
+    fetchUserData();
   }, []);
 
   const handleClick = (val: string): void => {

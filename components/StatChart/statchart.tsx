@@ -1,9 +1,15 @@
 import { LineChart } from "react-native-chart-kit";
 import { styles } from "./statchart.styles";
-import { View, Dimensions, Text } from "react-native";
+import { View, Dimensions, Text, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
 
-const StatChart = () => {
+interface activeData {
+  activityData: any[];
+}
+
+const StatChart = ({ activityData }: activeData) => {
   const { width } = Dimensions.get("screen");
+  const [active, setActive] = useState(0);
   return (
     <View
       style={{
@@ -18,34 +24,26 @@ const StatChart = () => {
         </Text>
 
         <View style={styles.selection}>
-          <View
-            style={{
-              width: "45%",
-              borderRadius: 20,
-              height: 20,
-              backgroundColor: "#242424",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+          <TouchableOpacity
+            style={active === 0 ? styles.activeButton : styles.buttonStyle}
+            onPress={() => setActive(0)}
           >
-            <Text style={{ color: "rgba(240,99,19,255)", fontSize: 11 }}>
+            <Text
+              style={{ color: active === 0 ? "orange" : "white", fontSize: 11 }}
+            >
               Week
             </Text>
-          </View>
-          <View
-            style={{
-              borderRadius: 20,
-              width: "50%",
-              height: 20,
-              display: "flex",
-              alignItems: "center",
-              margin: 3,
-              justifyContent: "center",
-            }}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={active === 1 ? styles.activeButton : styles.buttonStyle}
+            onPress={() => setActive(1)}
           >
-            <Text style={{ color: "gray", fontSize: 12 }}>Month</Text>
-          </View>
+            <Text
+              style={{ color: active === 1 ? "orange" : "white", fontSize: 12 }}
+            >
+              Month
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
       <LineChart
@@ -53,7 +51,7 @@ const StatChart = () => {
           labels: ["M", "T", "W", "T", "F", "S", "S"],
           datasets: [
             {
-              data: [0.4, 0.5, 2, 0, 0, 0, 0],
+              data: activityData,
             },
           ],
         }}

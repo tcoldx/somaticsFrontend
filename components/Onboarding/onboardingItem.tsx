@@ -290,7 +290,7 @@ const OnboardingItem = ({
                   maxHeight: height,
                 }}
                 itemStyle={{
-                  color: "white",
+                  color: "whitesmoke",
                   fontSize: 20,
                   backgroundColor: "orange",
                   height: height / 23,
