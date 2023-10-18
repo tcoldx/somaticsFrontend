@@ -35,7 +35,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     setStart(true);
   };
   const handleStep = () => {
-    if (position === currentLabel.length) {
+    if (position === currentLabel.length - 1) {
       setPosition(0);
       setDay(day + 1);
       setStop(true);
@@ -66,6 +66,8 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         .catch((err) => console.log(err));
     }
   };
+  // this is what you need to get the video for each workout and change the vid on index
+  // currentLabel[position].vid
   return (
     <SafeAreaView
       style={{
@@ -74,11 +76,10 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         justifyContent: "center",
         height: "100%",
         width: "100%",
-        backgroundColor: "transparent",
+        backgroundColor: "black",
       }}
     >
       {stop && <LevelUpPopUp navigation={navigation} handleDone={handleDone} />}
-
       <View
         style={{
           position: "absolute",
@@ -86,45 +87,57 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           width: width,
         }}
       >
+        {!open && (
+          <ImageBackground
+            source={details.img}
+            resizeMode="cover"
+            style={{ height: height / 2 }}
+          />
+        )}
+      </View>
+      <View
+        style={{
+          position: "absolute",
+          top: "5%",
+          left: "5%",
+          width: width,
+          zIndex: 3,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("home");
+          }}
+          style={styles.backButton}
+        >
+          <AntDesign name="left" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+      {open && position !== currentLabel.length && (
         <View
           style={{
+            top: 0,
             position: "absolute",
-            top: "10%",
-            left: "5%",
+            height: height - 560,
             width: width,
-            zIndex: 3,
           }}
         >
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("home");
-            }}
-            style={styles.backButton}
-          >
-            <AntDesign name="left" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-        <ImageBackground
-          source={details.img}
-          resizeMode="cover"
-          style={{ height: height / 2 }}
-        />
-      </View>
-      {/* <Video
-            source={currentLabel[currentLabel.length - 1].vid}
+          <Video
+            source={
+              currentLabel[position].vid ? currentLabel[position].vid : null
+            }
             style={{
-              display: "flex",
-              position: "absolute",
-              height: 400,
-              width: width,
+              height: "100%",
+              width: "100%",
             }}
-            useNativeControls
+            isMuted={true}
+            useNativeControls={false}
             isLooping
-            onLoadStart={() => console.log("on load start")}
-            onLoad={() => console.log("on load")}
+            shouldPlay={true}
             resizeMode={ResizeMode.COVER}
-          /> */}
-
+          />
+        </View>
+      )}
       {!open ? (
         <View style={styles.contentContainerBefore}>
           <View style={styles.navTouchBar}></View>
@@ -199,7 +212,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
               onPress={handleStep}
             >
               <Text style={{ color: "white", fontWeight: "bold" }}>
-                {position === currentLabel.length
+                {position === currentLabel.length - 1
                   ? "Finish Workout"
                   : "Next Workout"}
               </Text>

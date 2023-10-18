@@ -1,18 +1,19 @@
 import boxImg from "./glebBox.jpg";
 import Legacy from "../assets/legacy.png";
-import Abs from "./abs.mp4";
-import PullUps from "./pullups.mp4";
+import latPulls from "./videoCache/lat_pulls.mp4";
 import heavyBag from "./heavybag.jpg";
 import muayFit from "./muaythai.jpg";
 import armyFit from "./armyfit.jpg";
 import bodyCard from "./bodycard.jpg";
-
+import squat from "./videoCache/bbs.mp4";
+import militaryShoulder from "./videoCache/militaryPress.mp4";
+import russian from "./videoCache/russians_twists.mp4";
+import slams from "./videoCache/slams.mp4";
 export const boxingWorkouts = [
   {
     name: "Boxing Fitness",
     category: "Boxing",
     id: 1,
-    video: PullUps,
     time: "40-60",
     difficulty: "Medium",
     targets: ["Chest", "Arms", "Shoulders", "Back", "Legs"],
@@ -23,16 +24,21 @@ export const boxingWorkouts = [
     workouts: [
       {
         names: [
-          { name: "Barbell Squats", sets: 3, reps: "8-10" },
+          { name: "Barbell Squats", sets: 3, reps: "8-10", vid: squat },
           {
             name: "Pull-Ups or Lat Pulldowns",
-            set: 3,
+            sets: 3,
             reps: "8-10",
-            vid: PullUps,
+            vid: latPulls,
           },
-          { name: "Standing Military Press", sets: 3, reps: "8-10" },
-          { name: "Medicine Ball Slams", sets: 3, reps: "10-12" },
-          { name: "Russian Twists", sets: 3, reps: "10-12", vid: Abs },
+          {
+            name: "Standing Military Press",
+            sets: 3,
+            reps: "8-10",
+            vid: militaryShoulder,
+          },
+          { name: "Medicine Ball Slams", sets: 3, reps: "10-12", vid: slams },
+          { name: "Russian Twists", sets: 3, reps: "10-12", vid: russian },
         ],
       },
       {
@@ -384,11 +390,21 @@ export const All = [
     workouts: [
       {
         names: [
-          { name: "Barbell Squats", sets: 3, reps: "8-10" },
-          { name: "Pull-Ups or Lat Pulldowns", set: 3, reps: "8-10" },
-          { name: "Standing Military Press", sets: 3, reps: "8-10" },
-          { name: "Medicine Ball Slams", sets: 3, reps: "10-12" },
-          { name: "Russian Twists", sets: 3, reps: "10-12" },
+          { name: "Barbell Squats", vid: squat, sets: 3, reps: "8-10" },
+          {
+            name: "Pull-Ups or Lat Pulldowns",
+            vid: latPulls,
+            set: 3,
+            reps: "8-10",
+          },
+          {
+            name: "Standing Military Press",
+            vid: militaryShoulder,
+            sets: 3,
+            reps: "8-10",
+          },
+          { name: "Medicine Ball Slams", vid: slams, sets: 3, reps: "10-12" },
+          { name: "Russian Twists", vid: russian, sets: 3, reps: "10-12" },
         ],
       },
       {

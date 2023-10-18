@@ -19,6 +19,7 @@ import SearchBar from "../../components/Searchbar/Searchbar";
 import CollectionList from "../../components/CollectionList/CollectionList";
 import FooterNav from "../../components/FooterNav/footernav";
 import CurrentProgramList from "../../components/CurrentProgramList/currentprogramlist";
+import Notification from "../../components/Notification/notification";
 
 interface props {
   workoutDetails: any;
@@ -36,6 +37,7 @@ const Home = ({
 }: props): JSX.Element => {
   const [workoutList, setWorkoutList] = useState<any[]>([]);
   const [currentSelect, setCurrentSelect] = useState<any>("All");
+  const [openNotif, setOpenNotif] = useState<boolean>(false);
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
   const { name } = userInfo;
@@ -74,6 +76,10 @@ const Home = ({
     workoutDetails(item);
   };
 
+  const handleNotifOpen = () => {
+    setOpenNotif(!openNotif);
+  };
+
   return (
     <SafeAreaView style={home(width, height).container}>
       <View
@@ -96,13 +102,16 @@ const Home = ({
             </Text>
           </View>
         </View>
-        <View style={home(width, height).rightNotif}>
+        <TouchableOpacity
+          style={home(width, height).rightNotif}
+          onPress={handleNotifOpen}
+        >
           <Text style={{ color: "white" }}>
             <AntDesign name="bells" size={24} color="white" />
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
-
+      {openNotif ? <Notification /> : null}
       <View style={header.container}>
         <SearchBar />
       </View>
