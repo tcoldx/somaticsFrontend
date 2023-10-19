@@ -16,6 +16,13 @@ import { Video, ResizeMode } from "expo-av";
 import LevelUpPopUp from "../../components/LevelUpPopup/levelupPopUp";
 import { firebase, auth } from "../../firebase";
 import WorkoutDetailItem from "../../components/WorkoutDetailItem/workoutdetailitem";
+import Animated, {
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { PanGestureHandler } from "react-native-gesture-handler";
 
 interface DetailProps {
   details: any;
@@ -30,6 +37,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [stop, setStop] = useState<boolean>(false);
   const [workoutDB, setWorkoutDB] = useState<any>([]);
   const [day, setDay] = useState<number>(0);
+
   const handleStart = () => {
     setOpen(true);
     setStart(true);
@@ -66,6 +74,19 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         .catch((err) => console.log(err));
     }
   };
+
+  // to allow the workout div to slide down or up and view the full workout
+  // const handleSwipeGesture = useAnimatedGestureHandler({
+  //   onStart: () => {
+  //     console.log("on start");
+  //   },
+  //   onActive: (event) => {
+  //     console.log("On Active: ", event);
+  //   },
+  //   onEnd: () => {
+  //     console.log("On End");
+  //   },
+  // });
   // this is what you need to get the video for each workout and change the vid on index
   // currentLabel[position].vid
   return (
@@ -79,6 +100,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         backgroundColor: "black",
       }}
     >
+      <Animated.View></Animated.View>
       {stop && <LevelUpPopUp navigation={navigation} handleDone={handleDone} />}
       <View
         style={{
