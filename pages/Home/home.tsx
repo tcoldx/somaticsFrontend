@@ -20,6 +20,7 @@ import SearchBar from "../../components/Searchbar/Searchbar";
 import CollectionList from "../../components/CollectionList/CollectionList";
 import FooterNav from "../../components/FooterNav/footernav";
 import CurrentProgramList from "../../components/CurrentProgramList/currentprogramlist";
+import Payscreen from "../../components/Payscreen/Payscreen";
 
 interface props {
   name: string;
@@ -29,6 +30,8 @@ interface props {
 const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
   const [workoutList, setWorkoutList] = useState<any[]>([]);
   const [currentSelect, setCurrentSelect] = useState<string>("All");
+  // State to hold whether the payscreen is visible
+  const [payscreenIsVisible, setPayscreenIsVisible] = useState<boolean>(false);
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
 
@@ -68,6 +71,7 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
   };
 
   return (
+    <>
     <SafeAreaView style={home(width, height).container}>
       <View
         style={{
@@ -87,6 +91,21 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
             <Text style={{ fontSize: 20, color: "white", fontWeight: "bold" }}>
               {name}!
             </Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ color: "gray", padding: 5, borderColor: "rgba(128,128,128, .2)", borderStyle: "solid", borderWidth: 1, borderRadius: 10 }}>Standard Tier</Text>
+            <Text 
+              style={{ 
+                color: "white", 
+                padding: 5, 
+                marginLeft: 10, 
+                backgroundColor: "rgba(239, 111, 19, 1)", 
+                borderRadius: 10, 
+                overflow: "hidden",
+                fontWeight: "bold" 
+              }}
+              onPress={() => setPayscreenIsVisible(true)}
+            >Upgrade</Text>
           </View>
         </View>
         <View style={home(width, height).rightNotif}>
@@ -191,6 +210,9 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
       </ScrollView>
       <FooterNav navigation={navigation} />
     </SafeAreaView>
+
+    {payscreenIsVisible && <Payscreen />}
+    </>
   );
 };
 
