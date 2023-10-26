@@ -107,6 +107,8 @@ export const styles = StyleSheet.create({
     gap: 2,
   },
 
+  contentContainerSwiped: {},
+
   navTouchBar: {
     zIndex: 4,
     backgroundColor: "white",

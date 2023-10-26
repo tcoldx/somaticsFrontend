@@ -20,10 +20,8 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
 } from "react-native-reanimated";
 import { PanGestureHandler } from "react-native-gesture-handler";
-
 interface DetailProps {
   details: any;
   navigation: any;
@@ -37,7 +35,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [stop, setStop] = useState<boolean>(false);
   const [workoutDB, setWorkoutDB] = useState<any>([]);
   const [day, setDay] = useState<number>(0);
-
+  const y = useSharedValue(0);
   const handleStart = () => {
     setOpen(true);
     setStart(true);
@@ -76,31 +74,29 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   };
 
   // to allow the workout div to slide down or up and view the full workout
-  // const handleSwipeGesture = useAnimatedGestureHandler({
-  //   onStart: () => {
-  //     console.log("on start");
-  //   },
-  //   onActive: (event) => {
-  //     console.log("On Active: ", event);
-  //   },
-  //   onEnd: () => {
-  //     console.log("On End");
-  //   },
-  // });
-  // this is what you need to get the video for each workout and change the vid on index
-  // currentLabel[position].vid
+  const handleSwipeGesture = useAnimatedGestureHandler({
+    onStart: () => {},
+    onActive: (event) => {
+      y.value = event.translationY;
+      console.log("y values location", y.value);
+    },
+    onEnd: () => {
+      console.log("On End");
+    },
+  });
+  const animatedContainerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: y.value }],
+  }));
   return (
     <SafeAreaView
       style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: "100%",
         width: "100%",
-        backgroundColor: "black",
+        height: "100%",
       }}
     >
-      <Animated.View></Animated.View>
       {stop && <LevelUpPopUp navigation={navigation} handleDone={handleDone} />}
       <View
         style={{
@@ -135,12 +131,13 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           <AntDesign name="left" size={24} color="white" />
         </TouchableOpacity>
       </View>
+
       {open && position !== currentLabel.length && (
         <View
           style={{
             top: 0,
             position: "absolute",
-            height: height - 560,
+            height: y.value < 170 ? height / 2 : height,
             width: width,
           }}
         >
@@ -196,51 +193,60 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           </TouchableOpacity>
         </View>
       ) : (
-        <View style={styles.contentContainerAfter}>
-          <View style={styles.navTouchBar}></View>
-          <WorkoutActive
-            position={position}
-            timeStart={start}
-            stopTime={stop}
-            data={currentLabel}
-            workouts={currentLabel}
-          />
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-evenly",
-              position: "absolute",
-              bottom: 0,
-              marginBottom: 35,
-              width: "90%",
-            }}
+        <PanGestureHandler onGestureEvent={handleSwipeGesture}>
+          <Animated.View
+            style={[
+              y.value >= 170
+                ? styles.contentContainerSwiped
+                : styles.contentContainerAfter,
+              animatedContainerStyle,
+            ]}
           >
-            <TouchableOpacity
-              activeOpacity={1}
-              style={styles.prevStep}
-              onPress={() => {
-                if (position > 0) {
-                  setPosition(position - 1);
-                }
+            <View style={styles.navTouchBar}></View>
+            <WorkoutActive
+              position={position}
+              timeStart={start}
+              stopTime={stop}
+              data={currentLabel}
+              workouts={currentLabel}
+            />
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-evenly",
+                position: "absolute",
+                bottom: 0,
+                marginBottom: 35,
+                width: "90%",
               }}
             >
-              <AntDesign name="left" size={30} color="#EF6F13" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={styles.trainingButtonContainer}
-              onPress={handleStep}
-            >
-              <Text style={{ color: "white", fontWeight: "bold" }}>
-                {position === currentLabel.length - 1
-                  ? "Finish Workout"
-                  : "Next Workout"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+              <TouchableOpacity
+                activeOpacity={1}
+                style={styles.prevStep}
+                onPress={() => {
+                  if (position > 0) {
+                    setPosition(position - 1);
+                  }
+                }}
+              >
+                <AntDesign name="left" size={30} color="#EF6F13" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={1}
+                style={styles.trainingButtonContainer}
+                onPress={handleStep}
+              >
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  {position === currentLabel.length - 1
+                    ? "Finish Workout"
+                    : "Next Workout"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </PanGestureHandler>
       )}
     </SafeAreaView>
   );
