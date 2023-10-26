@@ -211,7 +211,7 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
       <FooterNav navigation={navigation} />
     </SafeAreaView>
 
-    {payscreenIsVisible && <Payscreen />}
+    {payscreenIsVisible && <Payscreen setPayscreenIsVisible={setPayscreenIsVisible} />}
     </>
   );
 };

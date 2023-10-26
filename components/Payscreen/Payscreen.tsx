@@ -1,15 +1,25 @@
 import styles from "./PayscreenStyles";
 import { Text, View, SafeAreaView, TouchableWithoutFeedback, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
-const Payscreen = () => {
+interface Props {
+    setPayscreenIsVisible: Dispatch<SetStateAction<boolean>>
+};
+
+const Payscreen = (props: Props) => {
+    // Destructure the props to get access to React state setter function
+    const {setPayscreenIsVisible} = props;
+
     // State to hold the duration of the membership
     const [paymentDuration, setPaymentDuration] = useState<string>("yearly");
 
     return (
         <View style={styles.container}>
             <SafeAreaView style={styles.columnContainer}>
+                <TouchableWithoutFeedback onPress={() => setPayscreenIsVisible(false)}>
+                    <AntDesign style={styles.close} name="close" size={24} color="rgba(128, 128, 128, 0.5)" />
+                </TouchableWithoutFeedback>
                 <Text style={styles.title}>Unlimited Access to Somatics.</Text>
                 <Text style={styles.subtitle}>Cancel anytime.</Text>
                 <View style={[styles.fact, styles.firstFact]}>

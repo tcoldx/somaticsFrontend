@@ -121,6 +121,10 @@ const styles = StyleSheet.create({
     underline: {
         textDecorationLine: "underline"
     },
+    close: {
+        alignSelf: "flex-end",
+        padding: 10,
+    },
 });
 
 export default styles;
