@@ -7,21 +7,19 @@ import {
   Dimensions,
   FlatList,
   ImageBackground,
+  PanResponder,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { styles } from "./WorkoutDetails.styles";
 import { AntDesign } from "@expo/vector-icons";
-import WorkoutActive from "../../components/WorkoutActive/workoutactive";
 import { Video, ResizeMode } from "expo-av";
 import LevelUpPopUp from "../../components/LevelUpPopup/levelupPopUp";
 import { firebase, auth } from "../../firebase";
 import WorkoutDetailItem from "../../components/WorkoutDetailItem/workoutdetailitem";
-import Animated, {
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-} from "react-native-reanimated";
-import { PanGestureHandler } from "react-native-gesture-handler";
+import SwipeWorkout from "../../components/SwipeWorkoutContainer/swipeworkout";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetMethods } from "../../components/SwipeWorkoutContainer/swipeworkout";
+import { Button } from "react-native";
 interface DetailProps {
   details: any;
   navigation: any;
@@ -35,7 +33,6 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [stop, setStop] = useState<boolean>(false);
   const [workoutDB, setWorkoutDB] = useState<any>([]);
   const [day, setDay] = useState<number>(0);
-  const y = useSharedValue(0);
   const handleStart = () => {
     setOpen(true);
     setStart(true);
@@ -72,21 +69,18 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         .catch((err) => console.log(err));
     }
   };
+  const bottomSheetRef = useRef<BottomSheetMethods>(null);
+  console.log(bottomSheetRef);
+  const expandHandler = useCallback(() => {
+    console.log(bottomSheetRef.current);
+    bottomSheetRef.current?.expand();
+  }, []);
+  const closeHandler = useCallback(() => {
+    console.log(bottomSheetRef.current);
 
-  // to allow the workout div to slide down or up and view the full workout
-  const handleSwipeGesture = useAnimatedGestureHandler({
-    onStart: () => {},
-    onActive: (event) => {
-      y.value = event.translationY;
-      console.log("y values location", y.value);
-    },
-    onEnd: () => {
-      console.log("On End");
-    },
-  });
-  const animatedContainerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: y.value }],
-  }));
+    bottomSheetRef.current?.close();
+  }, []);
+
   return (
     <SafeAreaView
       style={{
@@ -137,7 +131,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           style={{
             top: 0,
             position: "absolute",
-            height: y.value < 170 ? height / 2 : height,
+            height: height,
             width: width,
           }}
         >
@@ -146,7 +140,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
               currentLabel[position].vid ? currentLabel[position].vid : null
             }
             style={{
-              height: "100%",
+              height: height,
               width: "100%",
             }}
             isMuted={true}
@@ -193,60 +187,22 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           </TouchableOpacity>
         </View>
       ) : (
-        <PanGestureHandler onGestureEvent={handleSwipeGesture}>
-          <Animated.View
-            style={[
-              y.value >= 170
-                ? styles.contentContainerSwiped
-                : styles.contentContainerAfter,
-              animatedContainerStyle,
-            ]}
-          >
-            <View style={styles.navTouchBar}></View>
-            <WorkoutActive
-              position={position}
-              timeStart={start}
-              stopTime={stop}
-              data={currentLabel}
-              workouts={currentLabel}
-            />
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-evenly",
-                position: "absolute",
-                bottom: 0,
-                marginBottom: 35,
-                width: "90%",
-              }}
-            >
-              <TouchableOpacity
-                activeOpacity={1}
-                style={styles.prevStep}
-                onPress={() => {
-                  if (position > 0) {
-                    setPosition(position - 1);
-                  }
-                }}
-              >
-                <AntDesign name="left" size={30} color="#EF6F13" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={1}
-                style={styles.trainingButtonContainer}
-                onPress={handleStep}
-              >
-                <Text style={{ color: "white", fontWeight: "bold" }}>
-                  {position === currentLabel.length - 1
-                    ? "Finish Workout"
-                    : "Next Workout"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </PanGestureHandler>
+        <>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <Button title="expand" onPress={() => expandHandler()} />
+            <Button title="close" onPress={() => closeHandler()} />
+          </GestureHandlerRootView>
+          <SwipeWorkout
+            ref={bottomSheetRef}
+            snapTo={"70%"}
+            stop={stop}
+            position={position}
+            setPosition={setPosition}
+            handleStep={handleStep}
+            start={start}
+            currentLabel={currentLabel}
+          />
+        </>
       )}
     </SafeAreaView>
   );
