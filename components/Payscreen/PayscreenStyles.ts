@@ -15,11 +15,17 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height: "100%",
     },
+    image: {
+        height: 200,
+        width: 200,
+        resizeMode: 'contain',
+        marginTop: -30,
+    },
     title: {
         color: "white",
         fontSize: 20,
         fontWeight: "600",
-        marginTop: 60
+        marginTop: -25,
     },
     subtitle: {
         color: "grey",

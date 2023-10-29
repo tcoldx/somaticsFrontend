@@ -1,5 +1,5 @@
 import styles from "./PayscreenStyles";
-import { Text, View, SafeAreaView, TouchableWithoutFeedback, TouchableOpacity } from "react-native";
+import { Text, View, SafeAreaView, TouchableWithoutFeedback, TouchableOpacity, Image } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Dispatch, SetStateAction, useState } from "react";
 
@@ -20,6 +20,7 @@ const Payscreen = (props: Props) => {
                 <TouchableWithoutFeedback onPress={() => setPayscreenIsVisible(false)}>
                     <AntDesign style={styles.close} name="close" size={24} color="rgba(128, 128, 128, 0.5)" />
                 </TouchableWithoutFeedback>
+                <Image style={styles.image} source={require('../../assets/payscreen.png')} />
                 <Text style={styles.title}>Unlimited Access to Somatics.</Text>
                 <Text style={styles.subtitle}>Cancel anytime.</Text>
                 <View style={[styles.fact, styles.firstFact]}>
