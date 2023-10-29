@@ -20,6 +20,7 @@ import CollectionList from "../../components/CollectionList/CollectionList";
 import FooterNav from "../../components/FooterNav/footernav";
 import CurrentProgramList from "../../components/CurrentProgramList/currentprogramlist";
 import Notification from "../../components/Notification/notification";
+import Payscreen from "../../components/Payscreen/Payscreen";
 
 interface props {
   workoutDetails: any;
@@ -37,6 +38,8 @@ const Home = ({
 }: props): JSX.Element => {
   const [workoutList, setWorkoutList] = useState<any[]>([]);
   const [currentSelect, setCurrentSelect] = useState<any>("All");
+  // State to hold whether the payscreen is visible
+  const [payscreenIsVisible, setPayscreenIsVisible] = useState<boolean>(false);
   const [openNotif, setOpenNotif] = useState<boolean>(false);
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
@@ -206,6 +209,9 @@ const Home = ({
         </View>
       </ScrollView>
       <FooterNav navigation={navigation} />
+      {payscreenIsVisible && (
+        <Payscreen setPayscreenIsVisible={setPayscreenIsVisible} />
+      )}
     </SafeAreaView>
   );
 };
