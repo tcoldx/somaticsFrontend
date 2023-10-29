@@ -24,11 +24,11 @@ const Payscreen = (props: Props) => {
                 <Text style={styles.subtitle}>Cancel anytime.</Text>
                 <View style={[styles.fact, styles.firstFact]}>
                     <AntDesign name="check" size={24} color="#EF6F13" />
-                    <Text style={styles.factText}>Over 250 dedicated workouts and programs</Text>
+                    <Text style={styles.factText}>50 dedicated exercises and workouts</Text>
                 </View>
                 <View style={styles.fact}>
                     <AntDesign name="check" size={24} color="#EF6F13" />
-                    <Text style={styles.factText}>Over 500 exercises and technique guides</Text>           
+                    <Text style={styles.factText}>6 exclusive programs</Text>
                 </View>
                 <View style={styles.paymentList}>
                     <TouchableWithoutFeedback onPress={() => setPaymentDuration('yearly')}>
@@ -36,11 +36,11 @@ const Payscreen = (props: Props) => {
                             style={paymentDuration == 'yearly' ? [styles.paymentType, styles.selectedPayment] : [styles.paymentType]}
                         >
                             <View style={paymentDuration == 'yearly' ? [styles.savings, styles.selectedSavings] : [styles.savings]}>
-                                <Text style={styles.savingsText}>SAVE 29.89 PER YEAR</Text>
+                                <Text style={styles.savingsText}>SAVE 59.89 PER YEAR</Text>
                             </View>
                             <Text style={styles.duration}>YEARLY</Text>
-                            <Text style={styles.price}>$89.99</Text>
-                            <Text style={styles.extraInfo}>Equivalent of $7.49 / month</Text>
+                            <Text style={styles.price}>$59.99</Text>
+                            <Text style={styles.extraInfo}>Equivalent of $4.99 / month</Text>
                         </View>
                     </TouchableWithoutFeedback>
                      <TouchableWithoutFeedback onPress={() => setPaymentDuration('monthly')}>
