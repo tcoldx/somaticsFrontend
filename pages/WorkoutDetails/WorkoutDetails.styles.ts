@@ -1,6 +1,20 @@
 import { StyleSheet, Dimensions } from "react-native";
 const { width, height } = Dimensions.get("screen");
 export const styles = StyleSheet.create({
+  backButton: {
+    position: "absolute",
+    zIndex: 4,
+    backgroundColor: "#101010",
+    borderWidth: 1,
+    borderColor: "rgba(128,128,128, .2)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    width: 45,
+    height: 45,
+  },
+
   workoutHeader: {
     display: "flex",
     width: "89%",
@@ -14,7 +28,7 @@ export const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     position: "absolute",
-    height: height - 110,
+    height: height / 1.5,
     width: "100%",
     borderRadius: 8,
     bottom: 0,
@@ -57,8 +71,8 @@ export const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     borderRadius: 8,
-    height: 600,
-    bottom: 0,
+    height: height,
+    top: height / 3,
     backgroundColor: "#101010",
   },
 
@@ -92,6 +106,8 @@ export const styles = StyleSheet.create({
     height: "70%",
     gap: 2,
   },
+
+  contentContainerSwiped: {},
 
   navTouchBar: {
     zIndex: 4,

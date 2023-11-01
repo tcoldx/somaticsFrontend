@@ -7,13 +7,18 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { AntDesign, Fontisto, Ionicons } from "@expo/vector-icons";
+import { checkIfEmail } from "../../utils/checkEmail";
 import React, { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { slideStyle, styler } from "./onboarding.styles";
-import { auth } from "../../firebase";
+import SomaLogo from "../../assets/somaticLogo.png";
+import { auth, db } from "../../firebase";
+import { Picker } from "@react-native-picker/picker";
 import { styled } from "nativewind";
 type itemProps = {
   title: string;
@@ -22,6 +27,7 @@ type itemProps = {
   navigation: any;
   items: any;
   index: number;
+  username: Function;
   indexFunc: Function;
 };
 const OnboardingItem = ({
@@ -32,46 +38,83 @@ const OnboardingItem = ({
   navigation,
   index,
   indexFunc,
+  username,
 }: itemProps): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [active, setActive] = useState(-1);
   const [password, setPassword] = useState("");
-  const [foot, setFoot] = useState("");
-  const [inch, setInch] = useState("");
   const [weight, setWeight] = useState("");
   const [age, setAge] = useState("");
-
-  const handleChange = (text: any) => {
+  const [gender, setGender] = useState("");
+  const [select, setSelect] = useState(options);
+  const [goals, setGoals] = useState<Object[]>([]);
+  const [selectedInch, setSelectedInch] = useState("");
+  const [selectedFoot, setSelectedFoot] = useState("");
+  const handleChange = async (text: any) => {
     setName(text);
-  };
-
-  const handleSelect = (op) => {};
-
-  const handleChangeEmail = (text: any) => {
-    setEmail(text);
-  };
-
-  const handleChangePassword = (text: any) => {
-    setPassword(text);
-  };
-
-  const handleAuthentication = () => {
-    setLoading(true);
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+    await AsyncStorage.mergeItem(
+      "user2",
+      JSON.stringify({
+        name: text,
       })
-      .catch((err) => console.log(err.message));
+    );
+  };
+  const { width, height } = Dimensions.get("window");
+  const handleSelect = async (data: any) => {
+    let newMap = select.map((val: any) => {
+      if (val.id === data.id) {
+        return { ...val, selected: !val.selected };
+      } else {
+        return val;
+      }
+    });
+    const filtered = newMap.filter((el: any) => el.selected);
+    setGoals(filtered);
+    setSelect(newMap);
+  };
 
-    setTimeout(() => {
+  const handleChangeEmail = async (text: any) => {
+    setEmail(text);
+    await AsyncStorage.mergeItem(
+      "user2",
+      JSON.stringify({
+        email: text.toLowerCase(),
+      })
+    );
+  };
+
+  const handleChangePassword = async (text: any) => {
+    setPassword(text);
+    await AsyncStorage.mergeItem(
+      "user2",
+      JSON.stringify({
+        password: text,
+      })
+    );
+  };
+
+  const handleAuthentication = async () => {
+    const objVal = await AsyncStorage.getItem("user2");
+    if (checkIfEmail(email) && password && name && objVal) {
+      setLoading(true);
+      username(name);
+      auth
+        .createUserWithEmailAndPassword(email, password)
+        .then(async (userCredential) => {
+          const user = userCredential.user;
+          await db.collection("users").doc(user.uid).set(JSON.parse(objVal));
+        })
+
+        .catch((err) => {
+          console.log(err.message);
+          setLoading(false);
+        });
       setLoading(false);
       navigation.navigate("home");
-    }, 2500);
+    }
   };
-  const StyledView = styled(TextInput);
   const StyledViewOne = styled(View);
   if (id === 3) {
     return (
@@ -102,16 +145,27 @@ const OnboardingItem = ({
             {title}
           </Text>
           <View style={styler.optionContainer}>
-            {options.map((option: any) => {
+            {select.map((option: any) => {
               return (
                 <TouchableOpacity
-                  onPress={() => handleSelect(option.id)}
+                  onPress={() => handleSelect(option)}
                   key={option.id}
-                  style={styler.optionSelect}
+                  activeOpacity={1}
+                  style={
+                    !option.selected
+                      ? styler.optionSelect
+                      : styler.optionSelectFilled
+                  }
                 >
                   <Text style={styler.text}>{option.name}</Text>
 
-                  <View style={slideStyle.selector}>
+                  <View
+                    style={
+                      option.selected
+                        ? slideStyle.selector
+                        : slideStyle.selectorSecondary
+                    }
+                  >
                     <AntDesign name="checkcircleo" size={12} color="#242424" />
                   </View>
                 </TouchableOpacity>
@@ -119,8 +173,15 @@ const OnboardingItem = ({
             })}
           </View>
           <TouchableOpacity
-            onPress={() => {
+            activeOpacity={1}
+            onPress={async () => {
               if (index !== 3) {
+                await AsyncStorage.mergeItem(
+                  "user2",
+                  JSON.stringify({
+                    goals: goals,
+                  })
+                );
                 indexFunc(index + 1);
               }
             }}
@@ -133,6 +194,18 @@ const OnboardingItem = ({
     );
   }
   if (id === 2) {
+    const createArray = (length: number) => {
+      const arr = [];
+      let i = 0;
+      while (i < length) {
+        arr.push(i.toString());
+        i += 1;
+      }
+      return arr;
+    };
+
+    const AVAILABLE_FEET = createArray(8);
+    const AVAILABLE_INCHES = createArray(13);
     return (
       <SafeAreaView style={styles.container}>
         <SafeAreaView
@@ -178,6 +251,7 @@ const OnboardingItem = ({
             placeholderTextColor="white"
             placeholder={items.age}
             maxLength={2}
+            value={age}
             onChangeText={(val) => {
               setAge(val);
             }}
@@ -192,27 +266,86 @@ const OnboardingItem = ({
               justifyContent: "space-between",
             }}
           >
-            <TextInput
-              placeholderTextColor="white"
-              style={slideStyle.heightDetails}
-              placeholder={"ft"}
-              maxLength={1}
-              keyboardType="numeric"
-              onChangeText={(val) => {
-                setFoot(val);
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-            />
-            <StyledView
-              className="flex-1 items-center w-full"
-              placeholderTextColor="white"
-              style={slideStyle.heightDetails}
-              placeholder="in"
-              keyboardType="numeric"
-              maxLength={1}
-              onChangeText={(val) => {
-                setInch(val);
+            >
+              <Text
+                style={{
+                  position: "absolute",
+                  zIndex: 2,
+                  left: 10,
+                  color: "white",
+                }}
+              >
+                Ft
+              </Text>
+              <Picker
+                style={{
+                  flex: 1,
+                  maxWidth: 140,
+                  maxHeight: height,
+                }}
+                itemStyle={{
+                  color: "whitesmoke",
+                  fontSize: 20,
+                  backgroundColor: "orange",
+                  height: height / 23,
+                  borderRadius: 10,
+                }}
+                selectedValue={selectedFoot}
+                onValueChange={(itemValue, itemIndex) => {
+                  setSelectedFoot(itemValue);
+                }}
+              >
+                {AVAILABLE_FEET.map((el: any) => {
+                  return <Picker.Item key={el} label={el} value={el} />;
+                })}
+              </Picker>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-            />
+            >
+              <Text
+                style={{
+                  position: "absolute",
+                  zIndex: 2,
+                  left: 10,
+                  color: "white",
+                }}
+              >
+                In
+              </Text>
+              <Picker
+                style={{
+                  flex: 1,
+                  maxWidth: 140,
+                  maxHeight: height,
+                }}
+                itemStyle={{
+                  color: "white",
+                  fontSize: 20,
+                  backgroundColor: "orange",
+                  height: height / 24,
+                  borderRadius: 10,
+                }}
+                selectedValue={selectedInch}
+                onValueChange={(itemValue, itemIndex) => {
+                  setSelectedInch(itemValue);
+                }}
+              >
+                {AVAILABLE_INCHES.map((el: any) => {
+                  return <Picker.Item key={el} label={el} value={el} />;
+                })}
+              </Picker>
+            </View>
           </View>
           <TextInput
             placeholderTextColor="white"
@@ -225,9 +358,22 @@ const OnboardingItem = ({
             }}
           />
           <TouchableOpacity
-            onPress={() => {
-              if (index !== 3 && foot && age && inch && weight.length > 2) {
-                console.log(foot, foot, inch, age, weight);
+            onPress={async () => {
+              if (
+                index !== 3 &&
+                selectedFoot &&
+                age &&
+                selectedInch &&
+                weight.length > 2
+              ) {
+                await AsyncStorage.mergeItem(
+                  "user2",
+                  JSON.stringify({
+                    age: age,
+                    weight: weight,
+                    height: `${selectedFoot}"${selectedInch}`,
+                  })
+                );
                 indexFunc(index + 1);
               }
             }}
@@ -279,6 +425,7 @@ const OnboardingItem = ({
               }
               onPress={() => {
                 setActive(0);
+                setGender("Male");
               }}
             >
               <Ionicons name="male" size={50} color="white" />
@@ -292,6 +439,7 @@ const OnboardingItem = ({
               }
               onPress={() => {
                 setActive(1);
+                setGender("Female");
               }}
             >
               <Ionicons name="female" size={50} color="white" />
@@ -299,8 +447,12 @@ const OnboardingItem = ({
             </TouchableOpacity>
           </View>
           <TouchableOpacity
-            onPress={() => {
+            onPress={async () => {
               if (index === 0 && (active === 0 || active === 1)) {
+                await AsyncStorage.setItem(
+                  "user2",
+                  JSON.stringify({ gender: gender })
+                );
                 indexFunc(index + 1);
               }
             }}
@@ -361,7 +513,40 @@ const OnboardingItem = ({
           />
         </SafeAreaView>
         <View style={styles.loginContainer}>
-          <Text style={styles.loginTitle}>{title}</Text>
+          <View
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <View
+              style={{
+                width: "95%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                height: 70,
+              }}
+            >
+              <Image
+                source={SomaLogo}
+                alt={"logo"}
+                style={{ width: 100, height: 100, marginTop: 90 }}
+              />
+            </View>
+            <View
+              style={{
+                width: "90%",
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
+              <Text style={styles.loginTitle}>{title}</Text>
+            </View>
+          </View>
           <View style={styles.loginColumns}>
             <View
               style={{
@@ -370,7 +555,8 @@ const OnboardingItem = ({
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
-                borderBottomWidth: 1,
+                borderWidth: 1.4,
+                borderRadius: 10,
                 borderColor: "orange",
               }}
             >
@@ -380,7 +566,7 @@ const OnboardingItem = ({
                 onChangeText={(e) => handleChange(e)}
                 value={name}
                 placeholder="Name"
-                placeholderTextColor="rgba(240,99,19,255)"
+                placeholderTextColor="whitesmoke"
               />
             </View>
             <View
@@ -390,7 +576,8 @@ const OnboardingItem = ({
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
-                borderBottomWidth: 1,
+                borderWidth: 1.4,
+                borderRadius: 10,
                 borderColor: "orange",
               }}
             >
@@ -400,7 +587,7 @@ const OnboardingItem = ({
                 onChangeText={(e) => handleChangeEmail(e)}
                 placeholder="Email"
                 value={email}
-                placeholderTextColor="rgba(240,99,19,255)"
+                placeholderTextColor="whitesmoke"
               />
             </View>
             <View
@@ -410,7 +597,8 @@ const OnboardingItem = ({
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
-                borderBottomWidth: 1,
+                borderWidth: 1.4,
+                borderRadius: 10,
                 borderColor: "orange",
               }}
             >
@@ -418,19 +606,17 @@ const OnboardingItem = ({
               <TextInput
                 style={styles.loginInput}
                 onChangeText={(e) => handleChangePassword(e)}
+                secureTextEntry={true}
                 value={password}
                 placeholder="Password"
-                placeholderTextColor="rgba(240,99,19,255)"
+                placeholderTextColor="whitesmoke"
               />
             </View>
           </View>
-          <TouchableOpacity
-            onPress={handleAuthentication}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
         </View>
+        <TouchableOpacity onPress={handleAuthentication} style={styles.button}>
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     );
   }
@@ -470,8 +656,8 @@ const styles = StyleSheet.create({
 
   loginTitle: {
     marginTop: 40,
-    color: "rgba(240,99,19,255)",
-    fontSize: 20,
+    color: "white",
+    fontSize: 30,
     fontWeight: "bold",
   },
 
@@ -492,9 +678,9 @@ const styles = StyleSheet.create({
 
   loginContainer: {
     display: "flex",
-    height: "100%",
     width: "100%",
     alignItems: "center",
+    justifyContent: "center",
   },
 
   buttonText: {
@@ -513,17 +699,16 @@ const styles = StyleSheet.create({
   loginColumns: {
     display: "flex",
     flexDirection: "column",
-    height: "70%",
-    marginTop: 20,
+    height: "60%",
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    gap: 10,
+    gap: 20,
   },
 
   button: {
     position: "absolute",
-    bottom: 0,
+    bottom: 35,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

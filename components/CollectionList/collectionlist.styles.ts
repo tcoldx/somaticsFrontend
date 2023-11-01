@@ -32,4 +32,13 @@ export const styleDetail = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
   },
+  imageContainLoading: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 410,
+    width: 300,
+    borderRadius: 30,
+  },
 });

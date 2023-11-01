@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { Stopwatch } from "react-native-stopwatch-timer";
-import React, { useState } from "react";
+import React from "react";
 import StepIndicator from "react-native-step-indicator";
 import { styles } from "./workoutactive.styles";
 interface workoutProps {
@@ -77,7 +77,7 @@ const WorkoutActive = ({
             gap: 3,
           }}
         >
-          <View
+          {/* <View
             style={{
               width: 7,
               height: 7,
@@ -92,7 +92,7 @@ const WorkoutActive = ({
             options={options}
             reset={stopTime}
             startTime={0}
-          />
+          /> */}
         </View>
       </View>
     </View>

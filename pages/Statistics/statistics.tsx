@@ -7,7 +7,9 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "./statistics.styles";
-import { firebase } from "../../firebase";
+import { auth, firebase } from "../../firebase";
+import { getFirestore, doc, updateDoc, Timestamp } from "firebase/firestore";
+import moment from "moment";
 import { Skeleton } from "@rneui/themed";
 import { BlurView } from "expo-blur";
 import {
@@ -18,36 +20,99 @@ import {
 } from "@expo/vector-icons";
 import StatChart from "../../components/StatChart/statchart";
 import FooterNav from "../../components/FooterNav/footernav";
+import { _DEFAULT_INITIAL_PLAYBACK_STATUS } from "expo-av/build/AV";
 interface statProps {
   navigation: any;
+  userId: any;
 }
-const Statistics = ({ navigation }: statProps): JSX.Element => {
+const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   const [workoutHistory, setWorkoutHistory] = useState<any>([]);
   const [panel, setPanel] = useState<boolean>(false);
-  const [id, setId] = useState("");
+  const [tempId, setTempId] = useState<string>("");
+  const [chartData, setChartData] = useState<any>([0, 0, 0, 0, 0, 0, 0]);
   const workoutRef = firebase.firestore().collection("programs");
-  useEffect(() => {
-    return workoutRef.onSnapshot((querySnapshot) => {
-      const list = [];
-      querySnapshot.forEach((doc) => {
-        list.push({
-          id: doc.id,
-          name: doc.data().header.name,
-          calories: doc.data().header.calsBurned,
-        });
+  const getPrograms = async () => {
+    let usersId = auth.currentUser.uid;
+    const list = [];
+    const snapShot = await workoutRef.where("id", "==", usersId).get();
+    snapShot.forEach((doc: any) => {
+      const copyOfWorkout = Object.assign({}, doc.data());
+      list.push({
+        name: copyOfWorkout.header.name,
+        calories: copyOfWorkout.header.calsBurned,
+        id: doc.id,
+        workoutId: copyOfWorkout.workoutId,
+        date: copyOfWorkout.createdAt,
       });
-      setWorkoutHistory(list);
     });
-  }, []);
-  const calories = workoutHistory.map((el) => el.calories);
+    setWorkoutHistory(list);
+  };
+
+  const workoutChartAlgorithm = async () => {
+    /** ts in ms */
+    const to_day = (ts) => {
+      const d = new Date(ts);
+      return d.toISOString().slice(0, 10);
+    };
+    /** ts in ms */
+    const to_day_of_week = (ts) => {
+      const d = new Date(ts);
+      return d.getDay();
+    };
+    /** ts in ms */
+    const to_week = (ts) => {
+      const d = new Date(ts);
+      return `${d.getFullYear()}W${moment(ts).isoWeek()}`;
+    };
+
+    // the algorithm itself
+    const histogram_by_day = new Map();
+    const histogram_by_day_of_week = new Map();
+    const histogram_by_week = new Map();
+    for (let day_of_week = 0; day_of_week < 7; day_of_week++) {
+      histogram_by_day_of_week.set(day_of_week, 0);
+    }
+    for (const workout of workoutHistory) {
+      const day = to_day(workout.date.seconds * 1000); // in ms
+      const day_of_week = to_day_of_week(workout.date.seconds * 1000); // in ms
+      const week = to_week(workout.date.seconds * 1000); // in ms
+      histogram_by_day.set(day, (histogram_by_day.get(day) ?? 0) + 1);
+      histogram_by_day_of_week.set(
+        day_of_week,
+        (histogram_by_day_of_week.get(day_of_week) ?? 0) + 1
+      );
+      histogram_by_week.set(week, (histogram_by_week.get(week) ?? 0) + 1);
+    }
+
+    const counts = [...histogram_by_day_of_week.values()];
+    setChartData(counts);
+  };
+
+  useEffect(() => {
+    getPrograms();
+  }, [panel, workoutHistory.length]);
+  useEffect(() => {
+    workoutChartAlgorithm();
+  }, [panel, workoutHistory]);
+
+  const calories = workoutHistory.map((el: any) => el.calories);
   let sum = 0;
-  const totalCalories = calories.reduce((acc, curr) => acc + curr, sum);
+  const totalCalories = calories.reduce(
+    (acc: number, curr: number) => acc + curr,
+    sum
+  );
   const handleDelete = (id: string) => {
     setPanel(true);
-    setId(id);
+    setTempId(id);
     if (panel) {
-      workoutRef.doc(id).delete();
-      setPanel(false);
+      return workoutRef.onSnapshot((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          if (id === doc.data().workoutId) {
+            doc.ref.delete();
+          }
+        });
+        setPanel(false);
+      });
     }
   };
   return (
@@ -64,14 +129,14 @@ const Statistics = ({ navigation }: statProps): JSX.Element => {
           <Text style={{ color: "white" }}>this entire workout?</Text>
           <TouchableOpacity
             style={styles.deleteButton}
-            onPress={() => handleDelete(id)}
+            onPress={() => handleDelete(tempId)}
           >
             <Text style={{ color: "white", fontWeight: "bold" }}>Delete</Text>
           </TouchableOpacity>
         </View>
       )}
       <View style={styles.chartContainer}>
-        <StatChart />
+        <StatChart activityData={chartData} />
       </View>
       <View style={styles.statHeaders}>
         <View style={styles.statHeader}>
@@ -184,7 +249,7 @@ const Statistics = ({ navigation }: statProps): JSX.Element => {
           <ScrollView contentContainerStyle={styles.workoutHistoryContentWrap}>
             {workoutHistory.map((workout: any) => {
               return (
-                <View style={styles.workoutContainer}>
+                <View style={styles.workoutContainer} key={workout.id}>
                   <View
                     style={{
                       gap: 3,
@@ -209,7 +274,7 @@ const Statistics = ({ navigation }: statProps): JSX.Element => {
                       borderRadius: 4,
                     }}
                     size={30}
-                    onPress={() => handleDelete(workout.id)}
+                    onPress={() => handleDelete(workout.workoutId)}
                   />
                 </View>
               );

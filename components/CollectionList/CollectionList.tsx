@@ -5,24 +5,30 @@ import {
   ImageBackground,
   StyleSheet,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { styleDetail } from "./collectionlist.styles";
-import React from "react";
+import React, { useRef, useState } from "react";
 interface WorkoutProps {
   list: object[];
   itemRetrievalFunc: any;
   navigation: any;
 }
+const { width, height } = Dimensions.get("screen");
 const CollectionList = ({
   list,
   itemRetrievalFunc,
   navigation,
 }: WorkoutProps): JSX.Element => {
+  const [loading, setLoading] = useState(true);
   const handleSelect = (item: any) => {
     itemRetrievalFunc(item);
     navigation.navigate("details");
   };
 
+  const handleLoad = () => {
+    setLoading(false);
+  };
   return (
     <View
       style={{
@@ -32,48 +38,70 @@ const CollectionList = ({
         width: "90%",
       }}
     >
-      {list.map((item: any) => {
+      {list?.map((item: any) => {
         return (
-          <TouchableOpacity key={item.id} onPress={() => handleSelect(item)}>
+          <TouchableOpacity
+            activeOpacity={1}
+            key={item.id}
+            onPress={() => handleSelect(item)}
+          >
             <ImageBackground
-              style={styleDetail.imageContain}
+              style={
+                !loading
+                  ? styleDetail.imageContain
+                  : styleDetail.imageContainLoading
+              }
               source={item.img}
+              onLoad={handleLoad}
               imageStyle={{
                 borderRadius: 13,
               }}
-              key={item.id}
             >
-              <View style={styleDetail.programHeaderOne}>
-                <Text style={{ color: "white", fontWeight: "bold" }}>
-                  {item.difficulty}
-                </Text>
-              </View>
-              <View style={styleDetail.programHeaderTwo}>
-                <Text style={{ color: "white", fontWeight: "bold" }}>
-                  {item.category}
-                </Text>
-              </View>
-              <View
-                style={{
-                  position: "absolute",
-                  bottom: 20,
-                  zIndex: 3,
-                  left: 30,
-                  display: "flex",
-                  gap: 10,
-                }}
-              >
-                <Text
+              {!loading ? (
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  <View style={styleDetail.programHeaderOne}>
+                    <Text style={{ color: "white", fontWeight: "bold" }}>
+                      {item.difficulty}
+                    </Text>
+                  </View>
+                  <View style={styleDetail.programHeaderTwo}>
+                    <Text style={{ color: "white", fontWeight: "bold" }}>
+                      {item.category}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      position: "absolute",
+                      bottom: 20,
+                      zIndex: 3,
+                      left: 30,
+                      display: "flex",
+                      gap: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        color: "white",
+                        fontSize: 20,
+                      }}
+                    >
+                      {item.name}
+                    </Text>
+                    <Text style={{ color: "gray" }}>{item.tasks} Task</Text>
+                  </View>
+                </View>
+              ) : (
+                <View
                   style={{
-                    fontWeight: "bold",
-                    color: "white",
-                    fontSize: 20,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  {item.name}
-                </Text>
-                <Text style={{ color: "gray" }}>{item.tasks} Task</Text>
-              </View>
+                  <ActivityIndicator color="orange" />
+                </View>
+              )}
               <View style={styles.lineargradient} />
             </ImageBackground>
           </TouchableOpacity>
@@ -89,7 +117,7 @@ export const styles = StyleSheet.create({
     borderRadius: 13,
     width: 300,
     position: "absolute",
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0,0,0,0.2)",
   },
 });
 

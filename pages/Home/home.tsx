@@ -14,29 +14,38 @@ import {
   All,
   muayThaiWorkouts,
 } from "../../utils/workouts";
-import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign } from "@expo/vector-icons";
 import SearchBar from "../../components/Searchbar/Searchbar";
 import CollectionList from "../../components/CollectionList/CollectionList";
 import FooterNav from "../../components/FooterNav/footernav";
 import CurrentProgramList from "../../components/CurrentProgramList/currentprogramlist";
+import Notification from "../../components/Notification/notification";
 import Payscreen from "../../components/Payscreen/Payscreen";
 
 interface props {
-  name: string;
   workoutDetails: any;
   navigation: any;
+  id: any;
+  userInfo: any;
+  newUsersName: string;
 }
-const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
+const Home = ({
+  workoutDetails,
+  navigation,
+  id,
+  newUsersName,
+  userInfo,
+}: props): JSX.Element => {
   const [workoutList, setWorkoutList] = useState<any[]>([]);
-  const [currentSelect, setCurrentSelect] = useState<string>("All");
+  const [currentSelect, setCurrentSelect] = useState<any>("All");
   // State to hold whether the payscreen is visible
   const [payscreenIsVisible, setPayscreenIsVisible] = useState<boolean>(false);
+  const [openNotif, setOpenNotif] = useState<boolean>(false);
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
-
+  const { name } = userInfo;
   useEffect(() => {
-    setWorkoutList(boxingWorkouts);
+    setWorkoutList(All);
   }, []);
 
   const handleSelect = (curr: string) => {
@@ -70,8 +79,11 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
     workoutDetails(item);
   };
 
+  const handleNotifOpen = () => {
+    setOpenNotif(!openNotif);
+  };
+
   return (
-    <>
     <SafeAreaView style={home(width, height).container}>
       <View
         style={{
@@ -89,32 +101,20 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
           </View>
           <View>
             <Text style={{ fontSize: 20, color: "white", fontWeight: "bold" }}>
-              {name}!
+              {name ? name : newUsersName}!
             </Text>
           </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={{ color: "gray", padding: 5, borderColor: "rgba(128,128,128, .2)", borderStyle: "solid", borderWidth: 1, borderRadius: 10 }}>Standard Tier</Text>
-            <Text 
-              style={{ 
-                color: "white", 
-                padding: 5, 
-                marginLeft: 10, 
-                backgroundColor: "rgba(239, 111, 19, 1)", 
-                borderRadius: 10, 
-                overflow: "hidden",
-                fontWeight: "bold" 
-              }}
-              onPress={() => setPayscreenIsVisible(true)}
-            >Upgrade</Text>
-          </View>
         </View>
-        <View style={home(width, height).rightNotif}>
+        <TouchableOpacity
+          style={home(width, height).rightNotif}
+          onPress={handleNotifOpen}
+        >
           <Text style={{ color: "white" }}>
             <AntDesign name="bells" size={24} color="white" />
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
-
+      {openNotif ? <Notification /> : null}
       <View style={header.container}>
         <SearchBar />
       </View>
@@ -209,10 +209,10 @@ const Home = ({ name, workoutDetails, navigation }: props): JSX.Element => {
         </View>
       </ScrollView>
       <FooterNav navigation={navigation} />
+      {payscreenIsVisible && (
+        <Payscreen setPayscreenIsVisible={setPayscreenIsVisible} />
+      )}
     </SafeAreaView>
-
-    {payscreenIsVisible && <Payscreen setPayscreenIsVisible={setPayscreenIsVisible} />}
-    </>
   );
 };
 
