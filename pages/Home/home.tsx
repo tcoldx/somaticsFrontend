@@ -84,163 +84,170 @@ const Home = ({
   };
 
   return (
-    <SafeAreaView style={home(width, height).container}>
-      <View
-        style={{
-          width: "90%",
-          display: "flex",
-          justifyContent: "space-between",
-          flexDirection: "row",
-          alignItems: "center",
-          marginTop: 20,
-        }}
-      >
-        <View style={home(width, height).leftHeader}>
-          <View>
-            <Text style={home(width, height).headerone}>Welcome back,</Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 20, color: "white", fontWeight: "bold" }}>
-              {name ? name : newUsersName}!
-            </Text>
-          </View>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            style={{
-              color: "gray",
-              padding: 5,
-              borderColor: "rgba(128,128,128, .2)",
-              borderStyle: "solid",
-              borderWidth: 1,
-              borderRadius: 10,
-            }}
-          >
-            Standard Tier
-          </Text>
-          <Text
-            style={{
-              color: "white",
-              padding: 5,
-              marginLeft: 10,
-              backgroundColor: "rgba(239, 111, 19, 1)",
-              borderRadius: 10,
-              overflow: "hidden",
-              fontWeight: "bold",
-            }}
-            onPress={() => setPayscreenIsVisible(true)}
-          >
-            Upgrade
-          </Text>
-        </View>
-        <TouchableOpacity
-          style={home(width, height).rightNotif}
-          onPress={handleNotifOpen}
-        >
-          <Text style={{ color: "white" }}>
-            <AntDesign name="bells" size={24} color="white" />
-          </Text>
-        </TouchableOpacity>
-      </View>
-      {openNotif ? <Notification /> : null}
-      <View style={header.container}>
-        <SearchBar />
-      </View>
-
-      <View style={home(width, height).subheading}>
-        {sectionTypes.map((item) => {
-          return (
-            <TouchableOpacity
-              activeOpacity={1}
-              key={item.id}
-              style={
-                currentSelect === item.name
-                  ? header.selectedOption
-                  : header.options
-              }
-              onPress={() => handleSelect(item.name)}
-            >
-              <Text
-                style={
-                  currentSelect === item.name
-                    ? header.currentselect
-                    : { color: "gray" }
-                }
-              >
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-      <ScrollView
-        contentContainerStyle={{
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        style={{
-          display: "flex",
-          height: height,
-          width: width + 11,
-        }}
-        bounces={true}
-        horizontal={false}
-      >
+    <>
+      <SafeAreaView style={home(width, height).container}>
         <View
           style={{
+            width: "90%",
             display: "flex",
+            justifyContent: "space-between",
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "space-between",
-            width: "87%",
-            marginTop: 40,
+            marginTop: 20,
           }}
         >
-          <View>
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 23 }}>
-              Programs
-            </Text>
+          <View style={home(width, height).leftHeader}>
+            <View>
+              <Text style={home(width, height).headerone}>Welcome back,</Text>
+            </View>
+            <View>
+              <Text
+                style={{ fontSize: 20, color: "white", fontWeight: "bold" }}
+              >
+                {name ? name : newUsersName}!
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <Text
+                style={{
+                  color: "gray",
+                  padding: 5,
+                  borderColor: "rgba(128,128,128, .2)",
+                  borderStyle: "solid",
+                  borderWidth: 1,
+                  borderRadius: 10,
+                }}
+              >
+                Standard Tier
+              </Text>
+              <Text
+                style={{
+                  color: "white",
+                  padding: 5,
+                  marginLeft: 10,
+                  backgroundColor: "rgba(239, 111, 19, 1)",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                  fontWeight: "bold",
+                }}
+                onPress={() => setPayscreenIsVisible(true)}
+              >
+                Upgrade
+              </Text>
+            </View>
           </View>
-          <View>
-            <Text
-              style={{ color: "#EF6F13", fontWeight: "bold", fontSize: 14 }}
-            >
-              See all
+
+          <TouchableOpacity
+            style={home(width, height).rightNotif}
+            onPress={handleNotifOpen}
+          >
+            <Text style={{ color: "white" }}>
+              <AntDesign name="bells" size={24} color="white" />
             </Text>
-          </View>
+          </TouchableOpacity>
+        </View>
+        {openNotif ? <Notification /> : null}
+        <View style={header.container}>
+          <SearchBar />
+        </View>
+
+        <View style={home(width, height).subheading}>
+          {sectionTypes.map((item) => {
+            return (
+              <TouchableOpacity
+                activeOpacity={1}
+                key={item.id}
+                style={
+                  currentSelect === item.name
+                    ? header.selectedOption
+                    : header.options
+                }
+                onPress={() => handleSelect(item.name)}
+              >
+                <Text
+                  style={
+                    currentSelect === item.name
+                      ? header.currentselect
+                      : { color: "gray" }
+                  }
+                >
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
         <ScrollView
+          contentContainerStyle={{
+            alignItems: "center",
+            justifyContent: "center",
+          }}
           style={{
             display: "flex",
-            flexDirection: "row",
-            marginTop: 20,
-            width: "90%",
+            height: height,
+            width: width + 11,
           }}
-          bounces={false}
+          bounces={true}
+          horizontal={false}
         >
-          <CollectionList
-            itemRetrievalFunc={handleItem}
-            list={workoutList}
-            navigation={navigation}
-          />
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "87%",
+              marginTop: 40,
+            }}
+          >
+            <View>
+              <Text
+                style={{ color: "white", fontWeight: "bold", fontSize: 23 }}
+              >
+                Programs
+              </Text>
+            </View>
+            <View>
+              <Text
+                style={{ color: "#EF6F13", fontWeight: "bold", fontSize: 14 }}
+              >
+                See all
+              </Text>
+            </View>
+          </View>
+          <ScrollView
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 20,
+              width: "90%",
+            }}
+            bounces={false}
+          >
+            <CollectionList
+              itemRetrievalFunc={handleItem}
+              list={workoutList}
+              navigation={navigation}
+            />
+          </ScrollView>
+          <View
+            style={{
+              width: width - 35,
+              marginTop: 40,
+            }}
+          >
+            <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+              Current Programs
+            </Text>
+            <CurrentProgramList />
+          </View>
         </ScrollView>
-        <View
-          style={{
-            width: width - 35,
-            marginTop: 40,
-          }}
-        >
-          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
-            Current Programs
-          </Text>
-          <CurrentProgramList />
-        </View>
-      </ScrollView>
-      <FooterNav navigation={navigation} />
+        <FooterNav navigation={navigation} />
+      </SafeAreaView>
       {payscreenIsVisible && (
         <Payscreen setPayscreenIsVisible={setPayscreenIsVisible} />
       )}
-    </SafeAreaView>
+    </>
   );
 };
 
