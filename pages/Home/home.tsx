@@ -105,6 +105,34 @@ const Home = ({
             </Text>
           </View>
         </View>
+        <View style={{ flexDirection: "row" }}>
+          <Text
+            style={{
+              color: "gray",
+              padding: 5,
+              borderColor: "rgba(128,128,128, .2)",
+              borderStyle: "solid",
+              borderWidth: 1,
+              borderRadius: 10,
+            }}
+          >
+            Standard Tier
+          </Text>
+          <Text
+            style={{
+              color: "white",
+              padding: 5,
+              marginLeft: 10,
+              backgroundColor: "rgba(239, 111, 19, 1)",
+              borderRadius: 10,
+              overflow: "hidden",
+              fontWeight: "bold",
+            }}
+            onPress={() => setPayscreenIsVisible(true)}
+          >
+            Upgrade
+          </Text>
+        </View>
         <TouchableOpacity
           style={home(width, height).rightNotif}
           onPress={handleNotifOpen}
