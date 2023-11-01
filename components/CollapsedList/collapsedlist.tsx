@@ -1,23 +1,17 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 
 interface Props {
   item: any;
   index: number;
 }
 
+const { height, width } = Dimensions.get("screen");
+
 const CollapsedList = ({ item, index }: Props) => {
   return (
-    <View
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignContent: "flex-start",
-        height: "100%",
-        width: "100%",
-      }}
-    >
-      <Text style={{ color: "white" }}>yo</Text>
+    <View style={{ height, width, alignItems: "center", marginTop: 50 }}>
+      <Text style={{ color: "white" }}>{item.name}</Text>
     </View>
   );
 };

@@ -37,7 +37,7 @@ export interface BottomSheetMethods {
   expand: () => void;
   close: () => void;
 }
-const { height } = Dimensions.get("screen");
+const { height, width } = Dimensions.get("screen");
 const SwipeWorkout = React.forwardRef(
   (
     {
@@ -57,7 +57,6 @@ const SwipeWorkout = React.forwardRef(
     const topAnimation = useSharedValue(closeHeight);
     const [opened, setOpened] = useState(false);
     const context = useSharedValue(0);
-    console.log(currentLabel);
 
     const expand = useCallback(() => {
       "worklet";
@@ -153,9 +152,8 @@ const SwipeWorkout = React.forwardRef(
                 pagingEnabled={true}
                 scrollEnabled={true}
                 data={currentLabel}
-                keyExtractor={(item) => item.key}
                 renderItem={({ item, index }: any) => {
-                  return <CollapsedList index={index} item={item} />;
+                  return <CollapsedList item={item} index={index} />;
                 }}
               />
             </View>
