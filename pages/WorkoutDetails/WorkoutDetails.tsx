@@ -70,16 +70,6 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     }
   };
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
-  console.log(bottomSheetRef);
-  const expandHandler = useCallback(() => {
-    console.log(bottomSheetRef.current);
-    bottomSheetRef.current?.expand();
-  }, []);
-  const closeHandler = useCallback(() => {
-    console.log(bottomSheetRef.current);
-
-    bottomSheetRef.current?.close();
-  }, []);
 
   return (
     <SafeAreaView
@@ -188,10 +178,6 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         </View>
       ) : (
         <>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <Button title="expand" onPress={() => expandHandler()} />
-            <Button title="close" onPress={() => closeHandler()} />
-          </GestureHandlerRootView>
           <SwipeWorkout
             ref={bottomSheetRef}
             snapTo={"70%"}

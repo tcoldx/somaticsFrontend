@@ -1,6 +1,6 @@
 import React, {
-  forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useState,
 } from "react";
@@ -10,15 +10,19 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
+  FlatList,
 } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
-  useAnimatedGestureHandler,
   withTiming,
   useAnimatedStyle,
+  withSpring,
   useSharedValue,
+  runOnJS,
 } from "react-native-reanimated";
 import { AntDesign } from "@expo/vector-icons";
 import WorkoutActive from "../../components/WorkoutActive/workoutactive";
+import CollapsedList from "../CollapsedList/collapsedlist";
 type Props = {
   snapTo: string;
   start: boolean;
@@ -51,6 +55,10 @@ const SwipeWorkout = React.forwardRef(
     const percentage = parseFloat(snapTo.replace("%", "")) / 100;
     const openHeight = height - height * percentage;
     const topAnimation = useSharedValue(closeHeight);
+    const [opened, setOpened] = useState(false);
+    const context = useSharedValue(0);
+    console.log(currentLabel);
+
     const expand = useCallback(() => {
       "worklet";
       topAnimation.value = withTiming(openHeight);
@@ -58,6 +66,8 @@ const SwipeWorkout = React.forwardRef(
 
     const close = useCallback(() => {
       "worklet";
+      console.log("currents:", currentLabel);
+
       topAnimation.value = withTiming(closeHeight);
     }, [closeHeight, topAnimation]);
 
@@ -76,52 +86,120 @@ const SwipeWorkout = React.forwardRef(
       };
     });
 
+    useEffect(() => {}, [context.value, topAnimation.value, opened]);
+
+    const pan = Gesture.Pan()
+      .onBegin(() => {
+        context.value = topAnimation.value;
+      })
+      .onUpdate((event) => {
+        if (event.translationY <= 250) {
+          // this is how you can call hooks in these type of functions!! nice :D
+          runOnJS(setOpened)(false);
+        } else {
+          runOnJS(setOpened)(true);
+        }
+
+        if (event.translationY < 0) {
+          topAnimation.value = withSpring(openHeight, {
+            damping: 100,
+            stiffness: 400,
+          });
+        } else {
+          topAnimation.value = withSpring(event.translationY + context.value, {
+            damping: 100,
+            stiffness: 400,
+          });
+        }
+      })
+      .onEnd((event) => {
+        if (topAnimation.value > openHeight + 50) {
+          topAnimation.value = withSpring(closeHeight, {
+            damping: 100,
+            stiffness: 400,
+          });
+        } else {
+          topAnimation.value = withSpring(openHeight, {
+            damping: 100,
+            stiffness: 400,
+          });
+        }
+      });
     return (
-      <Animated.View style={[styles.container, animationStyle]}>
-        <View style={styles.navTouchBar}></View>
-        <WorkoutActive
-          position={position}
-          timeStart={start}
-          stopTime={stop}
-          data={currentLabel}
-          workouts={currentLabel}
-        />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-evenly",
-            position: "absolute",
-            bottom: 0,
-            marginBottom: 35,
-            width: "90%",
-          }}
-        >
-          <TouchableOpacity
-            activeOpacity={1}
-            style={styles.prevStep}
-            onPress={() => {
-              if (position > 0) {
-                setPosition(position - 1);
-              }
+      <GestureDetector gesture={pan}>
+        <Animated.View style={[styles.container, animationStyle]}>
+          <View style={styles.navTouchBar}></View>
+          {!opened ? (
+            <WorkoutActive
+              position={position}
+              timeStart={start}
+              stopTime={stop}
+              data={currentLabel}
+              workouts={currentLabel}
+            />
+          ) : (
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignContent: "center",
+                height: "100%",
+                width: "100%",
+              }}
+            >
+              <FlatList
+                horizontal
+                snapToAlignment="center"
+                pagingEnabled={true}
+                scrollEnabled={true}
+                data={currentLabel}
+                keyExtractor={(item) => item.key}
+                renderItem={({ item, index }: any) => {
+                  return <CollapsedList index={index} item={item} />;
+                }}
+              />
+            </View>
+          )}
+
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-evenly",
+              position: "absolute",
+              bottom: 0,
+              marginBottom: 35,
+              width: "90%",
             }}
           >
-            <AntDesign name="left" size={30} color="#EF6F13" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={1}
-            style={styles.trainingButtonContainer}
-            onPress={() => handleStep(position)}
-          >
-            <Text style={{ color: "white", fontWeight: "bold" }}>
-              {position === currentLabel.length - 1
-                ? "Finish Workout"
-                : "Next Workout"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.prevStep}
+              onPress={() => {
+                if (position > 0) {
+                  setPosition(position - 1);
+                }
+              }}
+            >
+              <AntDesign name="left" size={30} color="#EF6F13" />
+            </TouchableOpacity>
+            {!opened && (
+              <TouchableOpacity
+                activeOpacity={1}
+                style={styles.trainingButtonContainer}
+                onPress={() => handleStep(position)}
+              >
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  {position === currentLabel.length - 1
+                    ? "Finish Workout"
+                    : "Next Workout"}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </Animated.View>
+      </GestureDetector>
     );
   }
 );
