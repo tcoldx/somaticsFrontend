@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { styles } from "./settingPage.styles";
 import { AntDesign } from "@expo/vector-icons";
-
+import FooterNav from "../../components/FooterNav/footernav";
 import {
   SafeAreaView,
   ScrollView,
@@ -88,38 +88,26 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
   }
 
   return (
-    <View style={{ backgroundColor: "#242424" }}>
-      {/* Settings navigation */}
-      <SafeAreaView
-        style={{
-          backgroundColor: "rgba(240,99,19,255)",
-          width: width,
-          height: 100,
-        }}
-      ></SafeAreaView>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("home");
-        }}
-        style={styles.arrowLeft}
-      >
-        <AntDesign name="left" size={24} color="white" />
-      </TouchableOpacity>
-      {/* Settings options, split into sections */}
-      <ScrollView contentContainerStyle={styles.containerItems} style={styles.sectionContainer}>
-        <SettingsSection section={profileSection} />
-        <View style={styles.sectionTitleContainer}>
-          <AntDesign name="info" height={12} color="white" />
-          <Text style={styles.sectionTitle}>App Information</Text>
-        </View>
-        <SettingsSection section={appSection} />
-        <View style={styles.sectionTitleContainer}>
-          <AntDesign name="user" height={12} color="white" />
-          <Text style={styles.sectionTitle}>Account Management</Text>
-        </View>
-        <SettingsSection section={accountSection} />
-      </ScrollView>
-    </View>
+    <>
+        <SafeAreaView style={{ backgroundColor: "#0C0C0C" }}>
+          {/* Settings options, split into sections */}
+          <ScrollView contentContainerStyle={styles.containerItems} style={styles.sectionContainer}>
+            <SettingsSection section={profileSection} />
+            <View style={styles.sectionTitleContainer}>
+              <AntDesign name="info" height={12} color="white" />
+              <Text style={styles.sectionTitle}>App Information</Text>
+            </View>
+            <SettingsSection section={appSection} />
+            <View style={styles.sectionTitleContainer}>
+              <AntDesign name="user" height={12} color="white" />
+              <Text style={styles.sectionTitle}>Account Management</Text>
+            </View>
+            <SettingsSection section={accountSection} />
+          </ScrollView>
+        </SafeAreaView>
+        {/* Navigation bar */}
+        <FooterNav navigation={navigation} />
+    </>
   );
 };
 
