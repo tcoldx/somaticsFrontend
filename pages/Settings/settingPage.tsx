@@ -41,21 +41,55 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
     }
   };
 
-  const settingsContent = [
-    { title: "Email", subTitle: email ? email : newEmail },
-    { title: "Username", subTitle: name ? name : newName },
-    { title: "Gender", subTitle: gender ? gender : newGender },
-    { title: "Workout goals", subTitle: null },
-    { title: "About You", subTitle: null },
-    { title: "Language", subTitle: null },
-    { title: "Contact Us", subTitle: null },
-    { title: "Delete Account", subTitle: null },
-    { title: "About Somatics", subTitle: null },
-    { title: "Log out", subTitle: null },
+  // Store data for settings sections as arrays of objects, with each array representing a section
+  const profileSection = [
+    { title: "Email", subtitle: email ? email : newEmail },
+    { title: "Username", subtitle: name ? name : newName },
+    { title: "Gender", subtitle: gender ? gender : newGender },
+    { title: "Language", subtitle: null },
+    { title: "About You", subtitle: null },
+    { title: "Workout goals", subtitle: null },
   ];
+
+  const appSection = [
+    { title: "Contact Us", subtitle: null },
+    { title: "About Somatics", subtitle: null },
+  ];
+
+  const accountSection = [
+    { title: "Delete Account", subtitle: null },
+    { title: "Log out", subtitle: null },
+  ];
+
+  // Function to map through a section of the settings and display each option consistently
+  function SettingsSection ({ section }) {
+      return (
+        <View style={styles.container}>
+          {section.map(({ title, subtitle }, index: number) => {
+            return (
+            <TouchableOpacity style={styles.option} onPress={() => handleClick(title)} key={title}>
+              <Text style={styles.title}>{title}</Text>
+              {/* If a subtitle exists, display it */}
+              {subtitle != null && <Text style={styles.subtitle}>{subtitle}</Text>}
+              {/* Create a divider on every element but the last one */}
+              {index < section.length - 1 && <View style={styles.hr} />}
+              {/* Display an appropriate icon based on the title */}
+              <AntDesign 
+                style={styles.optionIcon} 
+                name={title == "Log out" ? "logout" : title == "Delete Account" ? "delete" : "right"} 
+                size={20} 
+                color="rgba(255, 255, 255, 0.5)" 
+              />
+            </TouchableOpacity>
+          );
+          })}
+        </View>
+      )
+  }
 
   return (
     <View style={{ backgroundColor: "#242424" }}>
+      {/* Settings navigation */}
       <SafeAreaView
         style={{
           backgroundColor: "rgba(240,99,19,255)",
@@ -71,37 +105,19 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
       >
         <AntDesign name="left" size={24} color="white" />
       </TouchableOpacity>
-      <ScrollView contentContainerStyle={styles.container}>
-        {settingsContent.map(({ title, subTitle }) => {
-          return (
-            <TouchableOpacity onPress={() => handleClick(title)} key={title}>
-              <View
-                style={{
-                  paddingHorizontal: 20,
-                  paddingBottom: 20,
-                  paddingTop: 20,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 17,
-                    color: title === "Log out" ? "#ff726f" : "white",
-                  }}
-                >
-                  {title}
-                </Text>
-                {subTitle && (
-                  <Text style={{ color: "lightblue", marginTop: 5 }}>
-                    {subTitle}
-                  </Text>
-                )}
-              </View>
-              <View
-                style={{ height: 0.5, backgroundColor: "gray", width: width }}
-              ></View>
-            </TouchableOpacity>
-          );
-        })}
+      {/* Settings options, split into sections */}
+      <ScrollView contentContainerStyle={styles.containerItems} style={styles.sectionContainer}>
+        <SettingsSection section={profileSection} />
+        <View style={styles.sectionTitleContainer}>
+          <AntDesign name="info" height={12} color="white" />
+          <Text style={styles.sectionTitle}>App Information</Text>
+        </View>
+        <SettingsSection section={appSection} />
+        <View style={styles.sectionTitleContainer}>
+          <AntDesign name="user" height={12} color="white" />
+          <Text style={styles.sectionTitle}>Account Management</Text>
+        </View>
+        <SettingsSection section={accountSection} />
       </ScrollView>
     </View>
   );
