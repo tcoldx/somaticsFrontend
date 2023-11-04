@@ -89,7 +89,7 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
 
   return (
     <>
-        <SafeAreaView style={{ backgroundColor: "#0C0C0C" }}>
+        <SafeAreaView style={{ backgroundColor: "#0C0C0C", flex: 1 }}>
           {/* Settings options, split into sections */}
           <ScrollView contentContainerStyle={styles.containerItems} style={styles.sectionContainer}>
             <SettingsSection section={profileSection} />
