@@ -1,10 +1,10 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, ViewStyle } from "react-native";
 const { width, height } = Dimensions.get("screen");
-export const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-  },
 
+export const Container = (prop): ViewStyle => ({
+  display: prop ? "none" : "flex",
+});
+export const styles = StyleSheet.create({
   innerContainer: {
     display: "flex",
     padding: 10,
