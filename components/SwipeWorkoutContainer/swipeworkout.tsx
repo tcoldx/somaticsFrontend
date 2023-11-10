@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useState,
+  useRef,
 } from "react";
 import {
   Dimensions,
@@ -51,13 +52,20 @@ const SwipeWorkout = React.forwardRef(
     }: Props,
     ref
   ) => {
+    const flatRef = useRef<FlatList>(null);
+
     const closeHeight = height - 200;
     const percentage = parseFloat(snapTo.replace("%", "")) / 100;
     const openHeight = height - height * percentage;
     const topAnimation = useSharedValue(closeHeight);
     const [opened, setOpened] = useState(false);
     const context = useSharedValue(0);
-
+    useEffect(() => {
+      flatRef.current?.scrollToIndex({
+        index: position,
+        animated: true,
+      });
+    }, [position]);
     const expand = useCallback(() => {
       "worklet";
       topAnimation.value = withTiming(openHeight);
@@ -65,8 +73,6 @@ const SwipeWorkout = React.forwardRef(
 
     const close = useCallback(() => {
       "worklet";
-      console.log("currents:", currentLabel);
-
       topAnimation.value = withTiming(closeHeight);
     }, [closeHeight, topAnimation]);
 
@@ -128,61 +134,77 @@ const SwipeWorkout = React.forwardRef(
       <GestureDetector gesture={pan}>
         <Animated.View style={[styles.container, animationStyle]}>
           <View style={styles.navTouchBar}></View>
-          {!opened ? (
-            <WorkoutActive
-              position={position}
-              timeStart={start}
-              stopTime={stop}
-              data={currentLabel}
-              workouts={currentLabel}
-            />
-          ) : (
-            <View
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignContent: "center",
-                height: "100%",
-                width: "100%",
-              }}
-            >
-              <FlatList
-                horizontal
-                snapToAlignment="center"
-                pagingEnabled={true}
-                scrollEnabled={true}
-                data={currentLabel}
-                renderItem={({ item, index }: any) => {
-                  return <CollapsedList item={item} index={index} />;
-                }}
-              />
-            </View>
-          )}
 
+          <WorkoutActive
+            position={position}
+            timeStart={start}
+            stopTime={stop}
+            opened={opened}
+            data={currentLabel}
+            workouts={currentLabel}
+          />
+          {/* this is the container for both flatlist and buttons */}
           <View
             style={{
-              display: "flex",
+              flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-evenly",
-              position: "absolute",
-              bottom: 0,
-              marginBottom: 35,
-              width: "90%",
+              justifyContent: "center",
             }}
           >
-            <TouchableOpacity
-              activeOpacity={1}
-              style={styles.prevStep}
-              onPress={() => {
-                if (position > 0) {
-                  setPosition(position - 1);
-                }
+            {/* this is the flatlist */}
+
+            <FlatList
+              horizontal
+              ref={flatRef}
+              snapToAlignment="center"
+              initialScrollIndex={0}
+              pagingEnabled={true}
+              scrollEnabled={false}
+              data={currentLabel}
+              renderItem={({ item }: any) => {
+                return <CollapsedList item={item} opened={opened} />;
               }}
+            />
+
+            {/* this is the container for both buttons */}
+            <View
+              style={
+                !opened
+                  ? {
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-evenly",
+                      position: "absolute",
+                      bottom: 0,
+                      marginBottom: 35,
+                      width: "90%",
+                    }
+                  : {
+                      width: "50%",
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: 10,
+                      marginRight: 15,
+                    }
+              }
             >
-              <AntDesign name="left" size={30} color="#EF6F13" />
-            </TouchableOpacity>
-            {!opened && (
+              {/* this is the container for the left arrow button  */}
+              <TouchableOpacity
+                activeOpacity={1}
+                style={styles.prevStep}
+                onPress={() => {
+                  if (position > 0) {
+                    setPosition(position - 1);
+                  }
+                }}
+              >
+                <AntDesign name="left" size={30} color="#EF6F13" />
+              </TouchableOpacity>
+              {/* this is the container for the next button  */}
               <TouchableOpacity
                 activeOpacity={1}
                 style={styles.trainingButtonContainer}
@@ -194,7 +216,7 @@ const SwipeWorkout = React.forwardRef(
                     : "Next Workout"}
                 </Text>
               </TouchableOpacity>
-            )}
+            </View>
           </View>
         </Animated.View>
       </GestureDetector>

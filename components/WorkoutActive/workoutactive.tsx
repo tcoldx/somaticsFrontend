@@ -2,18 +2,20 @@ import { View, Text } from "react-native";
 import { Stopwatch } from "react-native-stopwatch-timer";
 import React from "react";
 import StepIndicator from "react-native-step-indicator";
-import { styles } from "./workoutactive.styles";
+import { styles, Container } from "./workoutactive.styles";
 interface workoutProps {
   position: number;
   timeStart: boolean;
   stopTime: boolean;
   workouts: any;
+  opened: boolean;
   data: any;
 }
 const WorkoutActive = ({
   position,
   timeStart,
   stopTime,
+  opened,
   workouts,
   data,
 }: workoutProps) => {
@@ -42,7 +44,7 @@ const WorkoutActive = ({
   };
   const labeler = workouts.map((el: any) => el.name);
   return (
-    <View style={styles.container}>
+    <View style={Container(opened)}>
       <View style={styles.innerContainer}>
         <View style={styles.stepIndContainer}>
           <StepIndicator

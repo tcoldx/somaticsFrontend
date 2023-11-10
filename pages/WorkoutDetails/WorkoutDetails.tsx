@@ -32,7 +32,6 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [start, setStart] = useState<boolean>(false);
   const [stop, setStop] = useState<boolean>(false);
   const [workoutDB, setWorkoutDB] = useState<any>([]);
-  const [day, setDay] = useState<number>(0);
   const handleStart = () => {
     setOpen(true);
     setStart(true);
@@ -40,13 +39,12 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const handleStep = () => {
     if (position === currentLabel.length - 1) {
       setPosition(0);
-      setDay(day + 1);
       setStop(true);
       return;
     }
     setPosition(position + 1);
   };
-  const currentLabel = details.workouts[day].names;
+  const currentLabel = details.workouts[0].names;
   const timeStamp = firebase.firestore.FieldValue.serverTimestamp();
 
   const handleDone = (): void => {
