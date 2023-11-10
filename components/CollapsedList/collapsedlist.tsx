@@ -1,23 +1,44 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Dimensions, TouchableOpacity } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import { Styles } from "./collapsedlist.styles";
 
 interface Props {
   item: any;
-  index: number;
+  opened: boolean;
 }
 
-const CollapsedList = ({ item, index }: Props) => {
+const { height, width } = Dimensions.get("screen");
+
+const CollapsedList = ({ item, opened }: Props) => {
   return (
     <View
       style={{
-        display: "flex",
-        justifyContent: "center",
-        alignContent: "flex-start",
-        height: "100%",
-        width: "100%",
+        height: "auto",
+        width,
+        display: opened ? "flex" : "none",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
       }}
     >
-      <Text style={{ color: "white" }}>yo</Text>
+      <View
+        style={{
+          display: "flex",
+          width: "60%",
+          justifyContent: "space-between",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View style={Styles.leftSide}>
+          <Text style={{ color: "white", fontWeight: "bold" }}>
+            {item.name}
+          </Text>
+          <Text style={{ marginTop: 5, color: "gray" }}>Sets: {item.sets}</Text>
+          <Text style={{ marginTop: 5, color: "gray" }}>Reps: {item.reps}</Text>
+        </View>
+      </View>
     </View>
   );
 };
