@@ -108,10 +108,10 @@ const WorkoutDetailItem = ({
             gap: 10,
           }}
         >
-          {details?.targets?.map((item, idx): any => {
+          {details?.targets?.map((item: any, idx: number): any => {
             return (
               <View
-                key={idx}
+                key={item}
                 style={{
                   backgroundColor: "#242424",
                   borderRadius: 8,

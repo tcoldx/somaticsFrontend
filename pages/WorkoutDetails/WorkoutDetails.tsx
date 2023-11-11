@@ -20,6 +20,7 @@ import SwipeWorkout from "../../components/SwipeWorkoutContainer/swipeworkout";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetMethods } from "../../components/SwipeWorkoutContainer/swipeworkout";
 import { Button } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 interface DetailProps {
   details: any;
   navigation: any;
@@ -31,6 +32,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [position, setPosition] = useState<number>(0);
   const [start, setStart] = useState<boolean>(false);
   const [stop, setStop] = useState<boolean>(false);
+  const [currentDay, setCurrentDay] = useState<number>(0);
   const [workoutDB, setWorkoutDB] = useState<any>([]);
   const handleStart = () => {
     setOpen(true);
@@ -40,11 +42,24 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     if (position === currentLabel.length - 1) {
       setPosition(0);
       setStop(true);
+      const nextDay = currentDay + 1;
+      {
+        /** this code below is the problem:  */
+      }
+      const updatedDay =
+        currentDay == details.workouts.length - 1 ? 0 : nextDay;
+
+      setCurrentDay(updatedDay);
+      saveCurrentDay(updatedDay);
+
       return;
     }
     setPosition(position + 1);
   };
-  const currentLabel = details.workouts[0].names;
+  useEffect(() => {
+    loadCurrentDay();
+  }, []);
+  const currentLabel = details.workouts[currentDay && currentDay].names;
   const timeStamp = firebase.firestore.FieldValue.serverTimestamp();
 
   const handleDone = (): void => {
@@ -68,6 +83,24 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     }
   };
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
+  const loadCurrentDay = async () => {
+    try {
+      const savedDay = await AsyncStorage.getItem("currentDay");
+      if (savedDay !== null) {
+        setCurrentDay(parseInt(savedDay, 10));
+      }
+    } catch (error) {
+      console.error("Error loading current day:", error);
+    }
+  };
+
+  const saveCurrentDay = async (day: number) => {
+    try {
+      await AsyncStorage.setItem("currentDay", day.toString());
+    } catch (error) {
+      console.error("Error saving current day:", error);
+    }
+  };
 
   return (
     <SafeAreaView
@@ -148,6 +181,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           <ScrollView style={{ height: "100%" }}>
             <FlatList
               horizontal
+              initialScrollIndex={currentDay}
               snapToAlignment="center"
               pagingEnabled={true}
               scrollEnabled={true}
@@ -178,7 +212,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         <>
           <SwipeWorkout
             ref={bottomSheetRef}
-            snapTo={"70%"}
+            snapTo={"90%"}
             stop={stop}
             position={position}
             setPosition={setPosition}

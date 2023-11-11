@@ -202,7 +202,7 @@ const Home = ({
               <Text
                 style={{ color: "white", fontWeight: "bold", fontSize: 23 }}
               >
-                {currentSelect == "Featured" && "Programs"}
+                {currentSelect == "Featured" && "Featured"}
               </Text>
             </View>
           </View>

@@ -53,7 +53,7 @@ const WorkoutActive = ({
             direction="vertical"
             labels={labeler}
             stepCount={data.length}
-            renderLabel={({ position, label, currentPosition, stepStatus }) => {
+            renderLabel={({ position }) => {
               return (
                 <View style={styles.labelContainer}>
                   <Text style={styles.label}>{data[position].name}</Text>
