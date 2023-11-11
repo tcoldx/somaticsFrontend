@@ -6,6 +6,7 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import { home, header } from "./home.styles";
 import {
@@ -18,9 +19,13 @@ import { AntDesign } from "@expo/vector-icons";
 import SearchBar from "../../components/Searchbar/Searchbar";
 import CollectionList from "../../components/CollectionList/CollectionList";
 import FooterNav from "../../components/FooterNav/footernav";
-import CurrentProgramList from "../../components/CurrentProgramList/currentprogramlist";
 import Notification from "../../components/Notification/notification";
 import Payscreen from "../../components/Payscreen/Payscreen";
+import {
+  durationTypes,
+  sectionTypes,
+  bodyPartTypes,
+} from "../../utils/workoutTypesHome";
 
 interface props {
   workoutDetails: any;
@@ -37,7 +42,7 @@ const Home = ({
   userInfo,
 }: props): JSX.Element => {
   const [workoutList, setWorkoutList] = useState<any[]>([]);
-  const [currentSelect, setCurrentSelect] = useState<any>("All");
+  const [currentSelect, setCurrentSelect] = useState<any>("Featured");
   // State to hold whether the payscreen is visible
   const [payscreenIsVisible, setPayscreenIsVisible] = useState<boolean>(false);
   const [openNotif, setOpenNotif] = useState<boolean>(false);
@@ -67,13 +72,6 @@ const Home = ({
       setWorkoutList(HIIT);
     }
   };
-
-  const sectionTypes = [
-    { name: "All", id: 1 },
-    { name: "Boxing", id: 2 },
-    { name: "Thai", id: 3 },
-    { name: "HIIT", id: 4 },
-  ];
 
   const handleItem = (item: string) => {
     workoutDetails(item);
@@ -150,7 +148,7 @@ const Home = ({
         <View style={header.container}>
           <SearchBar />
         </View>
-
+        {/* section header container*/}
         <View style={home(width, height).subheading}>
           {sectionTypes.map((item) => {
             return (
@@ -204,33 +202,152 @@ const Home = ({
               <Text
                 style={{ color: "white", fontWeight: "bold", fontSize: 23 }}
               >
-                Programs
-              </Text>
-            </View>
-            <View>
-              <Text
-                style={{ color: "#EF6F13", fontWeight: "bold", fontSize: 14 }}
-              >
-                See all
+                {currentSelect == "Featured" && "Programs"}
               </Text>
             </View>
           </View>
-          <ScrollView
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 20,
-              width: "90%",
-            }}
-            bounces={false}
-          >
-            <CollectionList
-              itemRetrievalFunc={handleItem}
-              list={workoutList}
-              navigation={navigation}
-            />
-          </ScrollView>
-          <View
+          {/** program list container */}
+
+          {currentSelect == "Featured" && (
+            <ScrollView
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 20,
+                width: "90%",
+              }}
+              bounces={false}
+            >
+              <CollectionList
+                itemRetrievalFunc={handleItem}
+                list={workoutList}
+                navigation={navigation}
+              />
+            </ScrollView>
+          )}
+          {/** if workouts have been chosen */}
+          {currentSelect == "Workouts" && (
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                width: "87%",
+                marginTop: 10,
+                justifyContent: "space-evenly",
+                height: "100%",
+              }}
+            >
+              <View
+                style={{ display: "flex", flexDirection: "column", gap: 10 }}
+              >
+                <Text style={{ fontWeight: "bold", color: "white" }}>
+                  By Type
+                </Text>
+                <ScrollView
+                  style={{
+                    flex: 1,
+                  }}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                >
+                  <View style={home(width, height).workoutTypeWrap}>
+                    {sectionTypes.map((el) => {
+                      return (
+                        <View
+                          style={home(null, null).workoutTypeContainer}
+                          key={el.id}
+                        >
+                          <Text style={{ color: "white", fontWeight: "bold" }}>
+                            {el.name}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </ScrollView>
+              </View>
+              {/*end of list one*/}
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                }}
+              >
+                <Text style={{ fontWeight: "bold", color: "white" }}>
+                  By Duration
+                </Text>
+                <ScrollView
+                  style={{
+                    flex: 1,
+                  }}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                >
+                  <View style={home(width, height).workoutTypeWrap}>
+                    {durationTypes.map((el) => {
+                      return (
+                        <View
+                          style={home(width, height).workoutTypeContainer}
+                          key={el.id}
+                        >
+                          <Text style={{ color: "white", fontWeight: "bold" }}>
+                            {el.name}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </ScrollView>
+              </View>
+              {/**end of list two */}
+              <View
+                style={{ display: "flex", flexDirection: "column", gap: 10 }}
+              >
+                <Text style={{ fontWeight: "bold", color: "white" }}>
+                  By Body Part
+                </Text>
+                <ScrollView
+                  style={{
+                    flex: 1,
+                  }}
+                  showsHorizontalScrollIndicator={false}
+                  horizontal
+                >
+                  <View style={home(width, height).workoutTypeWrap}>
+                    {bodyPartTypes.map((el) => {
+                      return (
+                        <View
+                          style={home(null, null).workoutTypeContainer}
+                          key={el.id}
+                        >
+                          <Text style={{ color: "white", fontWeight: "bold" }}>
+                            {el.name}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </ScrollView>
+              </View>
+            </View>
+          )}
+          {currentSelect == "Programs" && (
+            <View
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                height: height / 3,
+              }}
+            >
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Coming Soon!
+              </Text>
+            </View>
+          )}
+          {/* <View
             style={{
               width: width - 35,
               marginTop: 40,
@@ -240,7 +357,7 @@ const Home = ({
               Current Programs
             </Text>
             <CurrentProgramList />
-          </View>
+          </View> */}
         </ScrollView>
         <FooterNav navigation={navigation} />
       </SafeAreaView>
