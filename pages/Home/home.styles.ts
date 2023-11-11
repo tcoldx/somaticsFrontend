@@ -1,4 +1,5 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+const { height, width } = Dimensions.get("screen");
 
 export const home = (width: number, height: number) =>
   StyleSheet.create({
@@ -14,12 +15,31 @@ export const home = (width: number, height: number) =>
       gap: 10,
     },
 
+    workoutTypeContainer: {
+      display: "flex",
+      justifyContent: "space-around",
+      alignItems: "center",
+      borderRadius: 5,
+      height: 100,
+      width: 130,
+      backgroundColor: "#24252d",
+    },
+
+    workoutTypeWrap: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-around", // or 'space-around' for more spacing
+      alignItems: "center",
+      padding: 1,
+      gap: 10,
+    },
+
     subheading: {
       width: "90%",
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "space-evenly",
       marginTop: 27,
     },
 
@@ -95,8 +115,9 @@ export const header = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    height: 25,
-    width: 60,
+    height: 40,
+    padding: 10,
+    width: "30%",
   },
 
   selectedOption: {
@@ -105,8 +126,9 @@ export const header = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    height: 25,
-    width: 60,
+    height: 40,
+    padding: 10,
+    width: "30%",
   },
 
   currentselect: {
