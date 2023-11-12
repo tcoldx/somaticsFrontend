@@ -59,7 +59,6 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
   }
   return (
     <SafeAreaView style={login.container}>
-      <Text style={{ fontSize: 30, fontWeight: "bold", color: "white" }}></Text>
       <View style={login.loginContentContainer}>
         <View
           style={{
@@ -68,22 +67,14 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
             alignItems: "center",
             justifyContent: "center",
             width: width,
-            gap: -20,
+            marginBottom: 40,
           }}
         >
           <Image source={SomaLogo} style={login.logo} />
           <Text
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: "bold",
-              marginRight: 50,
-              fontSize: 22,
-              color: "black",
-            }}
+            style={login.title}
           >
-            Login
+            Somatics
           </Text>
         </View>
         <View
@@ -94,6 +85,12 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
           }}
         >
           <View style={login.inputWrap}>
+            <AntDesign
+              name="mail"
+              color="gray"
+              size={18}
+              style={{ paddingLeft: 10 }}
+            />
             <TextInput
               style={login.input}
               placeholder="Email"
@@ -101,26 +98,20 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
               onChangeText={(e) => setEmail(e)}
               placeholderTextColor={"gray"}
             />
-            <AntDesign
-              name="mail"
-              color="gray"
-              size={18}
-              style={{ paddingRight: 10 }}
-            />
           </View>
           <View style={login.inputWrapSecond}>
+            <AntDesign
+              name="lock"
+              color="gray"
+              size={22}
+              style={{ paddingLeft: 10 }}
+            />
             <TextInput
               onChangeText={(e) => setPassword(e)}
               style={login.input}
               value={password}
               placeholder="Password"
               placeholderTextColor={"gray"}
-            />
-            <AntDesign
-              name="lock"
-              color="gray"
-              size={22}
-              style={{ paddingRight: 10 }}
             />
           </View>
           <View
@@ -141,7 +132,6 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
             </Text>
           </View>
         </View>
-        <View style={login.buttonContainer}>
           <TouchableOpacity
             onPress={handleLoginAuth}
             style={login.loginButtonWrap}
@@ -151,14 +141,12 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={login.loginButtonWrapSecond}
+            style={login.goBack}
             onPress={() => navigation.navigate("landing")}
           >
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 15 }}>
-              Go back
-            </Text>
+            <Text style={login.go}>Go</Text>
+            <Text style={login.back}>back</Text>
           </TouchableOpacity>
-        </View>
       </View>
     </SafeAreaView>
   );
