@@ -20,6 +20,7 @@ export const login = StyleSheet.create({
     height: 50,
     paddingLeft: 15,
     width: width - 55,
+    color: "#ffffff",
   },
 
   inputWrapSecond: {
@@ -30,7 +31,7 @@ export const login = StyleSheet.create({
     width: width - 25,
     margin: 10,
     height: 50,
-    borderColor: "gray",
+    borderColor: "rgba(240,99,19,255)",
     borderWidth: 1,
     borderRadius: 10,
   },
@@ -59,8 +60,17 @@ export const login = StyleSheet.create({
   logo: {
     display: "flex",
     alignItems: "center",
-    width: 85,
-    height: 85,
+    width: 50,
+    height: 50,
+    marginRight: 0,
+  },
+
+  title: {
+    fontSize: 40,
+    fontWeight: "600",
+    marginLeft: 0,
+    marginRight: 25,
+    color: "#ffffff",
   },
 
   loginButtonWrap: {
@@ -71,6 +81,7 @@ export const login = StyleSheet.create({
     height: 55,
     justifyContent: "center",
     borderRadius: 10,
+    marginTop: 20,
   },
 
   buttonContainer: {
@@ -96,13 +107,12 @@ export const login = StyleSheet.create({
 
   loginContentContainer: {
     position: "absolute",
-    backgroundColor: "whitesmoke",
     borderRadius: 10,
-    height: height - 400,
+    height: height,
     width: width - 15,
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-evenly",
+    justifyContent: "center",
   },
 
   inputWrap: {
@@ -113,8 +123,24 @@ export const login = StyleSheet.create({
     width: width - 25,
     margin: 10,
     height: 50,
-    borderColor: "gray",
+    borderColor: "rgba(240, 99, 19, 255)",
     borderWidth: 1,
     borderRadius: 10,
+  },
+    
+  goBack: {
+    position: "absolute",
+    bottom: 20,
+    flexDirection: "row",
+  },
+
+  go: {
+    color: "#ffffff",
+  },
+    
+  back: {
+    color: "#ffffff",
+    fontWeight: "600",
+    marginLeft: 4,
   },
 });

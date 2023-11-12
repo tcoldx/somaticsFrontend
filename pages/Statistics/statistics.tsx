@@ -43,6 +43,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
         id: doc.id,
         workoutId: copyOfWorkout.workoutId,
         date: copyOfWorkout.createdAt,
+        day: copyOfWorkout.day,
       });
     });
     setWorkoutHistory(list);
@@ -262,7 +263,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
                       {workout.name}
                     </Text>
                     <Text style={{ color: "gray", fontWeight: "bold" }}>
-                      Day: 1
+                      Day: {workout.day}
                     </Text>
                   </View>
                   <AntDesign
