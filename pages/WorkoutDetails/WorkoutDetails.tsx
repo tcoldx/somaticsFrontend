@@ -17,9 +17,7 @@ import LevelUpPopUp from "../../components/LevelUpPopup/levelupPopUp";
 import { firebase, auth } from "../../firebase";
 import WorkoutDetailItem from "../../components/WorkoutDetailItem/workoutdetailitem";
 import SwipeWorkout from "../../components/SwipeWorkoutContainer/swipeworkout";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetMethods } from "../../components/SwipeWorkoutContainer/swipeworkout";
-import { Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 interface DetailProps {
   details: any;
@@ -44,10 +42,10 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
       setStop(true);
       const nextDay = currentDay + 1;
       {
-        /** this code below is the problem:  */
+        /** this code below is fixed! :D  */
       }
-      const updatedDay =
-        currentDay == details.workouts.length - 1 ? 0 : nextDay;
+      const lastIndex = details.workouts.length - 1;
+      const updatedDay = currentDay >= lastIndex ? 0 : nextDay;
 
       setCurrentDay(updatedDay);
       saveCurrentDay(updatedDay);
@@ -58,9 +56,11 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   };
   useEffect(() => {
     loadCurrentDay();
-  }, []);
-  const currentLabel = details.workouts[currentDay && currentDay].names;
+  }, [currentDay]);
+
+  const currentLabel = details.workouts[currentDay].names;
   const timeStamp = firebase.firestore.FieldValue.serverTimestamp();
+  const flatListRef = useRef<FlatList>(null);
 
   const handleDone = (): void => {
     if (details) {
@@ -70,6 +70,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         id: userId,
         createdAt: timeStamp,
         workoutId: `${Math.random()}-${Math.random()}`,
+        day: currentDay,
       };
 
       const workoutRef = firebase.firestore().collection("programs");
@@ -85,7 +86,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
   const loadCurrentDay = async () => {
     try {
-      const savedDay = await AsyncStorage.getItem("currentDay");
+      const savedDay = await AsyncStorage.getItem(`currentDay_${details.id}`);
       if (savedDay !== null) {
         setCurrentDay(parseInt(savedDay, 10));
       }
@@ -96,7 +97,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
 
   const saveCurrentDay = async (day: number) => {
     try {
-      await AsyncStorage.setItem("currentDay", day.toString());
+      await AsyncStorage.setItem(`currentDay_${details.id}`, day.toString());
     } catch (error) {
       console.error("Error saving current day:", error);
     }
@@ -182,11 +183,19 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
             <FlatList
               horizontal
               initialScrollIndex={currentDay}
+              onScrollToIndexFailed={({ index, averageItemLength }) => {
+                // Layout doesn't know the exact location of the requested element.
+                // Falling back to calculating the destination manually
+                flatListRef.current?.scrollToOffset({
+                  offset: index * averageItemLength,
+                  animated: true,
+                });
+              }}
               snapToAlignment="center"
               pagingEnabled={true}
               scrollEnabled={true}
               data={details.workouts}
-              keyExtractor={(item) => item.key}
+              keyExtractor={(item) => item.id}
               renderItem={({ item, index }: any) => {
                 return (
                   <WorkoutDetailItem
