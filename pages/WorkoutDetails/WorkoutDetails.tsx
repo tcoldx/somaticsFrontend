@@ -31,6 +31,10 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [start, setStart] = useState<boolean>(false);
   const [stop, setStop] = useState<boolean>(false);
   const [currentDay, setCurrentDay] = useState<number>(0);
+  const [minutes, setMinutes] = useState<number>(0);
+  const [seconds, setSeconds] = useState<number>(0);
+  const [hours, setHours] = useState<number>(0);
+  const [savedTime, setSavedTime] = useState<any>("");
   const [workoutDB, setWorkoutDB] = useState<any>([]);
   const handleStart = () => {
     setOpen(true);
@@ -54,21 +58,50 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     }
     setPosition(position + 1);
   };
+
+  const calculate_calories_burned = () => {};
+  // the algorithm that will get the timer to work!
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (seconds == 59) {
+        setMinutes((prevMinutes) => prevMinutes + 1);
+        setSeconds(0);
+      } else {
+        setSeconds((prevSecs) => prevSecs + 1);
+      }
+      if (minutes == 59) {
+        setHours((prevHours) => prevHours + 1);
+        setMinutes(0);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [seconds]);
+
   useEffect(() => {
     loadCurrentDay();
-  }, [currentDay, position]);
+  }, []);
 
   const currentLabel = details.workouts[currentDay].names;
   const timeStamp = firebase.firestore.FieldValue.serverTimestamp();
   const flatListRef = useRef<FlatList>(null);
-
+  useEffect(() => {
+    if (savedTime) {
+      console.log("saved timesaa!: ", savedTime);
+    }
+  }, [savedTime]);
   const handleDone = (): void => {
+    // call stop time cause that means the workout is finished
+    handleStopTime();
+    console.log("savedTime!: ", savedTime);
+    var workout_in_minutes = Math.round(hours * 60 + minutes + seconds / 60);
     if (details) {
       const userId = auth.currentUser.uid;
       const data = {
         header: details,
         id: userId,
         createdAt: timeStamp,
+        workoutTime: savedTime,
+        workout_in_minutes,
         workoutId: `${Math.random()}-${Math.random()}`,
         day: currentDay == 0 ? "1" : currentDay,
       };
@@ -102,6 +135,20 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     }
   };
 
+  // function to save the time, and then we send it to statistics for eval!
+  const handleStopTime = () => {
+    // if stop is true, finished workout is selected
+    if (stop) {
+      setSavedTime((prevSavedTime: any) => {
+        const currentTime = `${hours}:${minutes}:${seconds}`;
+        const newSavedTime = prevSavedTime
+          ? `${prevSavedTime}, ${currentTime}`
+          : currentTime;
+        return newSavedTime;
+      });
+    }
+  };
+
   return (
     <SafeAreaView
       style={{
@@ -129,23 +176,49 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           />
         )}
       </View>
+      {/* top content container like a navbar that contains the timer and the back button */}
       <View
         style={{
           position: "absolute",
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "space-between",
           top: "5%",
-          left: "5%",
-          width: width,
-          zIndex: 3,
+          paddingHorizontal: 16,
+          width: "100%",
+          zIndex: 5,
         }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("home");
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
-          style={styles.backButton}
         >
-          <AntDesign name="left" size={24} color="white" />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("home");
+            }}
+            style={styles.backButton}
+          >
+            <AntDesign name="left" size={24} color="white" />
+          </TouchableOpacity>
+          {/* this is the timer container for the workout time */}
+          {open && (
+            <View style={styles.timer_background}>
+              <View style={styles.TimerSymbol}></View>
+              <Text style={{ color: "white", fontWeight: "bold" }}>{`${
+                hours < 10 ? "0" : ""
+              }${hours}:${minutes < 10 ? "0" : ""}${minutes}:${
+                seconds < 10 ? "0" : ""
+              }${seconds}`}</Text>
+            </View>
+          )}
+        </View>
       </View>
       {/* the container and conditional render for the video object!!*/}
       {open &&

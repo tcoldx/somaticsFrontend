@@ -42,6 +42,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
         calories: copyOfWorkout.header.calsBurned,
         id: doc.id,
         workoutId: copyOfWorkout.workoutId,
+        workout_in_minutes: copyOfWorkout.workout_in_minutes,
         date: copyOfWorkout.createdAt,
         day: copyOfWorkout.day,
       });
@@ -99,6 +100,13 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   const calories = workoutHistory.map((el: any) => el.calories);
   let sum = 0;
   const totalCalories = calories.reduce(
+    (acc: number, curr: number) => acc + curr,
+    sum
+  );
+  const minutes_from_backend = workoutHistory.map(
+    (el) => el.workout_in_minutes
+  );
+  const totalMinutes = minutes_from_backend.reduce(
     (acc: number, curr: number) => acc + curr,
     sum
   );
@@ -189,7 +197,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
             }}
           >
             <Text style={{ fontWeight: "bold", fontSize: 15, color: "white" }}>
-              0m
+              {totalMinutes}m
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 13, color: "gray" }}>
               Total Time
