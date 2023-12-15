@@ -2,8 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 const { width, height } = Dimensions.get("screen");
 export const styles = StyleSheet.create({
   backButton: {
-    position: "absolute",
-    zIndex: 4,
+    zIndex: 6,
     backgroundColor: "#101010",
     borderWidth: 1,
     borderColor: "rgba(128,128,128, .2)",
@@ -117,6 +116,27 @@ export const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     height: 5,
+  },
+
+  TimerSymbol: {
+    backgroundColor: "red",
+    borderRadius: 100,
+    width: 10,
+    height: 10,
+    margin: 8,
+  },
+
+  timer_background: {
+    backgroundColor: "#101010",
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    fontWeight: "bold",
+    width: 150,
+    height: 50,
+    borderRadius: 10,
+    zIndex: 4,
   },
 
   trainingButtonContainer: {
