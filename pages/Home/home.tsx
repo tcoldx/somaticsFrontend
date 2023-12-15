@@ -6,15 +6,9 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
-  FlatList,
 } from "react-native";
 import { home, header } from "./home.styles";
-import {
-  boxingWorkouts,
-  HIIT,
-  All,
-  muayThaiWorkouts,
-} from "../../utils/workouts";
+import { All } from "../../utils/workouts";
 import { AntDesign } from "@expo/vector-icons";
 import SearchBar from "../../components/Searchbar/Searchbar";
 import CollectionList from "../../components/CollectionList/CollectionList";
@@ -58,18 +52,6 @@ const Home = ({
 
     if (curr === "All") {
       setWorkoutList(All);
-    }
-
-    if (curr === "Boxing") {
-      setWorkoutList(boxingWorkouts);
-    }
-
-    if (curr === "Thai") {
-      setWorkoutList(muayThaiWorkouts);
-    }
-
-    if (curr === "HIIT") {
-      setWorkoutList(HIIT);
     }
   };
 

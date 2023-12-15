@@ -5,382 +5,48 @@ import heavyBag from "./heavybag.jpg";
 import muayFit from "./muaythai.jpg";
 import armyFit from "./armyfit.jpg";
 import bodyCard from "./bodycard.jpg";
-import squat from "./videoCache/bbs.mp4";
+import squat from "./videoCache/sqauts.mp4";
 import militaryShoulder from "./videoCache/militaryPress.mp4";
 import russian from "./videoCache/russians_twists.mp4";
 import slams from "./videoCache/slams.mp4";
-export const boxingWorkouts = [
-  {
-    name: "Boxing Fitness",
-    category: "Boxing",
-    id: 1,
-    time: "40-60",
-    difficulty: "Medium",
-    targets: ["Chest", "Arms", "Shoulders", "Back", "Legs"],
-    img: boxImg,
-    calsBurned: 243,
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
-    workouts: [
-      {
-        names: [
-          { name: "Barbell Squats", sets: 3, reps: "8-10", vid: squat },
-          {
-            name: "Pull-Ups or Lat Pulldowns",
-            sets: 3,
-            reps: "8-10",
-            vid: latPulls,
-          },
-          {
-            name: "Standing Military Press",
-            sets: 3,
-            reps: "8-10",
-            vid: militaryShoulder,
-          },
-          { name: "Medicine Ball Slams", sets: 3, reps: "10-12", vid: slams },
-          { name: "Russian Twists", sets: 3, reps: "10-12", vid: russian },
-        ],
-      },
-      {
-        names: [
-          { name: "Jump Rope", sets: 1, reps: 5 },
-          {
-            name: "Circuit Training",
-            reps: 1,
-            sets: 3,
-            subCategory: [
-              { name: "Burpees", sets: 1, reps: 10 },
-              { name: "Mountain Climbers", sets: 1, reps: 20 },
-              { name: "High Knees", sets: 1, reps: "30 seconds" },
-              { name: "Plank", sets: 1, reps: "45 seconds" },
-              { name: "Bicycle Crunches", sets: 1, reps: 20 },
-            ],
-          },
-          {
-            name: "Interval Sprints",
-            reps: "30 seconds",
-            sets: 1,
-
-            subCategory: [
-              { name: "Sprint", reps: 20 },
-              { name: "Rest", reps: 40 },
-              { name: "Repeat", reps: "10-15" },
-            ],
-          },
-        ],
-      },
-      {
-        names: [
-          {
-            name: "Agility Ladder Drills",
-            sets: "3-4",
-            reps: "30-40",
-            subCategory: [
-              { name: "Lateral Quick Feet" },
-              { name: "Single-leg lateral hops" },
-              { name: "Box drill" },
-            ],
-          },
-          { name: "Box Jumps", sets: 3, reps: "8-10" },
-          {
-            name: "Medicine Ball Rotational Throws",
-            sets: 3,
-            reps: "8-10",
-          },
-          { name: "Pull-Ups or Lat Pulldowns", set: 3, reps: "8-10" },
-          { name: "Medicine Ball Slams", sets: 3, reps: "10 - 12" },
-        ],
-      },
-      {
-        names: [
-          { name: "Barbell Squats", sets: 3, reps: "8-10" },
-          { name: "Pull-Ups or Lat Pulldowns", set: 3, reps: "8 - 10" },
-          { name: "Standing Military Press", sets: 3, reps: "8 - 10" },
-          { name: "Medicine Ball Slams", sets: 3, reps: "10 - 12" },
-          { name: "Russian Twists", sets: 3, reps: "10 - 12" },
-        ],
-      },
-      {
-        names: [
-          {
-            name: "Light Jogging or Cycling",
-            sets: 1,
-            reps: "20-30 minutes",
-          },
-          {
-            name: "Dynamic Stretching Routine",
-            sets: 3,
-            reps: "10 minutes",
-          },
-          { name: "Foam Rolling", sets: 1, reps: "1 mins" },
-        ],
-      },
-    ],
-    tasks: 5,
-  },
-  {
-    name: "Shredded Intense",
-    category: "Boxing",
-    id: 2,
-    difficulty: "Basic",
-    time: "35-45",
-    calsBurned: 210,
-    targets: ["chest", "arms", "shoulders", "back"],
-    img: Legacy,
-
-    workouts: [
-      {
-        names: [
-          { name: "Shadow Boxing", reps: "5 mins", sets: 3 },
-          { name: "Push-Ups", reps: "10-15", sets: 3 },
-          { name: "Russian Twists", reps: "8-10", sets: 3 },
-          { name: "Burpees", reps: "8-10", sets: 3 },
-          { name: "Mountian Climbers", reps: "10-15", sets: 3 },
-        ],
-      },
-      {
-        names: [
-          { name: "Jump Rope", reps: "5 minutes", sets: 1 },
-          { name: "Shadow Boxing Intense", reps: "3 minutes", sets: 3 },
-          { name: "Pylometric Lunges", reps: "10-15 reps", sets: 3 },
-          { name: "Plank Jacks", sets: 3, reps: "10-15 reps" },
-          { name: "Side-to-Side Sprawls", sets: 3, reps: "8-10 reps" },
-        ],
-      },
-      {
-        names: [
-          { name: "Shadow Boxing", sets: 3, reps: "3 minutes" },
-          { name: "Leg Raises", sets: 3, reps: "10-12 reps" },
-          { name: "Mountain Climbers", sets: 3, reps: "10-15 reps" },
-          { name: "Russian Twists", sets: 3, reps: "10-12 reps" },
-          { name: "Burpees", sets: 3, reps: "8-10 reps" },
-        ],
-      },
-    ],
-
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
-    tasks: 7,
-  },
-];
-
-export const muayThaiWorkouts = [
-  {
-    name: "Heavy bag training",
-    category: "Muay Thai",
-    targets: ["chest", "arms", "shoulders", "back"],
-    id: 1,
-    difficulty: "Medium",
-    img: heavyBag,
-    time: "30-45",
-    tasks: 2,
-    calsBurned: 343,
-
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
-    workouts: [
-      {
-        names: [
-          { name: "Goblet Squats", sets: 3, reps: "8-10 reps" },
-
-          { name: "Pull-Ups", sets: 3, reps: "8-10 reps" },
-          { name: "Standing Military Press", sets: 3, reps: "8-10 reps" },
-          { name: "Medicine Ball Slams", sets: 3, reps: "8-12 reps" },
-          { name: "Plyometric box jumps", sets: 3, reps: "8-10 reps" },
-        ],
-      },
-      {
-        names: [
-          { name: "Plank", sets: 3, reps: "30-60 seconds" },
-          { name: "Russian Twists", sets: 3, reps: "10-12 reps" },
-          { name: "Medicine Ball Woodchoppers", sets: 3, reps: "10-12 reps" },
-          {
-            name: "Hanging Leg Raises or Lying leg raises",
-            sets: 3,
-            reps: "10-12 reps",
-          },
-        ],
-      },
-      {
-        names: [
-          { name: "Running", sets: 1, reps: "3-5 miles" },
-          { name: "Cycling", sets: 1, reps: "20-30 minutes" },
-          { name: "HIIT Cardio", sets: 1, reps: "30 seconds" },
-        ],
-      },
-    ],
-  },
-  {
-    name: "Muay Thai Fit",
-    category: "Muay Thai",
-    id: 2,
-    targets: ["chest", "arms", "shoulders", "back"],
-    difficulty: "Basic",
-    time: "55-60",
-    img: muayFit,
-    tasks: 2,
-    calsBurned: 343,
-
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
-    workouts: [
-      {
-        names: [
-          { name: "Warm-up Cardio", reps: "10-15 mins", sets: 1 },
-          { name: "Bent-Over Rows", sets: 4, reps: "8-10 reps" },
-          { name: "Shoulder Press", sets: 4, reps: "8-10 reps" },
-          { name: "Pull ups", sets: 4, reps: "8-10 reps" },
-          { name: "Push-Ups", sets: 3, reps: "max out reps" },
-          { name: "Tricep Dips", sets: 3, reps: "10-12 reps" },
-        ],
-      },
-      {
-        names: [
-          { name: "Warm-up Cardio", sets: 1, reps: "10-15 mins" },
-          { name: "Goblet Squats", sets: 4, reps: "8-10 reps" },
-          { name: "Deadlifts", sets: 4, reps: "8-10 reps" },
-          { name: "Walking Lunges", sets: 3, reps: "12-15 per leg" },
-          { name: "Bulgarian Split Squats", sets: 3, reps: "10-12 per leg" },
-          { name: "Calf Raises", sets: 3, reps: "12-15 reps" },
-        ],
-      },
-      {
-        names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 mins" },
-          { name: "Jump Squats", sets: 4, reps: "15 reps" },
-          { name: "Push-ups", sets: 4, reps: "12 reps" },
-          { name: "Mountain Climbers", sets: 4, reps: "20 reps per leg" },
-          { name: "Plank", sets: 3, reps: "1 minute" },
-        ],
-      },
-    ],
-  },
-];
-
-export const HIIT = [
-  {
-    name: "Bodyweight Cardio",
-    category: "HIIT",
-    id: 1,
-    targets: ["chest", "arms", "shoulders", "back"],
-    difficulty: "Medium",
-    img: bodyCard,
-    time: "40-45",
-    tasks: 2,
-    calsBurned: 243,
-
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
-    workouts: [
-      {
-        names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Burpees", sets: 1, reps: "1 minute intense" },
-          { name: "Jumping Lunges", sets: 3, reps: "1 minute intense" },
-          { name: "Mountain Climbers", sets: 3, reps: "1 minute intense" },
-          { name: "Plank Jacks", sets: 3, reps: "1 minute intense" },
-          { name: "High knees", sets: 2, reps: "1 minute intense" },
-        ],
-      },
-      {
-        names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Squat Jumps", sets: 4, reps: "1 minute intense" },
-          { name: "Box Jumps", sets: 4, reps: "1 minute intense" },
-          {
-            name: "Alternating Reverse Lunges",
-            sets: 4,
-            reps: "1 minute intense",
-          },
-          { name: "Jumping Sumo Squats", sets: 4, reps: "1 minute intense" },
-        ],
-      },
-      {
-        names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Push-ups", sets: 4, reps: "1 minute" },
-          { name: "Plank Shoulder-Taps", sets: 4, reps: "1 minute" },
-          { name: "Tricep Dips", sets: 4, reps: "1 minute" },
-          { name: "Pylo Push-Ups", sets: 4, reps: "1 minute" },
-          { name: "Renegade Rows", sets: 4, reps: "1 minute" },
-        ],
-      },
-      {
-        names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Burpees", sets: 1, reps: "1 minute intense" },
-          { name: "Push-Ups", sets: 3, reps: "1 minute intense" },
-          { name: "High knees", sets: 2, reps: "1 minute intense" },
-          { name: "Jump Squats", sets: 3, reps: "1 minute intense" },
-          { name: "Russian Twists", sets: 3, reps: "1 minute intense" },
-        ],
-      },
-    ],
-  },
-  {
-    name: "Army Fit",
-    category: "HIIT",
-    time: "30-32",
-    calsBurned: 243,
-
-    id: 2,
-    difficulty: "Basic",
-    img: armyFit,
-    targets: ["chest", "arms", "shoulders", "back"],
-    tasks: 2,
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
-
-    workouts: [
-      {
-        names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Push-Ups", sets: 4, reps: "max out" },
-          { name: "Pull ups", sets: 4, reps: "max out" },
-          { name: "Squats", sets: 4, reps: "12-15 reps" },
-          { name: "Lunges", sets: 4, reps: "12-15 reps per leg" },
-          { name: "Plank", sets: 4, reps: "1 minute" },
-          { name: "Running", sets: 1, reps: "20-30 minutes" },
-        ],
-      },
-      {
-        names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Burpees", sets: 5, reps: "10-12 reps" },
-          { name: "Push-Ups", sets: 5, reps: "10-15 reps" },
-          { name: "Sit-Ups", sets: 5, reps: "15-10 reps" },
-          { name: "Jumping Lunges", sets: 4, reps: "10-15 reps per leg" },
-          { name: "Running", sets: 1, reps: "20-30 minutes" },
-        ],
-      },
-      {
-        names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Moderate Running", sets: 1, reps: "45-60 minutes" },
-          { name: "Push-Ups", sets: 3, reps: "max-out" },
-          { name: "Squats", sets: 3, reps: "12-15 reps" },
-          { name: "Plank", sets: 3, reps: "30-60 seconds" },
-        ],
-      },
-      {
-        names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Battle Rope Slams", sets: 3, reps: "30 seconds" },
-          { name: "Medicine Ball Throws", sets: 3, reps: "10 reps" },
-          { name: "Farmers Carry", sets: 3, reps: "50-100 meters" },
-        ],
-      },
-    ],
-  },
-];
-
+import planks from "./videoCache/planks.mp4";
+import burpees from "./videoCache/burpees.mp4";
+import climbers from "./videoCache/mountain-climbers.mp4";
+import highknees from "./videoCache/high knees.mp4";
+import jumprope from "./videoCache/jump_ropes.mp4";
+import boxJumps from "./videoCache/box-jumps.mp4";
+import pushups from "./videoCache/pushupsv2.mp4";
+import pyloLunge from "./videoCache/pylometriclunge.mp4";
+import shadowBoxing from "./videoCache/shadowboxingv1.mp4";
+import medRotaterRows from "./videoCache/medRotRows.mp4";
+import jumpSumos from "./videoCache/sumosquat.mp4";
+import deadlift from "./videoCache/deadlift.mp4";
+import reverselunge from "./videoCache/reverselunge.mp4";
+import sidesprawls from "./videoCache/sidesprawl.mp4";
+import dips from "./videoCache/dips.mp4";
+import sqautjumps from "./videoCache/sqautjumps.mp4";
+import shoulderPress from "./videoCache/shoulderpress.mp4";
+import situps from "./videoCache/situps.mp4";
+import hangingLegRaise from "./videoCache/hanginglegraise.mp4";
+import medballThrow from "./videoCache/medballthrow.mp4";
+import medicineBallWoods from "./videoCache/medicineBallChoppers.mp4";
+import calfRaise from "./videoCache/calf-raise.mp4";
+import renegade_rows from "./videoCache/renegade_rows.mp4";
+import farmersCarry from "./videoCache/farmers_carry.mp4";
+import gobletSquats from "./videoCache/goblet_squats.mp4";
+import walk_lunge from "./videoCache/walkLunge.mp4";
+import bent_overs from "./videoCache/bent_over_rows.mp4";
+import pull_ups from "./videoCache/Pull_ups.mp4";
+import leg_raise from "./videoCache/leg_raise.mp4";
+import ninjaga from "./ninjaz.jpg";
+import thai_fury from "./thai_fury.jpg";
 export const All = [
   {
     name: "Boxing Fitness",
     category: "Boxing",
     id: 1,
     difficulty: "Medium",
-    targets: ["chest", "arms", "shoulders", "back"],
+    targets: ["chest", "arms", "shoulders", "back", "legs"],
     img: boxImg,
     calsBurned: 143,
     time: "40-60",
@@ -403,22 +69,37 @@ export const All = [
             sets: 3,
             reps: "8-10",
           },
-          { name: "Medicine Ball Slams", vid: slams, sets: 3, reps: "10-12" },
-          { name: "Russian Twists", vid: russian, sets: 3, reps: "10-12" },
+          {
+            name: "Medicine Ball Slams",
+            vid: slams,
+            sets: 3,
+            reps: "10-12",
+          },
+          {
+            name: "Russian Twists",
+            vid: russian,
+            sets: 3,
+            reps: "10-12",
+          },
         ],
       },
       {
         names: [
-          { name: "Jump Rope", sets: 1, reps: 5 },
+          { name: "Jump Rope", sets: 1, reps: 5, vid: jumprope },
           {
             name: "Circuit Training",
             reps: 1,
             sets: 3,
             subCategory: [
-              { name: "Burpees", sets: 1, reps: 10 },
-              { name: "Mountain Climbers", sets: 1, reps: 20 },
-              { name: "High Knees", sets: 1, reps: "30 seconds" },
-              { name: "Plank", sets: 1, reps: "45 seconds" },
+              { name: "Burpees", sets: 1, reps: 10, vid: burpees },
+              { name: "Mountain Climbers", sets: 1, reps: 20, vid: climbers },
+              {
+                name: "High Knees",
+                sets: 1,
+                reps: "30 seconds",
+                vid: highknees,
+              },
+              { name: "Plank", sets: 1, reps: "45 seconds", vid: planks },
               { name: "Bicycle Crunches", sets: 1, reps: 20 },
             ],
           },
@@ -426,12 +107,6 @@ export const All = [
             name: "Interval Sprints",
             reps: "30 seconds",
             sets: 1,
-
-            subCategory: [
-              { name: "Sprint", reps: 20 },
-              { name: "Rest", reps: 40 },
-              { name: "Repeat", reps: "10-15" },
-            ],
           },
         ],
       },
@@ -441,29 +116,40 @@ export const All = [
             name: "Agility Ladder Drills",
             sets: "3-4",
             reps: "30-40",
-            subCategory: [
-              { name: "Lateral Quick Feet" },
-              { name: "Single-leg lateral hops" },
-              { name: "Box drill" },
-            ],
           },
-          { name: "Box Jumps", sets: 3, reps: "8-10" },
+          { name: "Box Jumps", sets: 3, reps: "8-10", vid: boxJumps },
           {
             name: "Medicine Ball Rotational Throws",
             sets: 3,
             reps: "8-10",
+            vid: medRotaterRows,
           },
-          { name: "Pull-Ups or Lat Pulldowns", set: 3, reps: "8-10" },
-          { name: "Medicine Ball Slams", sets: 3, reps: "10 - 12" },
+          {
+            name: "Pull-Ups or Lat Pulldowns",
+            set: 3,
+            reps: "8-10",
+            vid: latPulls,
+          },
+          { name: "Medicine Ball Slams", sets: 3, reps: "10 - 12", vid: slams },
         ],
       },
       {
         names: [
-          { name: "Barbell Squats", sets: 3, reps: "8-10" },
-          { name: "Pull-Ups or Lat Pulldowns", set: 3, reps: "8 - 10" },
-          { name: "Standing Military Press", sets: 3, reps: "8 - 10" },
-          { name: "Medicine Ball Slams", sets: 3, reps: "10 - 12" },
-          { name: "Russian Twists", sets: 3, reps: "10 - 12" },
+          { name: "Barbell Squats", sets: 3, reps: "8-10", vid: squat },
+          {
+            name: "Pull-Ups or Lat Pulldowns",
+            set: 3,
+            reps: "8 - 10",
+            vid: latPulls,
+          },
+          {
+            name: "Standing Military Press",
+            sets: 3,
+            reps: "8 - 10",
+            vid: militaryShoulder,
+          },
+          { name: "Medicine Ball Slams", sets: 3, reps: "10 - 12", vid: slams },
+          { name: "Russian Twists", sets: 3, reps: "10 - 12", vid: russian },
         ],
       },
       {
@@ -488,46 +174,76 @@ export const All = [
     category: "Boxing",
     id: 2,
     targets: ["chest", "arms", "shoulders", "back", "legs"],
-    difficulty: "Basic",
+    difficulty: "Advanced",
     img: Legacy,
-    time: "35-45",
+    time: "60",
     calsBurned: 143,
 
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
+    desc: `Shredded Intense is a high-intensity total body workout program designed for individuals seeking to achieve a lean and sculpted physique. Tailored to the boxing category, the program combines dynamic exercises with focused intensity to target multiple muscle groups and elevate cardiovascular fitness.
     `,
     tasks: 7,
     workouts: [
       {
         names: [
-          { name: "Shadow Boxing", reps: "5 mins", sets: 1 },
-          { name: "Push-Ups", reps: "10-15", sets: 3 },
-          { name: "Russian Twists", reps: "8-10", sets: 3 },
-          { name: "Burpees", reps: "8-10", sets: 3 },
-          { name: "Mountian Climbers", reps: "10-15", sets: 3 },
+          { name: "Shadow Boxing", reps: "5 mins", sets: 1, vid: shadowBoxing },
+          { name: "Push-Ups", reps: "10-15", sets: 3, vid: pushups },
+          { name: "Russian Twists", reps: "8-10", sets: 3, vid: russian },
+          { name: "Burpees", reps: "8-10", sets: 3, vid: burpees },
+          { name: "Mountian Climbers", reps: "10-15", sets: 3, vid: climbers },
         ],
       },
       {
         names: [
-          { name: "Jump Rope", reps: "5 minutes", sets: 1 },
-          { name: "Shadow Boxing Intense", reps: "3 minutes", sets: 3 },
-          { name: "Pylometric Lunges", reps: "10-15 reps", sets: 3 },
-          { name: "Plank Jacks", sets: 3, reps: "10-15 reps" },
-          { name: "Side-to-Side Sprawls", sets: 3, reps: "8-10 reps" },
+          { name: "Jump Rope", reps: "5 minutes", sets: 1, vid: jumprope },
+          {
+            name: "Shadow Boxing Intense",
+            reps: "3 minutes",
+            sets: 3,
+            vid: shadowBoxing,
+          },
+          {
+            name: "Pylometric Lunges",
+            reps: "10-15 reps",
+            sets: 3,
+            vid: pyloLunge,
+          },
+          { name: "Plank Jacks", sets: 3, reps: "10-15 reps", vid: planks },
+          {
+            name: "Side-to-Side Sprawls",
+            sets: 3,
+            reps: "8-10 reps",
+            vid: sidesprawls,
+          },
         ],
       },
       {
         names: [
-          { name: "Shadow Boxing", sets: 3, reps: "3 minutes" },
-          { name: "Leg Raises", sets: 3, reps: "10-12 reps" },
-          { name: "Mountain Climbers", sets: 3, reps: "10-15 reps" },
-          { name: "Russian Twists", sets: 3, reps: "10-12 reps" },
-          { name: "Burpees", sets: 3, reps: "8-10 reps" },
+          {
+            name: "Shadow Boxing",
+            sets: 3,
+            reps: "3 minutes",
+            vid: shadowBoxing,
+          },
+          {
+            name: "Leg Raises",
+            sets: 3,
+            reps: "10-12 reps",
+            vid: leg_raise,
+          },
+          {
+            name: "Mountain Climbers",
+            sets: 3,
+            reps: "10-15 reps",
+            vid: climbers,
+          },
+          { name: "Russian Twists", sets: 3, reps: "10-12 reps", vid: russian },
+          { name: "Burpees", sets: 3, reps: "8-10 reps", vid: burpees },
         ],
       },
     ],
   },
   {
-    name: "Bodyweight Cardio",
+    name: "Blitzkrieg Shred",
     category: "HIIT",
     id: 3,
     difficulty: "Medium",
@@ -535,88 +251,156 @@ export const All = [
     targets: ["chest", "arms", "shoulders", "back", "legs"],
     img: bodyCard,
     calsBurned: 143,
-
     tasks: 2,
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
+    desc: `Blitzkrieg Shred is a dynamic and efficient HIIT (High-Intensity Interval Training) program designed for individuals ready to embark on an exhilarating journey toward fitness. This heart-pounding regimen focuses on utilizing your body weight to torch calories, sculpt muscles, and elevate your cardiovascular endurance.`,
     workouts: [
       {
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Burpees", sets: 1, reps: "1 minute intense" },
-          { name: "Jumping Lunges", sets: 3, reps: "1 minute intense" },
-          { name: "Mountain Climbers", sets: 3, reps: "1 minute intense" },
-          { name: "Plank Jacks", sets: 3, reps: "1 minute intense" },
-          { name: "High knees", sets: 2, reps: "1 minute intense" },
+          { name: "Burpees", sets: 1, reps: "1 minute intense", vid: burpees },
+          {
+            name: "Jumping Lunges",
+            sets: 3,
+            reps: "1 minute intense",
+            vid: pyloLunge,
+          },
+          {
+            name: "Mountain Climbers",
+            sets: 3,
+            reps: "1 minute intense",
+            vid: climbers,
+          },
+          {
+            name: "Plank Jacks",
+            sets: 3,
+            reps: "1 minute intense",
+            vid: planks,
+          },
+          {
+            name: "High knees",
+            sets: 2,
+            reps: "1 minute intense",
+            vid: highknees,
+          },
         ],
       },
       {
         names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Squat Jumps", sets: 4, reps: "1 minute intense" },
-          { name: "Box Jumps", sets: 4, reps: "1 minute intense" },
+          {
+            name: "Warm-up",
+            sets: 1,
+            reps: "10-15 minutes",
+            desc: "The warm-up includes dynamic stretches lasting 10-15 minutes. Begin with arm circles and leg swings to loosen up the upper and lower body. Move into torso twists and hip circles for improved flexibility. Perform dynamic lunges and high knees to engage major muscle groups. These exercises enhance blood flow, increase joint mobility, and prepare your body for the main workout. Breathe deeply, move through each stretch with control, and set the foundation for a successful exercise session.",
+          },
+          {
+            name: "Squat Jumps",
+            sets: 4,
+            reps: "1 minute intense",
+            vid: sqautjumps,
+          },
+          {
+            name: "Box Jumps",
+            sets: 4,
+            reps: "1 minute intense",
+            vid: boxJumps,
+          },
           {
             name: "Alternating Reverse Lunges",
             sets: 4,
             reps: "1 minute intense",
+            vid: reverselunge,
           },
-          { name: "Jumping Sumo Squats", sets: 4, reps: "1 minute intense" },
+          {
+            name: "Jumping Sumo Squats",
+            sets: 4,
+            reps: "1 minute intense",
+            vid: jumpSumos,
+          },
         ],
       },
       {
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Push-ups", sets: 4, reps: "1 minute" },
+          { name: "Push-ups", sets: 4, reps: "1 minute", vid: pushups },
           { name: "Plank Shoulder-Taps", sets: 4, reps: "1 minute" },
-          { name: "Tricep Dips", sets: 4, reps: "1 minute" },
-          { name: "Pylo Push-Ups", sets: 4, reps: "1 minute" },
-          { name: "Renegade Rows", sets: 4, reps: "1 minute" },
+          { name: "Tricep Dips", sets: 4, reps: "1 minute", vid: dips },
+          { name: "Pylo Push-Ups", sets: 4, reps: "1 minute", vid: pushups },
+          {
+            name: "Renegade Rows",
+            sets: 4,
+            reps: "1 minute",
+            vid: renegade_rows,
+          },
         ],
       },
       {
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Burpees", sets: 1, reps: "1 minute intense" },
-          { name: "Push-Ups", sets: 3, reps: "1 minute intense" },
-          { name: "High knees", sets: 2, reps: "1 minute intense" },
-          { name: "Jump Squats", sets: 3, reps: "1 minute intense" },
-          { name: "Russian Twists", sets: 3, reps: "1 minute intense" },
+          { name: "Burpees", sets: 1, reps: "1 minute intense", vid: burpees },
+          { name: "Push-Ups", sets: 3, reps: "1 minute intense", vid: pushups },
+          {
+            name: "High knees",
+            sets: 2,
+            reps: "1 minute intense",
+            vid: highknees,
+          },
+          {
+            name: "Jump Squats",
+            sets: 3,
+            reps: "1 minute intense",
+            vid: sqautjumps,
+          },
+          {
+            name: "Russian Twists",
+            sets: 3,
+            reps: "1 minute intense",
+            vid: russian,
+          },
         ],
       },
     ],
   },
   {
-    name: "Army Fit",
+    name: "Ninja Commando Challenge",
     category: "HIIT",
     id: 4,
     difficulty: "Basic",
     time: "30-45",
-    img: armyFit,
+    img: ninjaga,
     tasks: 2,
     calsBurned: 143,
 
     targets: ["chest", "arms", "shoulders", "back", "legs"],
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
+    desc: `Embark on the Ninja Commando Challenge, an exhilarating HIIT (High-Intensity Interval Training) regimen designed to sculpt your body into peak physical condition, just like a stealthy ninja warrior. This program blends intense cardio with strength-building exercises, targeting key muscle groups to enhance overall fitness and agility.`,
     workouts: [
       {
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Push-Ups", sets: 4, reps: "max out" },
-          { name: "Pull ups", sets: 4, reps: "max out" },
-          { name: "Squats", sets: 4, reps: "12-15 reps" },
-          { name: "Lunges", sets: 4, reps: "12-15 reps per leg" },
-          { name: "Plank", sets: 4, reps: "1 minute" },
+          { name: "Push-Ups", sets: 4, reps: "max out", vid: pushups },
+          { name: "Pull ups", sets: 4, reps: "max out", vid: latPulls },
+          { name: "Squats", sets: 4, reps: "12-15 reps", vid: squat },
+          {
+            name: "Lunges",
+            sets: 4,
+            reps: "12-15 reps per leg",
+            vid: pyloLunge,
+          },
+          { name: "Plank", sets: 4, reps: "1 minute", vid: planks },
           { name: "Running", sets: 1, reps: "20-30 minutes" },
         ],
       },
       {
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Burpees", sets: 5, reps: "10-12 reps" },
-          { name: "Push-Ups", sets: 5, reps: "10-15 reps" },
-          { name: "Sit-Ups", sets: 5, reps: "15-10 reps" },
-          { name: "Jumping Lunges", sets: 4, reps: "10-15 reps per leg" },
+          { name: "Burpees", sets: 5, reps: "10-12 reps", vid: burpees },
+          { name: "Push-Ups", sets: 5, reps: "10-15 reps", vid: pushups },
+          { name: "Sit-Ups", sets: 5, reps: "15-10 reps", vid: situps },
+          {
+            name: "Jumping Lunges",
+            sets: 4,
+            reps: "10-15 reps per leg",
+            vid: pyloLunge,
+          },
           { name: "Running", sets: 1, reps: "20-30 minutes" },
         ],
       },
@@ -624,54 +408,94 @@ export const All = [
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
           { name: "Moderate Running", sets: 1, reps: "45-60 minutes" },
-          { name: "Push-Ups", sets: 3, reps: "max-out" },
-          { name: "Squats", sets: 3, reps: "12-15 reps" },
-          { name: "Plank", sets: 3, reps: "30-60 seconds" },
+          { name: "Push-Ups", sets: 3, reps: "max-out", vid: pushups },
+          { name: "Squats", sets: 3, reps: "12-15 reps", vid: squat },
+          { name: "Plank", sets: 3, reps: "30-60 seconds", vid: planks },
         ],
       },
       {
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Battle Rope Slams", sets: 3, reps: "30 seconds" },
-          { name: "Medicine Ball Throws", sets: 3, reps: "10 reps" },
-          { name: "Farmers Carry", sets: 3, reps: "50-100 meters" },
+          {
+            name: "Battle Rope Slams",
+            sets: 3,
+            reps: "30 seconds",
+            vid: slams,
+          },
+          {
+            name: "Medicine Ball Throws",
+            sets: 3,
+            reps: "10 reps",
+            vid: medballThrow,
+          },
+          {
+            name: "Farmers Carry",
+            sets: 3,
+            reps: "50-100 meters",
+            vid: farmersCarry,
+          },
         ],
       },
     ],
   },
   {
-    name: "Heavy bag training",
+    name: "Muay Thai Fury",
     category: "Muay Thai",
     id: 5,
     difficulty: "Medium",
-    img: heavyBag,
+    img: thai_fury,
     time: "30-45",
     calsBurned: 143,
 
     targets: ["chest", "arms", "shoulders", "back", "legs"],
     tasks: 2,
-    desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
+    desc: `Muay Thai Fury is not just a workout; it's a journey into the heart of Muay Thai-inspired fitness. Whether you're a martial artist looking to enhance your skills or a fitness enthusiast craving a challenging and dynamic regimen, Muay Thai Fury is your path to unlocking strength, agility, and endurance. Embrace the power of Muay Thai and embark on the Fury to transform your body and skills!`,
     workouts: [
       {
         names: [
-          { name: "Goblet Squats", sets: 3, reps: "8-10 reps" },
+          {
+            name: "Goblet Squats",
+            sets: 3,
+            reps: "8-10 reps",
+            vid: gobletSquats,
+          },
 
-          { name: "Pull-Ups", sets: 3, reps: "8-10 reps" },
-          { name: "Standing Military Press", sets: 3, reps: "8-10 reps" },
-          { name: "Medicine Ball Slams", sets: 3, reps: "8-12 reps" },
-          { name: "Plyometric box jumps", sets: 3, reps: "8-10 reps" },
+          { name: "Pull-Ups", sets: 3, reps: "8-10 reps", vid: pull_ups },
+          {
+            name: "Standing Military Press",
+            sets: 3,
+            reps: "8-10 reps",
+            vid: militaryShoulder,
+          },
+          {
+            name: "Medicine Ball Slams",
+            sets: 3,
+            reps: "8-12 reps",
+            vid: slams,
+          },
+          {
+            name: "Plyometric box jumps",
+            sets: 3,
+            reps: "8-10 reps",
+            vid: boxJumps,
+          },
         ],
       },
       {
         names: [
-          { name: "Plank", sets: 3, reps: "30-60 seconds" },
-          { name: "Russian Twists", sets: 3, reps: "10-12 reps" },
-          { name: "Medicine Ball Woodchoppers", sets: 3, reps: "10-12 reps" },
+          { name: "Plank", sets: 3, reps: "30-60 seconds", vid: planks },
+          { name: "Russian Twists", sets: 3, reps: "10-12 reps", vid: russian },
+          {
+            name: "Medicine Ball Woodchoppers",
+            sets: 3,
+            reps: "10-12 reps",
+            vid: medicineBallWoods,
+          },
           {
             name: "Hanging Leg Raises or Lying leg raises",
             sets: 3,
             reps: "10-12 reps",
+            vid: hangingLegRaise,
           },
         ],
       },
@@ -701,70 +525,57 @@ export const All = [
       {
         names: [
           { name: "Warm-up Cardio", reps: "10-15 mins", sets: 1 },
-          { name: "Bent-Over Rows", sets: 4, reps: "8-10 reps" },
-          { name: "Shoulder Press", sets: 4, reps: "8-10 reps" },
-          { name: "Pull ups", sets: 4, reps: "8-10 reps" },
-          { name: "Push-Ups", sets: 3, reps: "max out reps" },
-          { name: "Tricep Dips", sets: 3, reps: "10-12 reps" },
+          {
+            name: "Bent-Over Rows",
+            sets: 4,
+            reps: "8-10 reps",
+            vid: bent_overs,
+          },
+          {
+            name: "Shoulder Press",
+            sets: 4,
+            reps: "8-10 reps",
+            vid: shoulderPress,
+          },
+          { name: "Pull ups", sets: 4, reps: "8-10 reps", vid: pull_ups },
+          { name: "Push-Ups", sets: 3, reps: "max out reps", vid: pushups },
+          { name: "Tricep Dips", sets: 3, reps: "10-12 reps", vid: dips },
         ],
       },
       {
         names: [
           { name: "Warm-up Cardio", sets: 1, reps: "10-15 mins" },
-          { name: "Goblet Squats", sets: 4, reps: "8-10 reps" },
-          { name: "Deadlifts", sets: 4, reps: "8-10 reps" },
-          { name: "Walking Lunges", sets: 3, reps: "12-15 per leg" },
+          {
+            name: "Goblet Squats",
+            sets: 4,
+            reps: "8-10 reps",
+            vid: gobletSquats,
+          },
+          { name: "Deadlifts", sets: 4, reps: "8-10 reps", vid: deadlift },
+          {
+            name: "Walking Lunges",
+            sets: 3,
+            reps: "12-15 per leg",
+            vid: walk_lunge,
+          },
           { name: "Bulgarian Split Squats", sets: 3, reps: "10-12 per leg" },
-          { name: "Calf Raises", sets: 3, reps: "12-15 reps" },
+          { name: "Calf Raises", sets: 3, reps: "12-15 reps", vid: calfRaise },
         ],
       },
       {
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 mins" },
-          { name: "Jump Squats", sets: 4, reps: "15 reps" },
-          { name: "Push-ups", sets: 4, reps: "12 reps" },
-          { name: "Mountain Climbers", sets: 4, reps: "20 reps per leg" },
-          { name: "Plank", sets: 3, reps: "1 minute" },
+          { name: "Jump Squats", sets: 4, reps: "15 reps", vid: sqautjumps },
+          { name: "Push-ups", sets: 4, reps: "12 reps", vid: pushups },
+          {
+            name: "Mountain Climbers",
+            sets: 4,
+            reps: "20 reps per leg",
+            vid: climbers,
+          },
+          { name: "Plank", sets: 3, reps: "1 minute", vid: planks },
         ],
       },
     ],
   },
-];
-
-export const data = [
-  {
-    label: "Double Jab",
-    sets: "Sets: 4 sets",
-    reps: "Reps: 20-25 reps",
-    status: "Active",
-    done: "Finished",
-  },
-  {
-    label: "Jab Straight",
-    sets: "Sets: 4 sets",
-    reps: "Reps: 20-25 reps",
-    status: "Active",
-    done: "finished",
-  },
-  {
-    label: "Jab Straight Hook",
-    sets: "Sets: 4 sets",
-    reps: "Reps: 20-25 reps",
-    status: "Active",
-    done: "Finished",
-  },
-  {
-    label: "Jab Straight Hook Uppercut",
-    sets: "Sets: 4 sets",
-    reps: "Reps: 20-25 reps",
-    status: "Active",
-    done: "Finished",
-  },
-];
-
-export const labels = [
-  "Double Jab",
-  "Jab Straight",
-  "Jab Straight Hook",
-  "Jab Straight Hook Uppercut",
 ];

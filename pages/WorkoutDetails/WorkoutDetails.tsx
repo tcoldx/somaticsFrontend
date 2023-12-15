@@ -56,7 +56,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   };
   useEffect(() => {
     loadCurrentDay();
-  }, [currentDay]);
+  }, [currentDay, position]);
 
   const currentLabel = details.workouts[currentDay].names;
   const timeStamp = firebase.firestore.FieldValue.serverTimestamp();
@@ -70,9 +70,8 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         id: userId,
         createdAt: timeStamp,
         workoutId: `${Math.random()}-${Math.random()}`,
-        day: currentDay,
+        day: currentDay == 0 ? "1" : currentDay,
       };
-
       const workoutRef = firebase.firestore().collection("programs");
 
       workoutRef
@@ -111,6 +110,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         justifyContent: "center",
         width: "100%",
         height: "100%",
+        backgroundColor: "black",
       }}
     >
       {stop && <LevelUpPopUp navigation={navigation} handleDone={handleDone} />}
@@ -147,30 +147,47 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           <AntDesign name="left" size={24} color="white" />
         </TouchableOpacity>
       </View>
-
-      {open && position !== currentLabel.length && (
-        <View
-          style={{
-            top: 0,
-            position: "absolute",
-            height: height,
-            width: width,
-          }}
-        >
-          <Video
-            source={
-              currentLabel[position].vid ? currentLabel[position].vid : null
-            }
+      {/* the container and conditional render for the video object!!*/}
+      {open &&
+        position !== currentLabel.length &&
+        currentLabel[position].vid && (
+          <View
             style={{
+              top: 0,
+              position: "absolute",
               height: height,
-              width: "100%",
+              width: width,
             }}
-            isMuted={true}
-            useNativeControls={false}
-            isLooping
-            shouldPlay={true}
-            resizeMode={ResizeMode.COVER}
-          />
+          >
+            <Video
+              source={currentLabel[position].vid}
+              style={{
+                height: height,
+                width: "100%",
+              }}
+              isMuted={true}
+              useNativeControls={false}
+              isLooping
+              shouldPlay={true}
+              resizeMode={ResizeMode.COVER}
+            />
+          </View>
+        )}
+      {/* // if there is no video existent for the workout display this! */}
+      {!currentLabel[position].vid && (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text
+            style={{
+              color: "white",
+              fontSize: 20,
+              fontWeight: "bold",
+              marginBottom: 50,
+            }}
+          >
+            No Content available
+          </Text>
         </View>
       )}
       {!open ? (
