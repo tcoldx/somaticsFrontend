@@ -17,9 +17,8 @@ import LevelUpPopUp from "../../components/LevelUpPopup/levelupPopUp";
 import { firebase, auth } from "../../firebase";
 import WorkoutDetailItem from "../../components/WorkoutDetailItem/workoutdetailitem";
 import SwipeWorkout from "../../components/SwipeWorkoutContainer/swipeworkout";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetMethods } from "../../components/SwipeWorkoutContainer/swipeworkout";
-import { Button } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 interface DetailProps {
   details: any;
   navigation: any;
@@ -31,6 +30,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [position, setPosition] = useState<number>(0);
   const [start, setStart] = useState<boolean>(false);
   const [stop, setStop] = useState<boolean>(false);
+  const [currentDay, setCurrentDay] = useState<number>(0);
   const [workoutDB, setWorkoutDB] = useState<any>([]);
   const handleStart = () => {
     setOpen(true);
@@ -40,12 +40,27 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     if (position === currentLabel.length - 1) {
       setPosition(0);
       setStop(true);
+      const nextDay = currentDay + 1;
+      {
+        /** this code below is fixed! :D  */
+      }
+      const lastIndex = details.workouts.length - 1;
+      const updatedDay = currentDay >= lastIndex ? 0 : nextDay;
+
+      setCurrentDay(updatedDay);
+      saveCurrentDay(updatedDay);
+
       return;
     }
     setPosition(position + 1);
   };
-  const currentLabel = details.workouts[0].names;
+  useEffect(() => {
+    loadCurrentDay();
+  }, [currentDay, position]);
+
+  const currentLabel = details.workouts[currentDay].names;
   const timeStamp = firebase.firestore.FieldValue.serverTimestamp();
+  const flatListRef = useRef<FlatList>(null);
 
   const handleDone = (): void => {
     if (details) {
@@ -55,8 +70,8 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         id: userId,
         createdAt: timeStamp,
         workoutId: `${Math.random()}-${Math.random()}`,
+        day: currentDay == 0 ? "1" : currentDay,
       };
-
       const workoutRef = firebase.firestore().collection("programs");
 
       workoutRef
@@ -68,6 +83,24 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     }
   };
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
+  const loadCurrentDay = async () => {
+    try {
+      const savedDay = await AsyncStorage.getItem(`currentDay_${details.id}`);
+      if (savedDay !== null) {
+        setCurrentDay(parseInt(savedDay, 10));
+      }
+    } catch (error) {
+      console.error("Error loading current day:", error);
+    }
+  };
+
+  const saveCurrentDay = async (day: number) => {
+    try {
+      await AsyncStorage.setItem(`currentDay_${details.id}`, day.toString());
+    } catch (error) {
+      console.error("Error saving current day:", error);
+    }
+  };
 
   return (
     <SafeAreaView
@@ -77,6 +110,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         justifyContent: "center",
         width: "100%",
         height: "100%",
+        backgroundColor: "black",
       }}
     >
       {stop && <LevelUpPopUp navigation={navigation} handleDone={handleDone} />}
@@ -113,30 +147,47 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           <AntDesign name="left" size={24} color="white" />
         </TouchableOpacity>
       </View>
-
-      {open && position !== currentLabel.length && (
-        <View
-          style={{
-            top: 0,
-            position: "absolute",
-            height: height,
-            width: width,
-          }}
-        >
-          <Video
-            source={
-              currentLabel[position].vid ? currentLabel[position].vid : null
-            }
+      {/* the container and conditional render for the video object!!*/}
+      {open &&
+        position !== currentLabel.length &&
+        currentLabel[position].vid && (
+          <View
             style={{
+              top: 0,
+              position: "absolute",
               height: height,
-              width: "100%",
+              width: width,
             }}
-            isMuted={true}
-            useNativeControls={false}
-            isLooping
-            shouldPlay={true}
-            resizeMode={ResizeMode.COVER}
-          />
+          >
+            <Video
+              source={currentLabel[position].vid}
+              style={{
+                height: height,
+                width: "100%",
+              }}
+              isMuted={true}
+              useNativeControls={false}
+              isLooping
+              shouldPlay={true}
+              resizeMode={ResizeMode.COVER}
+            />
+          </View>
+        )}
+      {/* // if there is no video existent for the workout display this! */}
+      {!currentLabel[position].vid && (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text
+            style={{
+              color: "white",
+              fontSize: 20,
+              fontWeight: "bold",
+              marginBottom: 50,
+            }}
+          >
+            No Content available
+          </Text>
         </View>
       )}
       {!open ? (
@@ -148,11 +199,20 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
           <ScrollView style={{ height: "100%" }}>
             <FlatList
               horizontal
+              initialScrollIndex={currentDay}
+              onScrollToIndexFailed={({ index, averageItemLength }) => {
+                // Layout doesn't know the exact location of the requested element.
+                // Falling back to calculating the destination manually
+                flatListRef.current?.scrollToOffset({
+                  offset: index * averageItemLength,
+                  animated: true,
+                });
+              }}
               snapToAlignment="center"
               pagingEnabled={true}
               scrollEnabled={true}
               data={details.workouts}
-              keyExtractor={(item) => item.key}
+              keyExtractor={(item) => item.id}
               renderItem={({ item, index }: any) => {
                 return (
                   <WorkoutDetailItem
@@ -178,7 +238,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
         <>
           <SwipeWorkout
             ref={bottomSheetRef}
-            snapTo={"70%"}
+            snapTo={"90%"}
             stop={stop}
             position={position}
             setPosition={setPosition}

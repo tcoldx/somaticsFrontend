@@ -58,7 +58,7 @@ const SwipeWorkout = React.forwardRef(
     const percentage = parseFloat(snapTo.replace("%", "")) / 100;
     const openHeight = height - height * percentage;
     const topAnimation = useSharedValue(closeHeight);
-    const [opened, setOpened] = useState(false);
+    const [opened, setOpened] = useState(true);
     const context = useSharedValue(0);
     useEffect(() => {
       flatRef.current?.scrollToIndex({
@@ -233,6 +233,7 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     bottom: 0,
+    height: "auto",
     borderRadius: 8,
     backgroundColor: "#101010",
   },
