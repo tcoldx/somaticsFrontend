@@ -69,6 +69,16 @@ export const styles = StyleSheet.create({
     backgroundColor: "red",
     width: "60%",
   },
+  closeButton: {
+    display: "flex",
+    alignItems: "center",
+    borderRadius: 6,
+    marginTop: 10,
+    justifyContent: "center",
+    height: 40,
+    backgroundColor: "#ffa726",
+    width: "60%",
+  },
   workoutHistoryContentWrap: {
     display: "flex",
     width: "100%",

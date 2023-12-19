@@ -17,7 +17,9 @@ import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { slideStyle, styler } from "./onboarding.styles";
 import SomaLogo from "../../assets/somaticLogo.png";
-import { auth, db } from "../../firebase";
+import { db, auth } from "../../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
 import { Picker } from "@react-native-picker/picker";
 import { styled } from "nativewind";
 type itemProps = {
@@ -100,8 +102,8 @@ const OnboardingItem = ({
     if (checkIfEmail(email) && password && name && objVal) {
       setLoading(true);
       username(name);
-      auth
-        .createUserWithEmailAndPassword(email, password)
+
+      createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
           const user = userCredential.user;
           await db.collection("users").doc(user.uid).set(JSON.parse(objVal));

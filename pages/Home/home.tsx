@@ -15,6 +15,9 @@ import CollectionList from "../../components/CollectionList/CollectionList";
 import FooterNav from "../../components/FooterNav/footernav";
 import Notification from "../../components/Notification/notification";
 import Payscreen from "../../components/Payscreen/Payscreen";
+
+import { auth, firebase } from "../../firebase";
+
 import {
   durationTypes,
   sectionTypes,
@@ -24,19 +27,18 @@ import {
 interface props {
   workoutDetails: any;
   navigation: any;
-  id: any;
   userInfo: any;
   newUsersName: string;
 }
 const Home = ({
   workoutDetails,
   navigation,
-  id,
   newUsersName,
   userInfo,
 }: props): JSX.Element => {
   const [workoutList, setWorkoutList] = useState<any[]>([]);
   const [currentSelect, setCurrentSelect] = useState<any>("Featured");
+  const [fetchedName, setFetchedName] = useState<string>("");
   // State to hold whether the payscreen is visible
   const [payscreenIsVisible, setPayscreenIsVisible] = useState<boolean>(false);
   const [openNotif, setOpenNotif] = useState<boolean>(false);
@@ -62,6 +64,17 @@ const Home = ({
   const handleNotifOpen = () => {
     setOpenNotif(!openNotif);
   };
+  useEffect(() => {
+    const user = auth.currentUser;
+    const userRef = firebase.firestore().collection("users").doc(user.uid);
+    const fetchUserData = async () => {
+      const userData = await userRef.get();
+      const usersData = userData.data();
+      let backendName = usersData.name;
+      setFetchedName(backendName);
+    };
+    fetchUserData();
+  }, []);
 
   return (
     <>
@@ -84,7 +97,7 @@ const Home = ({
               <Text
                 style={{ fontSize: 20, color: "white", fontWeight: "bold" }}
               >
-                {name ? name : newUsersName}!
+                {fetchedName ? fetchedName : newUsersName}!
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>

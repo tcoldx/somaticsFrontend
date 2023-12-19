@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { FlatList, Animated, View } from "react-native";
 import { styles } from "./landingpage.styles";
 import LandingItem from "../../assets/landingItem";
@@ -7,8 +7,9 @@ import LandingFooter from "../../components/LandingFooter/LandingFooter";
 import Pagination from "../../assets/pagination";
 interface navProp {
   navigation: any;
+  initNav: Function;
 }
-function LandingPage({ navigation }: navProp) {
+function LandingPage({ navigation, initNav }: navProp) {
   const scrollX = useRef(new Animated.Value(0)).current;
   const [count, setCount] = useState(0);
   const handleOnScroll = (event: any) => {
@@ -32,6 +33,9 @@ function LandingPage({ navigation }: navProp) {
   const viewabilityConfig = useRef({
     itemVisiblePercentThreshold: 50,
   }).current;
+  useEffect(() => {
+    initNav(navigation);
+  }, []);
   return (
     <>
       <FlatList

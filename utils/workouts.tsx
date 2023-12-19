@@ -53,8 +53,10 @@ export const All = [
     tasks: 7,
     desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
     `,
+
     workouts: [
       {
+        day: "day 1",
         names: [
           { name: "Barbell Squats", vid: squat, sets: 3, reps: "8-10" },
           {
@@ -62,109 +64,157 @@ export const All = [
             vid: latPulls,
             set: 3,
             reps: "8-10",
+            met: 3.0,
           },
           {
             name: "Standing Military Press",
             vid: militaryShoulder,
             sets: 3,
             reps: "8-10",
+            met: 3.5,
           },
           {
             name: "Medicine Ball Slams",
             vid: slams,
             sets: 3,
             reps: "10-12",
+            met: 5.0,
           },
           {
             name: "Russian Twists",
             vid: russian,
             sets: 3,
             reps: "10-12",
+            met: 3.0,
           },
         ],
       },
       {
+        day: "day 2",
         names: [
-          { name: "Jump Rope", sets: 1, reps: 5, vid: jumprope },
+          { name: "Jump Rope", sets: 1, reps: 5, vid: jumprope, met: 12.0 },
           {
             name: "Circuit Training",
             reps: 1,
             sets: 3,
             subCategory: [
-              { name: "Burpees", sets: 1, reps: 10, vid: burpees },
-              { name: "Mountain Climbers", sets: 1, reps: 20, vid: climbers },
+              { name: "Burpees", sets: 1, reps: 10, vid: burpees, met: 8.0 },
+              {
+                name: "Mountain Climbers",
+                sets: 1,
+                reps: 20,
+                vid: climbers,
+                met: 8.0,
+              },
               {
                 name: "High Knees",
                 sets: 1,
                 reps: "30 seconds",
                 vid: highknees,
+                met: 8.0,
               },
-              { name: "Plank", sets: 1, reps: "45 seconds", vid: planks },
-              { name: "Bicycle Crunches", sets: 1, reps: 20 },
+              {
+                name: "Plank",
+                sets: 1,
+                reps: "45 seconds",
+                vid: planks,
+                met: 2.0,
+              },
+              { name: "Bicycle Crunches", sets: 1, reps: 20, met: 4.0 },
             ],
           },
-          {
-            name: "Interval Sprints",
-            reps: "30 seconds",
-            sets: 1,
-          },
+          { name: "Interval Sprints", reps: "30 seconds", sets: 1, met: 15.0 },
         ],
       },
       {
+        day: "day 3",
         names: [
           {
             name: "Agility Ladder Drills",
             sets: "3-4",
             reps: "30-40",
+            met: 6.0,
           },
-          { name: "Box Jumps", sets: 3, reps: "8-10", vid: boxJumps },
+          { name: "Box Jumps", sets: 3, reps: "8-10", vid: boxJumps, met: 8.0 },
           {
             name: "Medicine Ball Rotational Throws",
             sets: 3,
             reps: "8-10",
             vid: medRotaterRows,
+            met: 6.0,
           },
           {
             name: "Pull-Ups or Lat Pulldowns",
             set: 3,
             reps: "8-10",
             vid: latPulls,
+            met: 3.0, // MET for Pull-Ups
           },
-          { name: "Medicine Ball Slams", sets: 3, reps: "10 - 12", vid: slams },
+          {
+            name: "Medicine Ball Slams",
+            sets: 3,
+            reps: "10-12",
+            vid: slams,
+            met: 5.0,
+          },
         ],
       },
       {
+        day: "day 4",
         names: [
-          { name: "Barbell Squats", sets: 3, reps: "8-10", vid: squat },
+          {
+            name: "Barbell Squats",
+            sets: 3,
+            reps: "8-10",
+            vid: squat,
+            met: 6.0,
+          },
           {
             name: "Pull-Ups or Lat Pulldowns",
             set: 3,
-            reps: "8 - 10",
+            reps: "8-10",
             vid: latPulls,
+            met: 3.0,
           },
           {
             name: "Standing Military Press",
             sets: 3,
-            reps: "8 - 10",
+            reps: "8-10",
             vid: militaryShoulder,
+            met: 3.5,
           },
-          { name: "Medicine Ball Slams", sets: 3, reps: "10 - 12", vid: slams },
-          { name: "Russian Twists", sets: 3, reps: "10 - 12", vid: russian },
+          {
+            name: "Medicine Ball Slams",
+            sets: 3,
+            reps: "10-12",
+            vid: slams,
+            met: 5.0,
+          },
+          {
+            name: "Russian Twists",
+            sets: 3,
+            reps: "10-12",
+            vid: russian,
+            met: 3.0,
+          },
         ],
       },
       {
+        day: "day 5",
         names: [
           {
             name: "Light Jogging or Cycling",
             sets: 1,
             reps: "20-30 minutes",
+            met: 7.0,
           },
           {
             name: "Dynamic Stretching Routine",
             sets: 3,
             reps: "10 minutes",
+            met: 3.0,
           },
-          { name: "Foam Rolling", sets: 1, reps: "1 mins" },
+          { name: "Foam Rolling", sets: 1, reps: "1 mins", met: 1.5 },
         ],
       },
     ],
@@ -178,70 +228,120 @@ export const All = [
     img: Legacy,
     time: "60",
     calsBurned: 143,
-
-    desc: `Shredded Intense is a high-intensity total body workout program designed for individuals seeking to achieve a lean and sculpted physique. Tailored to the boxing category, the program combines dynamic exercises with focused intensity to target multiple muscle groups and elevate cardiovascular fitness.
-    `,
+    desc: `Shredded Intense is a high-intensity total body workout program designed for individuals seeking to achieve a lean and sculpted physique. Tailored to the boxing category, the program combines dynamic exercises with focused intensity to target multiple muscle groups and elevate cardiovascular fitness.`,
     tasks: 7,
     workouts: [
       {
+        day: 1,
         names: [
-          { name: "Shadow Boxing", reps: "5 mins", sets: 1, vid: shadowBoxing },
-          { name: "Push-Ups", reps: "10-15", sets: 3, vid: pushups },
-          { name: "Russian Twists", reps: "8-10", sets: 3, vid: russian },
-          { name: "Burpees", reps: "8-10", sets: 3, vid: burpees },
-          { name: "Mountian Climbers", reps: "10-15", sets: 3, vid: climbers },
+          {
+            name: "Shadow Boxing",
+            reps: "5 mins",
+            sets: 1,
+            vid: shadowBoxing,
+            met: 4.0,
+          },
+          { name: "Push-Ups", reps: "10-15", sets: 3, vid: pushups, met: 3.0 },
+          {
+            name: "Russian Twists",
+            reps: "8-10",
+            sets: 3,
+            vid: russian,
+            met: 3.0,
+          },
+          { name: "Burpees", reps: "8-10", sets: 3, vid: burpees, met: 8.0 },
+          {
+            name: "Mountain Climbers",
+            reps: "10-15",
+            sets: 3,
+            vid: climbers,
+            met: 8.0,
+          },
         ],
       },
       {
+        day: "day 2",
         names: [
-          { name: "Jump Rope", reps: "5 minutes", sets: 1, vid: jumprope },
+          {
+            name: "Jump Rope",
+            reps: "5 minutes",
+            sets: 1,
+            vid: jumprope,
+            met: 12.0,
+          },
           {
             name: "Shadow Boxing Intense",
             reps: "3 minutes",
             sets: 3,
             vid: shadowBoxing,
+            met: 8.0,
           },
           {
-            name: "Pylometric Lunges",
+            name: "Plyometric Lunges",
             reps: "10-15 reps",
             sets: 3,
             vid: pyloLunge,
+            met: 9.0,
           },
-          { name: "Plank Jacks", sets: 3, reps: "10-15 reps", vid: planks },
+          {
+            name: "Plank Jacks",
+            sets: 3,
+            reps: "10-15 reps",
+            vid: planks,
+            met: 6.0,
+          },
           {
             name: "Side-to-Side Sprawls",
             sets: 3,
             reps: "8-10 reps",
             vid: sidesprawls,
+            met: 10.0,
           },
         ],
       },
       {
+        day: "day 3",
         names: [
           {
             name: "Shadow Boxing",
             sets: 3,
             reps: "3 minutes",
             vid: shadowBoxing,
+            met: 4.0,
           },
           {
             name: "Leg Raises",
             sets: 3,
             reps: "10-12 reps",
             vid: leg_raise,
+            met: 2.5,
           },
           {
             name: "Mountain Climbers",
             sets: 3,
             reps: "10-15 reps",
             vid: climbers,
+            met: 8.0,
           },
-          { name: "Russian Twists", sets: 3, reps: "10-12 reps", vid: russian },
-          { name: "Burpees", sets: 3, reps: "8-10 reps", vid: burpees },
+          {
+            name: "Russian Twists",
+            sets: 3,
+            reps: "10-12 reps",
+            vid: russian,
+            met: 3.0,
+          },
+          {
+            name: "Burpees",
+            sets: 3,
+            reps: "8-10 reps",
+            vid: burpees,
+            met: 8.0,
+          },
         ],
       },
     ],
   },
+
   {
     name: "Blitzkrieg Shred",
     category: "HIIT",
@@ -255,6 +355,7 @@ export const All = [
     desc: `Blitzkrieg Shred is a dynamic and efficient HIIT (High-Intensity Interval Training) program designed for individuals ready to embark on an exhilarating journey toward fitness. This heart-pounding regimen focuses on utilizing your body weight to torch calories, sculpt muscles, and elevate your cardiovascular endurance.`,
     workouts: [
       {
+        day: 1,
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
           { name: "Burpees", sets: 1, reps: "1 minute intense", vid: burpees },
@@ -285,6 +386,7 @@ export const All = [
         ],
       },
       {
+        day: 2,
         names: [
           {
             name: "Warm-up",
@@ -319,6 +421,7 @@ export const All = [
         ],
       },
       {
+        day: 3,
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
           { name: "Push-ups", sets: 4, reps: "1 minute", vid: pushups },
@@ -334,6 +437,7 @@ export const All = [
         ],
       },
       {
+        day: 4,
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
           { name: "Burpees", sets: 1, reps: "1 minute intense", vid: burpees },
@@ -360,6 +464,7 @@ export const All = [
       },
     ],
   },
+
   {
     name: "Ninja Commando Challenge",
     category: "HIIT",
@@ -374,6 +479,7 @@ export const All = [
     desc: `Embark on the Ninja Commando Challenge, an exhilarating HIIT (High-Intensity Interval Training) regimen designed to sculpt your body into peak physical condition, just like a stealthy ninja warrior. This program blends intense cardio with strength-building exercises, targeting key muscle groups to enhance overall fitness and agility.`,
     workouts: [
       {
+        day: 1,
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
           { name: "Push-Ups", sets: 4, reps: "max out", vid: pushups },
@@ -390,6 +496,7 @@ export const All = [
         ],
       },
       {
+        day: 2,
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
           { name: "Burpees", sets: 5, reps: "10-12 reps", vid: burpees },
@@ -405,6 +512,7 @@ export const All = [
         ],
       },
       {
+        day: 3,
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
           { name: "Moderate Running", sets: 1, reps: "45-60 minutes" },
@@ -414,6 +522,7 @@ export const All = [
         ],
       },
       {
+        day: 4,
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
           {
@@ -452,6 +561,7 @@ export const All = [
     desc: `Muay Thai Fury is not just a workout; it's a journey into the heart of Muay Thai-inspired fitness. Whether you're a martial artist looking to enhance your skills or a fitness enthusiast craving a challenging and dynamic regimen, Muay Thai Fury is your path to unlocking strength, agility, and endurance. Embrace the power of Muay Thai and embark on the Fury to transform your body and skills!`,
     workouts: [
       {
+        day: 1,
         names: [
           {
             name: "Goblet Squats",
@@ -482,6 +592,7 @@ export const All = [
         ],
       },
       {
+        day: 2,
         names: [
           { name: "Plank", sets: 3, reps: "30-60 seconds", vid: planks },
           { name: "Russian Twists", sets: 3, reps: "10-12 reps", vid: russian },
@@ -500,6 +611,7 @@ export const All = [
         ],
       },
       {
+        day: 3,
         names: [
           { name: "Running", sets: 1, reps: "3-5 miles" },
           { name: "Cycling", sets: 1, reps: "20-30 minutes" },
@@ -520,9 +632,10 @@ export const All = [
     calsBurned: 143,
 
     desc: `Total body workout split focused on cardio and losing fat while getting shredded. This plan is 1 week long and can be used again to get stronger and more skilled.
-    `,
+  `,
     workouts: [
       {
+        day: 1,
         names: [
           { name: "Warm-up Cardio", reps: "10-15 mins", sets: 1 },
           {
@@ -543,6 +656,7 @@ export const All = [
         ],
       },
       {
+        day: 2,
         names: [
           { name: "Warm-up Cardio", sets: 1, reps: "10-15 mins" },
           {
@@ -563,6 +677,7 @@ export const All = [
         ],
       },
       {
+        day: 3,
         names: [
           { name: "Warm-up", sets: 1, reps: "10-15 mins" },
           { name: "Jump Squats", sets: 4, reps: "15 reps", vid: sqautjumps },
