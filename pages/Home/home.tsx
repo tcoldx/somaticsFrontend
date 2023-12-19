@@ -66,14 +66,16 @@ const Home = ({
   };
   useEffect(() => {
     const user = auth.currentUser;
-    const userRef = firebase.firestore().collection("users").doc(user.uid);
-    const fetchUserData = async () => {
-      const userData = await userRef.get();
-      const usersData = userData.data();
-      let backendName = usersData.name;
-      setFetchedName(backendName);
-    };
-    fetchUserData();
+    if (user) {
+      const userRef = firebase.firestore().collection("users").doc(user.uid);
+      const fetchUserData = async () => {
+        const userData = await userRef.get();
+        const usersData = userData.data();
+        let backendName = usersData.name;
+        setFetchedName(backendName);
+      };
+      fetchUserData();
+    }
   }, []);
 
   return (

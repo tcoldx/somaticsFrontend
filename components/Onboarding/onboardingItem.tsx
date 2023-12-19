@@ -54,6 +54,7 @@ const OnboardingItem = ({
   const [goals, setGoals] = useState<Object[]>([]);
   const [selectedInch, setSelectedInch] = useState("");
   const [selectedFoot, setSelectedFoot] = useState("");
+
   const handleChange = async (text: any) => {
     setName(text);
     await AsyncStorage.mergeItem(
@@ -99,22 +100,27 @@ const OnboardingItem = ({
 
   const handleAuthentication = async () => {
     const objVal = await AsyncStorage.getItem("user2");
+
     if (checkIfEmail(email) && password && name && objVal) {
       setLoading(true);
-      username(name);
 
       createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
           const user = userCredential.user;
-          await db.collection("users").doc(user.uid).set(JSON.parse(objVal));
-        })
 
+          // Save user data to Firestore
+          await db.collection("users").doc(user.uid).set(JSON.parse(objVal));
+
+          // Save user data to AsyncStorage (optional, but can be useful for consistency)
+          await AsyncStorage.setItem("user2", objVal);
+        })
         .catch((err) => {
           console.log(err.message);
+        })
+        .finally(() => {
           setLoading(false);
+          navigation.navigate("home");
         });
-      setLoading(false);
-      navigation.navigate("home");
     }
   };
   const StyledViewOne = styled(View);
