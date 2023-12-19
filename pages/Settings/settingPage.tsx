@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { styles } from "./settingPage.styles";
 import { AntDesign } from "@expo/vector-icons";
 import FooterNav from "../../components/FooterNav/footernav";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import {
   SafeAreaView,
   ScrollView,
@@ -34,9 +36,13 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
     fetchUserData();
   }, []);
 
-  const handleClick = (val: string): void => {
+  // log the user out and remove the users login details only when initially logged out
+  const handleClick = async (val: string) => {
     if (val === "Log out") {
-      auth.signOut();
+      await auth.signOut();
+      await AsyncStorage.removeItem("userToken");
+      await AsyncStorage.removeItem("userEmail");
+      await AsyncStorage.removeItem("userName");
       navigation.navigate("landing");
     }
   };
@@ -46,9 +52,6 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
     { title: "Email", subtitle: email ? email : newEmail },
     { title: "Username", subtitle: name ? name : newName },
     { title: "Gender", subtitle: gender ? gender : newGender },
-    { title: "Language", subtitle: null },
-    { title: "About You", subtitle: null },
-    { title: "Workout goals", subtitle: null },
   ];
 
   const appSection = [
@@ -56,57 +59,70 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
     { title: "About Somatics", subtitle: null },
   ];
 
-  const accountSection = [
-    { title: "Delete Account", subtitle: null },
-    { title: "Log out", subtitle: null },
-  ];
+  const accountSection = [{ title: "Log out", subtitle: null }];
 
   // Function to map through a section of the settings and display each option consistently
-  function SettingsSection ({ section }) {
-      return (
-        <View style={styles.container}>
-          {section.map(({ title, subtitle }, index: number) => {
-            return (
-            <TouchableOpacity style={styles.option} onPress={() => handleClick(title)} key={title}>
+  function SettingsSection({ section }) {
+    return (
+      <View style={styles.container}>
+        {section.map(({ title, subtitle }, index: number) => {
+          return (
+            <TouchableOpacity
+              style={styles.option}
+              onPress={() => handleClick(title)}
+              key={title}
+              activeOpacity={title == "Log out" ? 0 : 1}
+            >
               <Text style={styles.title}>{title}</Text>
               {/* If a subtitle exists, display it */}
-              {subtitle != null && <Text style={styles.subtitle}>{subtitle}</Text>}
+              {subtitle != null && (
+                <Text style={styles.subtitle}>{subtitle}</Text>
+              )}
               {/* Create a divider on every element but the last one */}
               {index < section.length - 1 && <View style={styles.hr} />}
               {/* Display an appropriate icon based on the title */}
-              <AntDesign 
-                style={styles.optionIcon} 
-                name={title == "Log out" ? "logout" : title == "Delete Account" ? "delete" : "right"} 
-                size={20} 
-                color="rgba(255, 255, 255, 0.5)" 
+              <AntDesign
+                style={styles.optionIcon}
+                name={
+                  title == "Log out"
+                    ? "logout"
+                    : title == "Delete Account"
+                    ? "delete"
+                    : null
+                }
+                size={20}
+                color="rgba(255, 255, 255, 0.5)"
               />
             </TouchableOpacity>
           );
-          })}
-        </View>
-      )
+        })}
+      </View>
+    );
   }
 
   return (
     <>
-        <SafeAreaView style={{ backgroundColor: "#0C0C0C", flex: 1 }}>
-          {/* Settings options, split into sections */}
-          <ScrollView contentContainerStyle={styles.containerItems} style={styles.sectionContainer}>
-            <SettingsSection section={profileSection} />
-            <View style={styles.sectionTitleContainer}>
-              <AntDesign name="info" height={12} color="white" />
-              <Text style={styles.sectionTitle}>App Information</Text>
-            </View>
-            <SettingsSection section={appSection} />
-            <View style={styles.sectionTitleContainer}>
-              <AntDesign name="user" height={12} color="white" />
-              <Text style={styles.sectionTitle}>Account Management</Text>
-            </View>
-            <SettingsSection section={accountSection} />
-          </ScrollView>
-        </SafeAreaView>
-        {/* Navigation bar */}
-        <FooterNav navigation={navigation} />
+      <SafeAreaView style={{ backgroundColor: "#0C0C0C", flex: 1 }}>
+        {/* Settings options, split into sections */}
+        <ScrollView
+          contentContainerStyle={styles.containerItems}
+          style={styles.sectionContainer}
+        >
+          <SettingsSection section={profileSection} />
+          <View style={styles.sectionTitleContainer}>
+            <AntDesign name="info" height={12} color="white" />
+            <Text style={styles.sectionTitle}>App Information</Text>
+          </View>
+          <SettingsSection section={appSection} />
+          <View style={styles.sectionTitleContainer}>
+            <AntDesign name="user" height={12} color="white" />
+            <Text style={styles.sectionTitle}>Account Management</Text>
+          </View>
+          <SettingsSection section={accountSection} />
+        </ScrollView>
+      </SafeAreaView>
+      {/* Navigation bar */}
+      <FooterNav navigation={navigation} />
     </>
   );
 };

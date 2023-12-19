@@ -8,7 +8,6 @@ import {
 import React, { useEffect, useState } from "react";
 import { styles } from "./statistics.styles";
 import { auth, firebase } from "../../firebase";
-import { getFirestore, doc, updateDoc, Timestamp } from "firebase/firestore";
 import moment from "moment";
 import { Skeleton } from "@rneui/themed";
 import { BlurView } from "expo-blur";
@@ -39,10 +38,10 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
       const copyOfWorkout = Object.assign({}, doc.data());
       list.push({
         name: copyOfWorkout.header.name,
-        calories: copyOfWorkout.header.calsBurned,
         id: doc.id,
         workoutId: copyOfWorkout.workoutId,
-        workout_in_minutes: copyOfWorkout.workout_in_minutes,
+        calories_burned: copyOfWorkout.calories_burned,
+        total_time_minutes: copyOfWorkout.total_time_minutes,
         date: copyOfWorkout.createdAt,
         day: copyOfWorkout.day,
       });
@@ -96,15 +95,16 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   useEffect(() => {
     workoutChartAlgorithm();
   }, [panel, workoutHistory]);
-
-  const calories = workoutHistory.map((el: any) => el.calories);
+  const calories = workoutHistory.map((el: any) => el.calories_burned);
   let sum = 0;
+  let calSum = 0;
+  console.log("total cals", calories);
   const totalCalories = calories.reduce(
     (acc: number, curr: number) => acc + curr,
-    sum
+    calSum
   );
   const minutes_from_backend = workoutHistory.map(
-    (el) => el.workout_in_minutes
+    (el) => el.total_time_minutes
   );
   const totalMinutes = minutes_from_backend.reduce(
     (acc: number, curr: number) => acc + curr,
@@ -142,6 +142,12 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
           >
             <Text style={{ color: "white", fontWeight: "bold" }}>Delete</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setPanel(false)}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>Close</Text>
+          </TouchableOpacity>
         </View>
       )}
       <View style={styles.chartContainer}>
@@ -169,7 +175,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
             }}
           >
             <Text style={{ fontWeight: "bold", fontSize: 15, color: "white" }}>
-              {workoutHistory.length ? totalCalories : 0}
+              {workoutHistory.length ? Math.round(totalCalories) : 0}
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 13, color: "gray" }}>
               KCal Burnt
@@ -197,7 +203,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
             }}
           >
             <Text style={{ fontWeight: "bold", fontSize: 15, color: "white" }}>
-              {totalMinutes}m
+              {Math.round(totalMinutes)}m
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 13, color: "gray" }}>
               Total Time

@@ -17,6 +17,7 @@ import LevelUpPopUp from "../../components/LevelUpPopup/levelupPopUp";
 import { firebase, auth } from "../../firebase";
 import WorkoutDetailItem from "../../components/WorkoutDetailItem/workoutdetailitem";
 import SwipeWorkout from "../../components/SwipeWorkoutContainer/swipeworkout";
+import { All } from "../../utils/workouts";
 import { BottomSheetMethods } from "../../components/SwipeWorkoutContainer/swipeworkout";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 interface DetailProps {
@@ -34,15 +35,63 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const [minutes, setMinutes] = useState<number>(0);
   const [seconds, setSeconds] = useState<number>(0);
   const [hours, setHours] = useState<number>(0);
+  const [timedMinutes, setTimedMinutes] = useState(0);
+  const [timedSeconds, setTimedSeconds] = useState(0);
+  const [timedHours, setTimedHours] = useState(0);
   const [savedTime, setSavedTime] = useState<any>("");
+  const [timedWorkouts, setTimedWorkouts] = useState<any>([]);
   const [workoutDB, setWorkoutDB] = useState<any>([]);
+  const [fetchedWeight, setFetchedWeight] = useState<any>("");
+  const currentLabel = details.workouts[currentDay].names;
+  const workoutDaysArray = All.map((el) => el.workouts);
+  let theDay = workoutDaysArray[0][currentDay].day;
+
   const handleStart = () => {
     setOpen(true);
     setStart(true);
   };
   const handleStep = () => {
+    // when the user click next step the timer resets for the workout and eac workout has its own saved time
+    // after workout time for that specific workout is saved in an array
+    // the total calories in the algorithm from all the workouts based on the TIME from each of them
+    // WILL be calculated!
+    setTimedWorkouts((prevDurations) => [
+      ...prevDurations,
+      {
+        name: currentLabel[position].name,
+        duration: timedHours * 60 + timedMinutes + timedSeconds / 60,
+      },
+    ]);
+    setTimedMinutes(0);
+    setTimedHours(0);
+    setTimedSeconds(0);
+    handleStopTime();
+    let totalCaloriesBurned = calculateTotalCaloriesBurned(timedWorkouts);
     if (position === currentLabel.length - 1) {
       setPosition(0);
+      let totalCaloriesBurned = calculateTotalCaloriesBurned(timedWorkouts);
+      let totalMinutes = hours * 60 + minutes + seconds / 60;
+      if (details) {
+        const userId = auth.currentUser.uid;
+        const data = {
+          header: details,
+          id: userId,
+          createdAt: timeStamp,
+          calories_burned: totalCaloriesBurned,
+          total_time_minutes: totalMinutes,
+          total_workout_time: savedTime,
+          workoutId: `${Math.random()}-${Math.random()}`,
+          day: theDay,
+        };
+        const workoutRef = firebase.firestore().collection("programs");
+
+        workoutRef
+          .add(data)
+          .then(() => {
+            setWorkoutDB([]);
+          })
+          .catch((err) => console.log(err));
+      }
       setStop(true);
       const nextDay = currentDay + 1;
       {
@@ -53,67 +102,88 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
 
       setCurrentDay(updatedDay);
       saveCurrentDay(updatedDay);
-
       return;
     }
-    setPosition(position + 1);
+    if (!stop) {
+      setPosition(position + 1);
+    }
   };
 
-  const calculate_calories_burned = () => {};
-  // the algorithm that will get the timer to work!
+  // calories burned calculator
+
+  const fetchData = async () => {
+    const usersId = auth.currentUser.uid;
+    const userRef = firebase.firestore().collection("users").doc(usersId);
+    const doc = await userRef.get();
+
+    if (doc.exists) {
+      const userData = doc.data();
+      setFetchedWeight(userData.weight);
+    } else {
+      console.log("No such document!");
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
-      if (seconds == 59) {
-        setMinutes((prevMinutes) => prevMinutes + 1);
-        setSeconds(0);
-      } else {
-        setSeconds((prevSecs) => prevSecs + 1);
-      }
-      if (minutes == 59) {
-        setHours((prevHours) => prevHours + 1);
-        setMinutes(0);
-      }
+      setSeconds((prevSecs) => (prevSecs === 59 ? 0 : prevSecs + 1));
+      setTimedSeconds((prevSecs) => (prevSecs === 59 ? 0 : prevSecs + 1));
+
+      setMinutes((prevMinutes) =>
+        timedSeconds === 59 ? prevMinutes + 1 : prevMinutes
+      );
+      setTimedMinutes((prevMinutes) =>
+        timedSeconds === 59 ? prevMinutes + 1 : prevMinutes
+      );
+
+      setHours((prevHours) =>
+        timedMinutes === 59 && timedSeconds === 59 ? prevHours + 1 : prevHours
+      );
+      setTimedHours((prevHours) =>
+        timedMinutes === 59 && timedSeconds === 59 ? prevHours + 1 : prevHours
+      );
     }, 1000);
     return () => clearInterval(interval);
   }, [seconds]);
 
   useEffect(() => {
     loadCurrentDay();
-  }, []);
+  }, [currentDay]);
+  const calculateTotalCaloriesBurned = (workoutDurations: any) => {
+    // Initialize total calories burned
+    let totalCaloriesBurned = 0;
 
-  const currentLabel = details.workouts[currentDay].names;
+    // Assuming the formula is caloriesBurned = MET * weight * duration (in minutes) / 60
+    const weight = fetchedWeight; // Replace this with the actual user weight
+
+    // Loop through each workout in the array
+    workoutDurations.forEach((workout) => {
+      console.log("workout", workout.duration);
+      // Assuming MET is stored in currentLabel.names as an array
+      const MET = currentLabel.find(
+        (exercise) => exercise.name === workout.name
+      )?.met;
+
+      if (MET && weight) {
+        // Calculate calories burned using the formula
+
+        const caloriesBurnedForExercise =
+          (MET * weight * workout.duration) / 60;
+        totalCaloriesBurned += caloriesBurnedForExercise;
+      }
+    });
+
+    return totalCaloriesBurned;
+  };
   const timeStamp = firebase.firestore.FieldValue.serverTimestamp();
   const flatListRef = useRef<FlatList>(null);
-  useEffect(() => {
-    if (savedTime) {
-      console.log("saved timesaa!: ", savedTime);
-    }
-  }, [savedTime]);
   const handleDone = (): void => {
     // call stop time cause that means the workout is finished
     handleStopTime();
-    console.log("savedTime!: ", savedTime);
-    var workout_in_minutes = Math.round(hours * 60 + minutes + seconds / 60);
-    if (details) {
-      const userId = auth.currentUser.uid;
-      const data = {
-        header: details,
-        id: userId,
-        createdAt: timeStamp,
-        workoutTime: savedTime,
-        workout_in_minutes,
-        workoutId: `${Math.random()}-${Math.random()}`,
-        day: currentDay == 0 ? "1" : currentDay,
-      };
-      const workoutRef = firebase.firestore().collection("programs");
-
-      workoutRef
-        .add(data)
-        .then(() => {
-          setWorkoutDB([]);
-        })
-        .catch((err) => console.log(err));
-    }
   };
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
   const loadCurrentDay = async () => {
@@ -138,15 +208,14 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   // function to save the time, and then we send it to statistics for eval!
   const handleStopTime = () => {
     // if stop is true, finished workout is selected
-    if (stop) {
-      setSavedTime((prevSavedTime: any) => {
-        const currentTime = `${hours}:${minutes}:${seconds}`;
-        const newSavedTime = prevSavedTime
-          ? `${prevSavedTime}, ${currentTime}`
-          : currentTime;
-        return newSavedTime;
-      });
-    }
+
+    setSavedTime((prevSavedTime: any) => {
+      const currentTime = `${hours}:${minutes}:${seconds}`;
+      const newSavedTime = prevSavedTime
+        ? `${prevSavedTime}, ${currentTime}`
+        : currentTime;
+      return newSavedTime;
+    });
   };
 
   return (

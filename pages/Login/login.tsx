@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,7 +16,8 @@ import { login } from "./styles.login";
 import SomaLogo from "../../assets/somaticLogo.png";
 import { firebase } from "../../firebase";
 import { checkIfEmail } from "../../utils/checkEmail";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, User } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface loginProps {
   navigation: any;
@@ -28,13 +29,76 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const auth = getAuth();
+  useEffect(() => {
+    // Listen for changes in the authentication state
+    const auth = getAuth();
+
+    // Listen for changes in the ID token (token refresh)
+    const unsubscribeToken = auth.onIdTokenChanged(
+      async (user: User | null) => {
+        if (user) {
+          const token = await user.getIdToken();
+          try {
+            // Save the token to AsyncStorage
+            await AsyncStorage.setItem("userToken", token);
+
+            // Save user information to AsyncStorage
+            await AsyncStorage.setItem("userEmail", user.email || "");
+            await AsyncStorage.setItem("userName", user.displayName || "");
+          } catch (error) {
+            console.error(
+              "Error saving user data to AsyncStorage:",
+              error.message
+            );
+          } finally {
+            setLoading(false);
+          }
+        }
+      }
+    );
+
+    // Check for a stored token on app launch
+    const checkStoredToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem("userToken");
+        if (storedToken) {
+          // Retrieve user information from AsyncStorage
+          const userEmail = await AsyncStorage.getItem("userEmail");
+          const userName = await AsyncStorage.getItem("userName");
+          const password = await AsyncStorage.getItem("userPassword");
+          // Use the stored token to authenticate the user
+          await signInWithEmailAndPassword(auth, userEmail, password); // Use user's email and a placeholder password
+          navigation.navigate("home");
+          // Now you can use userEmail and userName as needed
+
+          console.log("User authenticated using stored token");
+        }
+      } catch (error) {
+        console.error(
+          "Error retrieving user token from AsyncStorage:",
+          error.message
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkStoredToken();
+
+    return () => {
+      unsubscribeToken();
+    };
+  }, []); // Run only once when component mounts
 
   const handleLoginAuth = async () => {
     if (checkIfEmail(email) && password) {
+      await AsyncStorage.setItem("userPassword", password);
+
       await signInWithEmailAndPassword(auth, email, password);
 
       auth.onAuthStateChanged(async (user) => {
         if (user) {
+          // User is signed in
           setLoading(true);
           const userRef = firebase
             .firestore()
@@ -50,6 +114,7 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
     }
     return;
   };
+
   if (loading) {
     return (
       <View style={login.loadingContainer}>
@@ -71,11 +136,7 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
           }}
         >
           <Image source={SomaLogo} style={login.logo} />
-          <Text
-            style={login.title}
-          >
-            Somatics
-          </Text>
+          <Text style={login.title}>Somatics</Text>
         </View>
         <View
           style={{
@@ -132,21 +193,21 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
             </Text>
           </View>
         </View>
-          <TouchableOpacity
-            onPress={handleLoginAuth}
-            style={login.loginButtonWrap}
-          >
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 15 }}>
-              Log in
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={login.goBack}
-            onPress={() => navigation.navigate("landing")}
-          >
-            <Text style={login.go}>Go</Text>
-            <Text style={login.back}>back</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleLoginAuth}
+          style={login.loginButtonWrap}
+        >
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 15 }}>
+            Log in
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={login.goBack}
+          onPress={() => navigation.navigate("landing")}
+        >
+          <Text style={login.go}>Go</Text>
+          <Text style={login.back}>back</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
