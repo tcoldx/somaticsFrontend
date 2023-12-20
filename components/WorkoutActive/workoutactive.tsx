@@ -1,8 +1,11 @@
 import { View, Text } from "react-native";
 import { Stopwatch } from "react-native-stopwatch-timer";
-import React from "react";
+import React, { useState } from "react";
 import StepIndicator from "react-native-step-indicator";
 import { styles, Container } from "./workoutactive.styles";
+import { AntDesign } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
 interface workoutProps {
   position: number;
   timeStart: boolean;
@@ -42,6 +45,7 @@ const WorkoutActive = ({
     labelSize: 13,
     currentStepLabelColor: "#fe7013",
   };
+  const [open, setOpen] = useState<boolean>(false);
   const labeler = workouts.map((el: any) => el.name);
   return (
     <View style={Container(opened)}>
@@ -55,14 +59,33 @@ const WorkoutActive = ({
             stepCount={data.length}
             renderLabel={({ position }) => {
               return (
-                <View style={styles.labelContainer}>
-                  <Text style={styles.label}>{data[position].name}</Text>
-                  <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
-                    sets: {data[position].sets}
-                  </Text>
-                  <Text style={(styles.label, { marginTop: 5, color: "gray" })}>
-                    reps: {data[position].reps}
-                  </Text>
+                <View style={styles.outerContainer}>
+                  {/* the left side */}
+                  <View style={styles.labelContainer}>
+                    <Text style={styles.label}>{data[position].name}</Text>
+                    <Text
+                      style={(styles.label, { marginTop: 5, color: "gray" })}
+                    >
+                      sets: {data[position].sets}
+                    </Text>
+                    <Text
+                      style={(styles.label, { marginTop: 5, color: "gray" })}
+                    >
+                      reps: {data[position].reps}
+                    </Text>
+                  </View>
+                  {/* the right side */}
+                  <TouchableOpacity
+                    style={{ width: 100, height: 100, zIndex: 3 }}
+                    onPress={() => {
+                      setOpen(true);
+                    }}
+                  >
+                    <AntDesign name="arrowright" color="white" size={30} />
+                  </TouchableOpacity>
+                  <View style={styles.descriptionContainer}>
+                    <Text>{}</Text>
+                  </View>
                 </View>
               );
             }}

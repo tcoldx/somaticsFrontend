@@ -66,7 +66,6 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
     setTimedHours(0);
     setTimedSeconds(0);
     handleStopTime();
-    let totalCaloriesBurned = calculateTotalCaloriesBurned(timedWorkouts);
     if (position === currentLabel.length - 1) {
       setPosition(0);
       let totalCaloriesBurned = calculateTotalCaloriesBurned(timedWorkouts);
@@ -162,7 +161,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
 
     // Loop through each workout in the array
     workoutDurations.forEach((workout) => {
-      console.log("workout", workout.duration);
+      console.log("workout", workout);
       // Assuming MET is stored in currentLabel.names as an array
       const MET = currentLabel.find(
         (exercise) => exercise.name === workout.name
@@ -170,9 +169,9 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
 
       if (MET && weight) {
         // Calculate calories burned using the formula
-
+        const durationInMinutes = Math.round(workout.duration);
         const caloriesBurnedForExercise =
-          (MET * weight * workout.duration) / 60;
+          (MET * weight * durationInMinutes) / 60;
         totalCaloriesBurned += caloriesBurnedForExercise;
       }
     });
