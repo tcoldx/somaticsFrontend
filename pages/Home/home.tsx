@@ -15,8 +15,8 @@ import CollectionList from "../../components/CollectionList/CollectionList";
 import FooterNav from "../../components/FooterNav/footernav";
 import Notification from "../../components/Notification/notification";
 import Payscreen from "../../components/Payscreen/Payscreen";
-
 import { auth, firebase } from "../../firebase";
+import { BlurView } from "expo-blur";
 
 import {
   durationTypes,
@@ -132,19 +132,19 @@ const Home = ({
             </View>
           </View>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={home(width, height).rightNotif}
             onPress={handleNotifOpen}
           >
             <Text style={{ color: "white" }}>
               <AntDesign name="bells" size={24} color="white" />
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
-        {openNotif ? <Notification /> : null}
-        <View style={header.container}>
+        {/* {openNotif ? <Notification /> : null} */}
+        {/* <View style={header.container}>
           <SearchBar />
-        </View>
+        </View> */}
         {/* section header container*/}
         <View style={home(width, height).subheading}>
           {sectionTypes.map((item) => {
@@ -227,106 +227,16 @@ const Home = ({
             <View
               style={{
                 display: "flex",
-                flexDirection: "column",
-                width: "87%",
-                marginTop: 10,
-                justifyContent: "space-evenly",
+                alignItems: "center",
+                width: "100%",
                 height: "100%",
+                justifyContent: "center",
+                marginTop: "50%",
               }}
             >
-              <View
-                style={{ display: "flex", flexDirection: "column", gap: 10 }}
-              >
-                <Text style={{ fontWeight: "bold", color: "white" }}>
-                  By Type
-                </Text>
-                <ScrollView
-                  style={{
-                    flex: 1,
-                  }}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                >
-                  <View style={home(width, height).workoutTypeWrap}>
-                    {sectionTypes.map((el) => {
-                      return (
-                        <View
-                          style={home(null, null).workoutTypeContainer}
-                          key={el.id}
-                        >
-                          <Text style={{ color: "white", fontWeight: "bold" }}>
-                            {el.name}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                </ScrollView>
-              </View>
-              {/*end of list one*/}
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 10,
-                }}
-              >
-                <Text style={{ fontWeight: "bold", color: "white" }}>
-                  By Duration
-                </Text>
-                <ScrollView
-                  style={{
-                    flex: 1,
-                  }}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                >
-                  <View style={home(width, height).workoutTypeWrap}>
-                    {durationTypes.map((el) => {
-                      return (
-                        <View
-                          style={home(width, height).workoutTypeContainer}
-                          key={el.id}
-                        >
-                          <Text style={{ color: "white", fontWeight: "bold" }}>
-                            {el.name}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                </ScrollView>
-              </View>
-              {/**end of list two */}
-              <View
-                style={{ display: "flex", flexDirection: "column", gap: 10 }}
-              >
-                <Text style={{ fontWeight: "bold", color: "white" }}>
-                  By Body Part
-                </Text>
-                <ScrollView
-                  style={{
-                    flex: 1,
-                  }}
-                  showsHorizontalScrollIndicator={false}
-                  horizontal
-                >
-                  <View style={home(width, height).workoutTypeWrap}>
-                    {bodyPartTypes.map((el) => {
-                      return (
-                        <View
-                          style={home(null, null).workoutTypeContainer}
-                          key={el.id}
-                        >
-                          <Text style={{ color: "white", fontWeight: "bold" }}>
-                            {el.name}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                </ScrollView>
-              </View>
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Coming soon!
+              </Text>
             </View>
           )}
           {currentSelect == "Programs" && (
@@ -334,13 +244,14 @@ const Home = ({
               style={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
                 width: "100%",
-                height: height / 3,
+                height: "100%",
+                justifyContent: "center",
+                marginTop: "50%",
               }}
             >
               <Text style={{ color: "white", fontWeight: "bold" }}>
-                Coming Soon!
+                Coming soon!
               </Text>
             </View>
           )}

@@ -241,7 +241,17 @@ export const All = [
             vid: shadowBoxing,
             met: 4.0,
           },
-          { name: "Push-Ups", reps: "10-15", sets: 3, vid: pushups, met: 3.0 },
+          {
+            name: "Push-Ups",
+            reps: "10-15",
+            sets: 3,
+            vid: pushups,
+            met: 3.0,
+            desc: `Begin in a plank position with your hands placed slightly wider than shoulder-width apart.Your wrists should be aligned with your shoulders, and your fingers should point forward,
+          Maintain a straight line from your head to your heels. Engage your core muscles to keep your body in a straight, neutral position.Bend your elbows and lower your body toward the ground.
+          Keep your elbows at a 90-degree angle, pointing backward rather than flaring out to the sides. Inhale as you lower your body.
+          Exhale as you push back up to the starting position.`,
+          },
           {
             name: "Russian Twists",
             reps: "8-10",
