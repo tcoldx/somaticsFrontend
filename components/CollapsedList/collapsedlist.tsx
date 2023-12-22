@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, Dimensions, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Styles } from "./collapsedlist.styles";
@@ -6,11 +6,12 @@ import { Styles } from "./collapsedlist.styles";
 interface Props {
   item: any;
   opened: boolean;
+  realItem: any;
 }
 
 const { height, width } = Dimensions.get("screen");
 
-const CollapsedList = ({ item, opened }: Props) => {
+const CollapsedList = ({ item, opened, realItem }: Props) => {
   return (
     <View
       style={{
@@ -33,10 +34,14 @@ const CollapsedList = ({ item, opened }: Props) => {
       >
         <View style={Styles.leftSide}>
           <Text style={{ color: "white", fontWeight: "bold" }}>
-            {item.name}
+            {realItem.name}
           </Text>
-          <Text style={{ marginTop: 5, color: "gray" }}>Sets: {item.sets}</Text>
-          <Text style={{ marginTop: 5, color: "gray" }}>Reps: {item.reps}</Text>
+          <Text style={{ marginTop: 5, color: "gray" }}>
+            Sets: {realItem.sets}
+          </Text>
+          <Text style={{ marginTop: 5, color: "gray" }}>
+            Reps: {realItem.reps}
+          </Text>
         </View>
       </View>
     </View>

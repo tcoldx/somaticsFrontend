@@ -60,21 +60,28 @@ const SwipeWorkout = React.forwardRef(
     const topAnimation = useSharedValue(closeHeight);
     const [opened, setOpened] = useState(true);
     const context = useSharedValue(0);
+
+    // Update the scroll position whenever the 'opened' state changes
+
+    // Update the scroll position whenever the 'opened' state changes
     useEffect(() => {
       flatRef.current?.scrollToIndex({
         index: position,
         animated: true,
       });
-    }, [position]);
+    }, [opened]);
+
     const expand = useCallback(() => {
       "worklet";
       topAnimation.value = withTiming(openHeight);
-    }, [openHeight, topAnimation]);
+      runOnJS(setOpened)(true);
+    }, [openHeight, topAnimation, position]);
 
     const close = useCallback(() => {
       "worklet";
       topAnimation.value = withTiming(closeHeight);
-    }, [closeHeight, topAnimation]);
+      runOnJS(setOpened)(false);
+    }, [closeHeight, topAnimation, position]);
 
     useImperativeHandle(
       ref,
@@ -98,19 +105,16 @@ const SwipeWorkout = React.forwardRef(
         context.value = topAnimation.value;
       })
       .onUpdate((event) => {
-        if (event.translationY <= 250) {
-          // this is how you can call hooks in these type of functions!! nice :D
+        if (event.translationY <= 0) {
+          // User is swiping down
           runOnJS(setOpened)(false);
-        } else {
-          runOnJS(setOpened)(true);
-        }
-
-        if (event.translationY < 0) {
-          topAnimation.value = withSpring(openHeight, {
+          topAnimation.value = withSpring(event.translationY + context.value, {
             damping: 100,
             stiffness: 400,
           });
         } else {
+          // User is swiping up
+          runOnJS(setOpened)(true);
           topAnimation.value = withSpring(event.translationY + context.value, {
             damping: 100,
             stiffness: 400,
@@ -118,18 +122,21 @@ const SwipeWorkout = React.forwardRef(
         }
       })
       .onEnd((event) => {
-        if (topAnimation.value > openHeight + 50) {
+        if (event.translationY > 0) {
+          // User swiped down, close the container
           topAnimation.value = withSpring(closeHeight, {
             damping: 100,
             stiffness: 400,
           });
         } else {
+          // User swiped up, open the container
           topAnimation.value = withSpring(openHeight, {
             damping: 100,
             stiffness: 400,
           });
         }
       });
+
     return (
       <GestureDetector gesture={pan}>
         <Animated.View style={[styles.container, animationStyle]}>
@@ -163,7 +170,13 @@ const SwipeWorkout = React.forwardRef(
               scrollEnabled={false}
               data={currentLabel}
               renderItem={({ item }: any) => {
-                return <CollapsedList item={item} opened={opened} />;
+                return (
+                  <CollapsedList
+                    item={item}
+                    realItem={currentLabel[position]}
+                    opened={opened}
+                  />
+                );
               }}
             />
 

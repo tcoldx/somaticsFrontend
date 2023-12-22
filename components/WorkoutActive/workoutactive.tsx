@@ -83,9 +83,9 @@ const WorkoutActive = ({
                   >
                     <AntDesign name="arrowright" color="white" size={30} />
                   </TouchableOpacity>
-                  <View style={styles.descriptionContainer}>
+                  {/* <View style={styles.descriptionContainer}>
                     <Text>{}</Text>
-                  </View>
+                  </View> */}
                 </View>
               );
             }}

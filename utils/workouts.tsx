@@ -1,9 +1,8 @@
 import boxImg from "./glebBox.jpg";
 import Legacy from "../assets/legacy.png";
 import latPulls from "./videoCache/lat_pulls.mp4";
-import heavyBag from "./heavybag.jpg";
+import bulgariansplits from "./videoCache/bulgariansplits.mp4";
 import muayFit from "./muaythai.jpg";
-import armyFit from "./armyfit.jpg";
 import bodyCard from "./bodycard.jpg";
 import squat from "./videoCache/sqauts.mp4";
 import militaryShoulder from "./videoCache/militaryPress.mp4";
@@ -40,6 +39,10 @@ import pull_ups from "./videoCache/Pull_ups.mp4";
 import leg_raise from "./videoCache/leg_raise.mp4";
 import ninjaga from "./ninjaz.jpg";
 import thai_fury from "./thai_fury.jpg";
+import jogging from "./videoCache/jogging.mp4";
+import battleropes from "./videoCache/battlerope.mp4";
+import planktaps from "./videoCache/plankshouldtap.mp4";
+import bicycle_crunch from "./videoCache/bicycleCr.mp4";
 export const All = [
   {
     name: "Boxing Fitness",
@@ -62,7 +65,7 @@ export const All = [
           {
             name: "Pull-Ups or Lat Pulldowns",
             vid: latPulls,
-            set: 3,
+            sets: 3,
             reps: "8-10",
             met: 3.0,
           },
@@ -93,45 +96,44 @@ export const All = [
         day: "day 2",
         names: [
           { name: "Jump Rope", sets: 1, reps: 5, vid: jumprope, met: 12.0 },
+
+          { name: "Burpees", sets: 1, reps: 10, vid: burpees, met: 8.0 },
           {
-            name: "Circuit Training",
-            reps: 1,
-            sets: 3,
-            subCategory: [
-              { name: "Burpees", sets: 1, reps: 10, vid: burpees, met: 8.0 },
-              {
-                name: "Mountain Climbers",
-                sets: 1,
-                reps: 20,
-                vid: climbers,
-                met: 8.0,
-              },
-              {
-                name: "High Knees",
-                sets: 1,
-                reps: "30 seconds",
-                vid: highknees,
-                met: 8.0,
-              },
-              {
-                name: "Plank",
-                sets: 1,
-                reps: "45 seconds",
-                vid: planks,
-                met: 2.0,
-              },
-              { name: "Bicycle Crunches", sets: 1, reps: 20, met: 4.0 },
-            ],
+            name: "Mountain Climbers",
+            sets: 1,
+            reps: 20,
+            vid: climbers,
+            met: 8.0,
           },
-          { name: "Interval Sprints", reps: "30 seconds", sets: 1, met: 15.0 },
+          {
+            name: "High Knees",
+            sets: 1,
+            reps: "30 seconds",
+            vid: highknees,
+            met: 8.0,
+          },
+          {
+            name: "Plank",
+            sets: 1,
+            reps: "45 seconds",
+            vid: planks,
+            met: 2.0,
+          },
+          {
+            name: "Bicycle Crunches",
+            sets: 1,
+            reps: 20,
+            met: 4.0,
+            vid: bicycle_crunch,
+          },
         ],
       },
       {
         day: "day 3",
         names: [
           {
-            name: "Agility Ladder Drills",
-            sets: "3-4",
+            name: "Burpees",
+            sets: "1",
             reps: "30-40",
             met: 6.0,
           },
@@ -203,18 +205,43 @@ export const All = [
         day: "day 5",
         names: [
           {
-            name: "Light Jogging or Cycling",
-            sets: 1,
-            reps: "20-30 minutes",
-            met: 7.0,
+            name: "Shadow Boxing",
+            sets: 3,
+            reps: "3 minutes",
+            met: 4.0,
+            vid: shadowBoxing,
           },
           {
-            name: "Dynamic Stretching Routine",
+            name: "Jump Rope",
             sets: 3,
-            reps: "10 minutes",
-            met: 3.0,
+            reps: "5 minutes",
+            met: 12.0,
+            vid: shadowBoxing,
           },
-          { name: "Foam Rolling", sets: 1, reps: "1 mins", met: 1.5 },
+          {
+            name: "High Knees",
+            sets: 3,
+            reps: "3 minutes",
+            desc: "Perform exercises like high knees, jumping jacks, and burpees in a circuit for a cardio workout.",
+            met: 8.0,
+            vid: highknees,
+          },
+          {
+            name: "Burpees",
+            sets: 3,
+            reps: "1 minute",
+            desc: "Create an agility course using household items to improve footwork and coordination.",
+            met: 6.0,
+            vid: burpees,
+          },
+          {
+            name: "Push ups",
+            sets: 4,
+            reps: "10-15 reps per exercise",
+            desc: "Include exercises like push-ups, squats, and lunges for strength training at home.",
+            met: 5.0,
+            vid: pushups,
+          },
         ],
       },
     ],
@@ -367,7 +394,7 @@ export const All = [
       {
         day: 1,
         names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          { name: "Jump rope", sets: 1, reps: "10-15 minutes", vid: jumprope },
           { name: "Burpees", sets: 1, reps: "1 minute intense", vid: burpees },
           {
             name: "Jumping Lunges",
@@ -399,10 +426,11 @@ export const All = [
         day: 2,
         names: [
           {
-            name: "Warm-up",
+            name: "jump rope",
             sets: 1,
             reps: "10-15 minutes",
             desc: "The warm-up includes dynamic stretches lasting 10-15 minutes. Begin with arm circles and leg swings to loosen up the upper and lower body. Move into torso twists and hip circles for improved flexibility. Perform dynamic lunges and high knees to engage major muscle groups. These exercises enhance blood flow, increase joint mobility, and prepare your body for the main workout. Breathe deeply, move through each stretch with control, and set the foundation for a successful exercise session.",
+            vid: jumprope,
           },
           {
             name: "Squat Jumps",
@@ -433,9 +461,14 @@ export const All = [
       {
         day: 3,
         names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          { name: "running", sets: 1, reps: "10-15 minutes", vid: jogging },
           { name: "Push-ups", sets: 4, reps: "1 minute", vid: pushups },
-          { name: "Plank Shoulder-Taps", sets: 4, reps: "1 minute" },
+          {
+            name: "Plank Shoulder-Taps",
+            sets: 4,
+            reps: "1 minute",
+            vid: planktaps,
+          },
           { name: "Tricep Dips", sets: 4, reps: "1 minute", vid: dips },
           { name: "Pylo Push-Ups", sets: 4, reps: "1 minute", vid: pushups },
           {
@@ -449,7 +482,7 @@ export const All = [
       {
         day: 4,
         names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          { name: "running", sets: 1, reps: "10-15 minutes", vid: jogging },
           { name: "Burpees", sets: 1, reps: "1 minute intense", vid: burpees },
           { name: "Push-Ups", sets: 3, reps: "1 minute intense", vid: pushups },
           {
@@ -491,7 +524,12 @@ export const All = [
       {
         day: 1,
         names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          {
+            name: "Warm-up ropes",
+            sets: 1,
+            reps: "10-15 minutes",
+            vid: jumprope,
+          },
           { name: "Push-Ups", sets: 4, reps: "max out", vid: pushups },
           { name: "Pull ups", sets: 4, reps: "max out", vid: latPulls },
           { name: "Squats", sets: 4, reps: "12-15 reps", vid: squat },
@@ -502,13 +540,13 @@ export const All = [
             vid: pyloLunge,
           },
           { name: "Plank", sets: 4, reps: "1 minute", vid: planks },
-          { name: "Running", sets: 1, reps: "20-30 minutes" },
+          { name: "Running", sets: 1, reps: "20-30 minutes", vid: jogging },
         ],
       },
       {
         day: 2,
         names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          { name: "Jump rope", sets: 1, reps: "10-15 minutes", vid: jumprope },
           { name: "Burpees", sets: 5, reps: "10-12 reps", vid: burpees },
           { name: "Push-Ups", sets: 5, reps: "10-15 reps", vid: pushups },
           { name: "Sit-Ups", sets: 5, reps: "15-10 reps", vid: situps },
@@ -518,14 +556,19 @@ export const All = [
             reps: "10-15 reps per leg",
             vid: pyloLunge,
           },
-          { name: "Running", sets: 1, reps: "20-30 minutes" },
+          { name: "Running", sets: 1, reps: "20-30 minutes", vid: jogging },
         ],
       },
       {
         day: 3,
         names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
-          { name: "Moderate Running", sets: 1, reps: "45-60 minutes" },
+          { name: "jump ropes", sets: 1, reps: "10-15 minutes", vid: jumprope },
+          {
+            name: "Moderate Running",
+            sets: 1,
+            reps: "45-60 minutes",
+            vid: jogging,
+          },
           { name: "Push-Ups", sets: 3, reps: "max-out", vid: pushups },
           { name: "Squats", sets: 3, reps: "12-15 reps", vid: squat },
           { name: "Plank", sets: 3, reps: "30-60 seconds", vid: planks },
@@ -534,12 +577,12 @@ export const All = [
       {
         day: 4,
         names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 minutes" },
+          { name: "jump rope", sets: 1, reps: "10-15 minutes", vid: jumprope },
           {
             name: "Battle Rope Slams",
             sets: 3,
             reps: "30 seconds",
-            vid: slams,
+            vid: battleropes,
           },
           {
             name: "Medicine Ball Throws",
@@ -623,9 +666,8 @@ export const All = [
       {
         day: 3,
         names: [
-          { name: "Running", sets: 1, reps: "3-5 miles" },
-          { name: "Cycling", sets: 1, reps: "20-30 minutes" },
-          { name: "HIIT Cardio", sets: 1, reps: "30 seconds" },
+          { name: "Running", sets: 1, reps: "3-5 miles", vid: jogging },
+          { name: "situps", sets: 2, reps: "50", vid: situps },
         ],
       },
     ],
@@ -647,7 +689,12 @@ export const All = [
       {
         day: 1,
         names: [
-          { name: "Warm-up Cardio", reps: "10-15 mins", sets: 1 },
+          {
+            name: "Warm-up Cardio",
+            reps: "10-15 mins",
+            sets: 1,
+            vid: jumprope,
+          },
           {
             name: "Bent-Over Rows",
             sets: 4,
@@ -668,7 +715,7 @@ export const All = [
       {
         day: 2,
         names: [
-          { name: "Warm-up Cardio", sets: 1, reps: "10-15 mins" },
+          { name: "Warm-up Cardio", sets: 1, reps: "10-15 mins", vid: jogging },
           {
             name: "Goblet Squats",
             sets: 4,
@@ -682,14 +729,19 @@ export const All = [
             reps: "12-15 per leg",
             vid: walk_lunge,
           },
-          { name: "Bulgarian Split Squats", sets: 3, reps: "10-12 per leg" },
+          {
+            name: "Bulgarian Split Squats",
+            sets: 3,
+            reps: "10-12 per leg",
+            vid: bulgariansplits,
+          },
           { name: "Calf Raises", sets: 3, reps: "12-15 reps", vid: calfRaise },
         ],
       },
       {
         day: 3,
         names: [
-          { name: "Warm-up", sets: 1, reps: "10-15 mins" },
+          { name: "Jump Ropes", sets: 1, reps: "10-15 mins", vid: jumprope },
           { name: "Jump Squats", sets: 4, reps: "15 reps", vid: sqautjumps },
           { name: "Push-ups", sets: 4, reps: "12 reps", vid: pushups },
           {
