@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./pages/Home/home";
@@ -12,6 +12,9 @@ import Settings from "./pages/Settings/settingPage";
 import Login from "./pages/Login/login";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, signInWithEmailAndPassword, User } from "firebase/auth";
+import * as RNIap from "react-native-iap";
+import Purchases from "react-native-purchases";
+import "expo-dev-client";
 
 export default function App() {
   const [workoutDetail, setWorkoutDetail] = useState("");
@@ -21,6 +24,7 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [nav, setNav] = useState<any>();
   const Stack = createNativeStackNavigator();
+  const productIds = ["premium_tier_monthly", "premium_tier_yearly"];
 
   const handleWorkoutDetail = (item: any) => {
     setWorkoutDetail(item);
@@ -35,6 +39,30 @@ export default function App() {
     setNewUser(item);
   };
   const auth = getAuth();
+  const apiKeys = {
+    apple: "appl_fWCmQmTucGrjrbTCfQpdZMtaafl",
+  };
+
+  useEffect(() => {
+    async function initializeIAP() {
+      try {
+        await RNIap.initConnection();
+        const productId = await RNIap.getProducts({
+          skus: ["premium_tier_monthly_sub"],
+        });
+        console.log("product", productId);
+      } catch (error) {
+        console.error("Error initializing IAP:", error);
+      }
+    }
+
+    initializeIAP();
+
+    return () => {
+      // Clean up when component unmounts
+    };
+  }, [productIds]);
+
   useEffect(() => {
     // Listen for changes in the authentication state
 
@@ -76,8 +104,6 @@ export default function App() {
           setUserData({ name: userName });
           nav.navigate("home");
           // Now you can use userEmail and userName as needed
-
-          console.log("User authenticated using stored token");
         }
       } catch (error) {
         console.error(
@@ -103,13 +129,18 @@ export default function App() {
             name="landing"
             options={{
               headerShown: false,
+              title: "landingPage",
             }}
           >
             {(props) => <LandingPage {...props} initNav={setNav} />}
           </Stack.Screen>
           <Stack.Screen
             name="userInit"
-            options={{ headerShown: false, gestureEnabled: false }}
+            options={{
+              headerShown: false,
+              gestureEnabled: false,
+              title: "user-initialization",
+            }}
           >
             {(props) => <InfoSlides {...props} usersName={handleUserName} />}
           </Stack.Screen>
@@ -118,6 +149,7 @@ export default function App() {
             options={{
               headerShown: false,
               gestureEnabled: false,
+              title: "my-home",
             }}
           >
             {(props) => (
@@ -133,6 +165,7 @@ export default function App() {
             name="settings"
             options={{
               headerShown: false,
+              title: "settings",
             }}
           >
             {(props) => <Settings {...props} userInfo={userData} />}
@@ -142,6 +175,7 @@ export default function App() {
             options={{
               headerShown: false,
               gestureEnabled: false,
+              title: "detail-page",
             }}
           >
             {(props) => <WorkoutDetails {...props} details={workoutDetail} />}
@@ -152,6 +186,7 @@ export default function App() {
               headerShown: false,
               animation: "default",
               gestureEnabled: false,
+              title: "login-page",
             }}
           >
             {(props) => (
@@ -164,6 +199,7 @@ export default function App() {
               headerShown: false,
               animation: "default",
               gestureEnabled: false,
+              title: "stat-page",
             }}
           >
             {(props) => <Statistics {...props} userId={userData} />}

@@ -13,6 +13,12 @@
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "t.tredis@icloud.com",
+        "ascAppId": "6474644368",
+        "appleTeamId": "4XC4U2WSSK"
+      }
+    }
   }
 }
