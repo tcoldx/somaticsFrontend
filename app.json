@@ -11,12 +11,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.tcoldx.somaticsFrontend"
+      "bundleIdentifier": "com.somaticsfitness.somatics"
     },
     "android": {
       "adaptiveIcon": {

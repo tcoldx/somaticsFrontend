@@ -8,14 +8,16 @@
     "ios": "expo start --ios",
     "web": "expo start --web"
   },
+  "overrides": {
+    "@expo/config-plugins": "~7.2.2"
+  },
   "dependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
-    "@expo/config-plugins": "^7.2.5",
     "@expo/ngrok": "^4.1.1",
-    "@expo/prebuild-config": "^6.2.6",
+    "@expo/prebuild-config": "~6.2.4",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-community/blur": "^4.3.0",
-    "@react-native-community/cli": "^13.2.0",
+    "@react-native-community/cli": "^13.5.2",
     "@react-native-picker/picker": "2.4.10",
     "@react-native/metro-config": "^0.73.3",
     "@react-navigation/bottom-tabs": "^6.5.7",

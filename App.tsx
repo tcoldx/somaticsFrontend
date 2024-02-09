@@ -13,7 +13,6 @@ import Login from "./pages/Login/login";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, signInWithEmailAndPassword, User } from "firebase/auth";
 import * as RNIap from "react-native-iap";
-import Purchases from "react-native-purchases";
 import "expo-dev-client";
 
 export default function App() {
@@ -43,25 +42,7 @@ export default function App() {
     apple: "appl_fWCmQmTucGrjrbTCfQpdZMtaafl",
   };
 
-  useEffect(() => {
-    async function initializeIAP() {
-      try {
-        await RNIap.initConnection();
-        const productId = await RNIap.getProducts({
-          skus: ["premium_tier_monthly_sub"],
-        });
-        console.log("product", productId);
-      } catch (error) {
-        console.error("Error initializing IAP:", error);
-      }
-    }
-
-    initializeIAP();
-
-    return () => {
-      // Clean up when component unmounts
-    };
-  }, [productIds]);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     // Listen for changes in the authentication state
@@ -105,11 +86,6 @@ export default function App() {
           nav.navigate("home");
           // Now you can use userEmail and userName as needed
         }
-      } catch (error) {
-        console.error(
-          "Error retrieving user token from AsyncStorage:",
-          error.message
-        );
       } finally {
         setLoading(false);
       }
