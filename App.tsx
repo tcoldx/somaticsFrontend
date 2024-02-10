@@ -12,7 +12,6 @@ import Settings from "./pages/Settings/settingPage";
 import Login from "./pages/Login/login";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, signInWithEmailAndPassword, User } from "firebase/auth";
-import * as RNIap from "react-native-iap";
 import "expo-dev-client";
 
 export default function App() {
