@@ -13,6 +13,9 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "We need access to your microphone to record audio for workout feedback."
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.somaticsfitness.somatics"
     },
