@@ -2,9 +2,9 @@
   "expo": {
     "name": "somaticsFrontend",
     "slug": "somaticsFrontend",
-    "version": "1.0.1",
+    "version": "1.0.4",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/somaticsLogoBlack.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/somaticLogo.png",
@@ -13,11 +13,12 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "buildNumber": "1.0.1",
+      "icon": "./assets/somaticsLogoBlack.png",
+      "buildNumber": "1.0.4",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "We need access to your microphone to record audio for workout feedback."
       },
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.somaticsfitness.somatics"
     },
     "android": {
