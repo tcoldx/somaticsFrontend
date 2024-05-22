@@ -29,6 +29,17 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   const [panel, setPanel] = useState<boolean>(false);
   const [tempId, setTempId] = useState<string>("");
   const [chartData, setChartData] = useState<any>([0, 0, 0, 0, 0, 0, 0]);
+  const [switcher, setSwitcher] = useState(0);
+
+  const selector = (val: number) => {
+    if (val === 0) {
+      setSwitcher(0);
+    }
+    if (val === 1) {
+      setSwitcher(1);
+    }
+  };
+
   const workoutRef = firebase.firestore().collection("programs");
   const getPrograms = async () => {
     let usersId = auth.currentUser.uid;
@@ -48,7 +59,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
     });
     setWorkoutHistory(list);
   };
-
+  // function to make the chart algorithm
   const workoutChartAlgorithm = async () => {
     /** ts in ms */
     const to_day = (ts) => {
@@ -89,16 +100,20 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
     setChartData(counts);
   };
 
+  // invoke the get program function as soon as app starts
   useEffect(() => {
     getPrograms();
   }, [panel, workoutHistory.length]);
+
+  // invoke the chart algorithm for the workouts
   useEffect(() => {
     workoutChartAlgorithm();
   }, [panel, workoutHistory]);
+
   const calories = workoutHistory.map((el: any) => el.calories_burned);
   let sum = 0;
   let calSum = 0;
-  console.log("total cals", calories);
+
   const totalCalories = calories.reduce(
     (acc: number, curr: number) => acc + curr,
     calSum
@@ -151,7 +166,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
         </View>
       )}
       <View style={styles.chartContainer}>
-        <StatChart activityData={chartData} />
+        <StatChart activityData={chartData} selector={selector} />
       </View>
       <View style={styles.statHeaders}>
         <View style={styles.statHeader}>

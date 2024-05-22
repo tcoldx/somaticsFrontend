@@ -9,14 +9,10 @@ import {
 } from "react-native";
 import { home, header } from "./home.styles";
 import { All } from "../../utils/workouts";
-import { AntDesign } from "@expo/vector-icons";
-import SearchBar from "../../components/Searchbar/Searchbar";
 import CollectionList from "../../components/CollectionList/CollectionList";
 import FooterNav from "../../components/FooterNav/footernav";
-import Notification from "../../components/Notification/notification";
 import Payscreen from "../../components/Payscreen/Payscreen";
 import { auth, firebase } from "../../firebase";
-import { BlurView } from "expo-blur";
 
 import {
   durationTypes,
@@ -115,7 +111,7 @@ const Home = ({
               >
                 Standard Tier
               </Text>
-              <Text
+              {/* <Text
                 style={{
                   color: "white",
                   padding: 5,
@@ -128,7 +124,7 @@ const Home = ({
                 onPress={() => setPayscreenIsVisible(true)}
               >
                 Upgrade
-              </Text>
+              </Text> */}
             </View>
           </View>
 

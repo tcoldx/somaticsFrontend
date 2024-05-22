@@ -5,9 +5,10 @@ import React, { useState } from "react";
 
 interface activeData {
   activityData: any[];
+  selector: Function;
 }
 
-const StatChart = ({ activityData }: activeData) => {
+const StatChart = ({ activityData, selector }: activeData) => {
   const { width } = Dimensions.get("screen");
   const [active, setActive] = useState(0);
   return (
@@ -26,22 +27,17 @@ const StatChart = ({ activityData }: activeData) => {
         <View style={styles.selection}>
           <TouchableOpacity
             style={active === 0 ? styles.activeButton : styles.buttonStyle}
-            onPress={() => setActive(0)}
+            activeOpacity={1}
+            onPress={() => {
+              setActive(0);
+              // passing the number 0 to selector when the week button is clicked
+              selector(0);
+            }}
           >
             <Text
               style={{ color: active === 0 ? "orange" : "white", fontSize: 11 }}
             >
               Week
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={active === 1 ? styles.activeButton : styles.buttonStyle}
-            onPress={() => setActive(1)}
-          >
-            <Text
-              style={{ color: active === 1 ? "orange" : "white", fontSize: 12 }}
-            >
-              Month
             </Text>
           </TouchableOpacity>
         </View>

@@ -10,8 +10,8 @@ export const bodyPartTypes = [
 
 export const sectionTypes = [
   { name: "Featured", id: 1 },
-  { name: "Workouts", id: 2 },
-  { name: "Programs", id: 3 },
+  // { name: "Workouts", id: 2 },
+  // { name: "Programs", id: 3 },
 ];
 
 export const durationTypes = [

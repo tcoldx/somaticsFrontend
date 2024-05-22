@@ -109,11 +109,11 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
           style={styles.sectionContainer}
         >
           <SettingsSection section={profileSection} />
-          <View style={styles.sectionTitleContainer}>
+          {/* <View style={styles.sectionTitleContainer}>
             <AntDesign name="info" height={12} color="white" />
             <Text style={styles.sectionTitle}>App Information</Text>
-          </View>
-          <SettingsSection section={appSection} />
+          </View> */}
+          {/* <SettingsSection section={appSection} /> */}
           <View style={styles.sectionTitleContainer}>
             <AntDesign name="user" height={12} color="white" />
             <Text style={styles.sectionTitle}>Account Management</Text>

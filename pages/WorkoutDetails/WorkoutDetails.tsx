@@ -7,7 +7,6 @@ import {
   Dimensions,
   FlatList,
   ImageBackground,
-  PanResponder,
 } from "react-native";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { styles } from "./WorkoutDetails.styles";

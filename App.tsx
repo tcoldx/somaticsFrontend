@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Platform } from "react-native";
+import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./pages/Home/home";
@@ -22,7 +22,6 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [nav, setNav] = useState<any>();
   const Stack = createNativeStackNavigator();
-  const productIds = ["premium_tier_monthly", "premium_tier_yearly"];
 
   const handleWorkoutDetail = (item: any) => {
     setWorkoutDetail(item);
@@ -37,11 +36,6 @@ export default function App() {
     setNewUser(item);
   };
   const auth = getAuth();
-  const apiKeys = {
-    apple: "appl_fWCmQmTucGrjrbTCfQpdZMtaafl",
-  };
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     // Listen for changes in the authentication state

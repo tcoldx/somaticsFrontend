@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    width: 150,
+    width: "50%",
     height: 24,
     borderRadius: 20,
     backgroundColor: "#0c0c0c",
@@ -26,7 +26,8 @@ export const styles = StyleSheet.create({
   },
 
   activeButton: {
-    width: "45%",
+    // set to 50% when you figure out the month button functionality
+    width: "100%",
     borderRadius: 20,
     height: 20,
     backgroundColor: "#242424",

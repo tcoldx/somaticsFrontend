@@ -279,80 +279,78 @@ const OnboardingItem = ({
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
+                backgroundColor: "orange",
+                width: width / 3,
+                height: height / 23,
+                borderRadius: 10,
               }}
             >
-              <Text
+              <View
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  height: "50%",
+                  justifyContent: "center",
+                  alignItems: "flex-end",
+                  marginRight: "15%",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                  }}
+                >
+                  Ft
+                </Text>
+              </View>
+              <TextInput
                 style={{
                   position: "absolute",
+                  width: "100%",
                   zIndex: 2,
                   left: 10,
                   color: "white",
                 }}
-              >
-                Ft
-              </Text>
-              <Picker
-                style={{
-                  flex: 1,
-                  maxWidth: 140,
-                  maxHeight: height,
+                onChangeText={(val) => {
+                  setSelectedFoot(val);
                 }}
-                itemStyle={{
-                  color: "whitesmoke",
-                  fontSize: 20,
-                  backgroundColor: "orange",
-                  height: height / 23,
-                  borderRadius: 10,
-                }}
-                selectedValue={selectedFoot}
-                onValueChange={(itemValue, itemIndex) => {
-                  setSelectedFoot(itemValue);
-                }}
-              >
-                {AVAILABLE_FEET.map((el: any) => {
-                  return <Picker.Item key={el} label={el} value={el} />;
-                })}
-              </Picker>
+              ></TextInput>
             </View>
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
+                backgroundColor: "orange",
+                width: width / 3,
+                height: height / 23,
+                borderRadius: 10,
               }}
             >
-              <Text
+              <View
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  height: "50%",
+                  justifyContent: "center",
+                  alignItems: "flex-end",
+                  marginRight: "15%",
+                }}
+              >
+                <Text style={{ color: "white" }}>In</Text>
+              </View>
+              <TextInput
                 style={{
                   position: "absolute",
+                  width: "100%",
                   zIndex: 2,
                   left: 10,
                   color: "white",
                 }}
-              >
-                In
-              </Text>
-              <Picker
-                style={{
-                  flex: 1,
-                  maxWidth: 140,
-                  maxHeight: height,
+                onChangeText={(val) => {
+                  setSelectedInch(val);
                 }}
-                itemStyle={{
-                  color: "white",
-                  fontSize: 20,
-                  backgroundColor: "orange",
-                  height: height / 24,
-                  borderRadius: 10,
-                }}
-                selectedValue={selectedInch}
-                onValueChange={(itemValue, itemIndex) => {
-                  setSelectedInch(itemValue);
-                }}
-              >
-                {AVAILABLE_INCHES.map((el: any) => {
-                  return <Picker.Item key={el} label={el} value={el} />;
-                })}
-              </Picker>
+              ></TextInput>
             </View>
           </View>
           <TextInput
