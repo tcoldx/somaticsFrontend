@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, SafeAreaView, Text, ScrollView, FlatList } from "react-native";
+import { FlatList } from "react-native";
 import OnboardingItem from "../../components/Onboarding/onboardingItem";
 import slides from "../../components/Onboarding/onboarding";
 interface infoProps {

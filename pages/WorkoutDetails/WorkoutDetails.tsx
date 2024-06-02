@@ -8,7 +8,7 @@ import {
   FlatList,
   ImageBackground,
 } from "react-native";
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { styles } from "./WorkoutDetails.styles";
 import { AntDesign } from "@expo/vector-icons";
 import { Video, ResizeMode } from "expo-av";

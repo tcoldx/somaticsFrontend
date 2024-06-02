@@ -14,11 +14,7 @@ import FooterNav from "../../components/FooterNav/footernav";
 import Payscreen from "../../components/Payscreen/Payscreen";
 import { auth, firebase } from "../../firebase";
 
-import {
-  durationTypes,
-  sectionTypes,
-  bodyPartTypes,
-} from "../../utils/workoutTypesHome";
+import { sectionTypes } from "../../utils/workoutTypesHome";
 
 interface props {
   workoutDetails: any;

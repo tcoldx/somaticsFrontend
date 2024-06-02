@@ -5,12 +5,10 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
-  ImageBackground,
   SafeAreaView,
   ActivityIndicator,
   Dimensions,
 } from "react-native";
-import LoginImg from "../../assets/legacy.png";
 import { AntDesign } from "@expo/vector-icons";
 import { login } from "./styles.login";
 import SomaLogo from "../../assets/somaticLogo.png";

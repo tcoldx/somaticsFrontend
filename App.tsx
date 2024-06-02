@@ -1,95 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Home from "./pages/Home/home";
 import LandingPage from "./pages/Landing/landingpage";
-import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
+import Login from "./pages/Login/login";
+import Home from "./pages/Home/home";
 import InfoSlides from "./pages/InfoSlides/InfoSlides";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
 import Statistics from "./pages/Statistics/statistics";
 import Settings from "./pages/Settings/settingPage";
-import Login from "./pages/Login/login";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAuth, signInWithEmailAndPassword, User } from "firebase/auth";
-import "expo-dev-client";
 
 export default function App() {
-  const [workoutDetail, setWorkoutDetail] = useState("");
-  const [id, setId] = useState("");
-  const [userData, setUserData] = useState({});
-  const [newUser, setNewUser] = useState("");
-  const [loading, setLoading] = useState<boolean>(false);
   const [nav, setNav] = useState<any>();
+  const [id, setId] = useState("");
+  const [newUser, setNewUser] = useState("");
+  const [workoutDetail, setWorkoutDetail] = useState("");
+
+  const [userData, setUserData] = useState({});
+
   const Stack = createNativeStackNavigator();
 
-  const handleWorkoutDetail = (item: any) => {
-    setWorkoutDetail(item);
-  };
-
+  // authenticate the login when app opens
   const handleAuthenticatedLoginInfo = (item: any) => {
     setId(item.id);
     setUserData(item);
   };
 
+  // handle sending the workout details to home page
+  const handleWorkoutDetail = (item: any) => {
+    setWorkoutDetail(item);
+  };
+
+  //handle user name for sign up process
   const handleUserName = (item: string) => {
     setNewUser(item);
   };
-  const auth = getAuth();
 
-  useEffect(() => {
-    // Listen for changes in the authentication state
-
-    // Listen for changes in the ID token (token refresh)
-    const unsubscribeToken = auth.onIdTokenChanged(
-      async (user: User | null) => {
-        if (user) {
-          const token = await user.getIdToken();
-          try {
-            // Save the token to AsyncStorage
-            await AsyncStorage.setItem("userToken", token);
-
-            // Save user information to AsyncStorage
-            await AsyncStorage.setItem("userEmail", user.email || "");
-            await AsyncStorage.setItem("userName", user.displayName || "");
-          } catch (error) {
-            console.error(
-              "Error saving user data to AsyncStorage:",
-              error.message
-            );
-          } finally {
-            setLoading(false);
-          }
-        }
-      }
-    );
-
-    // Check for a stored token on app launch
-    const checkStoredToken = async () => {
-      try {
-        const storedToken = await AsyncStorage.getItem("userToken");
-        if (storedToken) {
-          // Retrieve user information from AsyncStorage
-          const userEmail = await AsyncStorage.getItem("userEmail");
-          const userName = await AsyncStorage.getItem("userName");
-          const password = await AsyncStorage.getItem("userPassword");
-          // Use the stored token to authenticate the user
-          await signInWithEmailAndPassword(auth, userEmail, password); // Use user's email and a placeholder password
-          setUserData({ name: userName });
-          nav.navigate("home");
-          // Now you can use userEmail and userName as needed
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkStoredToken();
-
-    return () => {
-      unsubscribeToken();
-    };
-  }, [nav]); // Run only once when component mounts
   return (
     <GestureHandlerRootView style={styles.container}>
       <NavigationContainer>
@@ -104,14 +51,26 @@ export default function App() {
             {(props) => <LandingPage {...props} initNav={setNav} />}
           </Stack.Screen>
           <Stack.Screen
-            name="userInit"
+            name="login"
             options={{
               headerShown: false,
+              animation: "default",
               gestureEnabled: false,
-              title: "user-initialization",
+              title: "login-page",
             }}
           >
-            {(props) => <InfoSlides {...props} usersName={handleUserName} />}
+            {(props) => (
+              <Login {...props} sendInfo={handleAuthenticatedLoginInfo} />
+            )}
+          </Stack.Screen>
+          <Stack.Screen
+            name="settings"
+            options={{
+              headerShown: false,
+              title: "settings",
+            }}
+          >
+            {(props) => <Settings {...props} userInfo={userData} />}
           </Stack.Screen>
           <Stack.Screen
             name="home"
@@ -131,13 +90,14 @@ export default function App() {
             )}
           </Stack.Screen>
           <Stack.Screen
-            name="settings"
+            name="userInit"
             options={{
               headerShown: false,
-              title: "settings",
+              gestureEnabled: false,
+              title: "user-initialization",
             }}
           >
-            {(props) => <Settings {...props} userInfo={userData} />}
+            {(props) => <InfoSlides {...props} usersName={handleUserName} />}
           </Stack.Screen>
           <Stack.Screen
             name="details"
@@ -148,19 +108,6 @@ export default function App() {
             }}
           >
             {(props) => <WorkoutDetails {...props} details={workoutDetail} />}
-          </Stack.Screen>
-          <Stack.Screen
-            name="login"
-            options={{
-              headerShown: false,
-              animation: "default",
-              gestureEnabled: false,
-              title: "login-page",
-            }}
-          >
-            {(props) => (
-              <Login {...props} sendInfo={handleAuthenticatedLoginInfo} />
-            )}
           </Stack.Screen>
           <Stack.Screen
             name="stats"
