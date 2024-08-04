@@ -2,7 +2,7 @@
   "expo": {
     "name": "somaticsFrontend",
     "slug": "somaticsFrontend",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/somaticsLogoBlack.png",
     "userInterfaceStyle": "light",
@@ -14,7 +14,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "icon": "./assets/somaticsLogoBlack.png",
-      "buildNumber": "1.0.7",
+      "buildNumber": "1.0.8",
       "infoPlist": {},
       "supportsTablet": false,
       "bundleIdentifier": "com.somaticsfitness.somatics"
@@ -34,7 +34,7 @@
         "projectId": "74a850b6-bbd2-4f32-b6f1-5ab1c40fb5ce"
       }
     },
-    "runtimeVersion": "1.0.7",
+    "runtimeVersion": "1.0.",
     "updates": {
       "url": "https://u.expo.dev/74a850b6-bbd2-4f32-b6f1-5ab1c40fb5ce"
     }
