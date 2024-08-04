@@ -29,7 +29,8 @@
     "react-native-step-indicator": "^1.0.3",
     "react-native-swipe-gestures": "^1.0.5",
     "typescript": "~5.3.3",
-    "react-native-svg": "15.2.0"
+    "react-native-svg": "15.2.0",
+    "expo-updates": "~0.25.15"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

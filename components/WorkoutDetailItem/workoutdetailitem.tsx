@@ -111,7 +111,7 @@ const WorkoutDetailItem = ({
           {details?.targets?.map((item: any, idx: number): any => {
             return (
               <View
-                key={item}
+                key={idx}
                 style={{
                   backgroundColor: "#242424",
                   borderRadius: 8,
