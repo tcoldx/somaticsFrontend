@@ -10,6 +10,7 @@ import InfoSlides from "./pages/InfoSlides/InfoSlides";
 import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
 import Statistics from "./pages/Statistics/statistics";
 import Settings from "./pages/Settings/settingPage";
+import "expo-dev-client";
 
 export default function App() {
   const [nav, setNav] = useState<any>();
