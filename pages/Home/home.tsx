@@ -16,6 +16,7 @@ import Payscreen from "../../components/Payscreen/Payscreen";
 import { auth, firebase } from "../../firebase";
 
 import { sectionTypes } from "../../utils/workoutTypesHome";
+import * as Sentry from "@sentry/react-native";
 
 interface props {
   workoutDetails: any;
