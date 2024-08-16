@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react-native";
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -11,11 +12,10 @@ import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
 import Statistics from "./pages/Statistics/statistics";
 import Settings from "./pages/Settings/settingPage";
 import "expo-dev-client";
-import * as Sentry from "@sentry/react-native";
 
 Sentry.init({
   dsn: "https://7cbcfdbec4551da5cc6d195e139eafbc@o4507779665756160.ingest.us.sentry.io/4507779666149376",
-
+  debug: true,
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // enableSpotlight: __DEV__,
 });
