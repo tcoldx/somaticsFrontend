@@ -180,16 +180,7 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
               justifyContent: "flex-start",
               width: width - 30,
             }}
-          >
-            <Text
-              style={{
-                color: "rgba(240,99,19,255)",
-                fontWeight: "bold",
-              }}
-            >
-              forgot your password?
-            </Text>
-          </View>
+          ></View>
         </View>
         <TouchableOpacity
           onPress={handleLoginAuth}

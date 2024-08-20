@@ -3,6 +3,7 @@ import { styles } from "./settingPage.styles";
 import { AntDesign } from "@expo/vector-icons";
 import FooterNav from "../../components/FooterNav/footernav";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BlurView } from "expo-blur";
 
 import {
   SafeAreaView,
@@ -11,6 +12,8 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  TextInput,
+  Linking,
 } from "react-native";
 import { auth, firebase } from "../../firebase";
 const { width } = Dimensions.get("screen");
@@ -18,6 +21,8 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
   const [newEmail, setNewEmail] = useState("");
   const [newName, setNewName] = useState("");
   const [newGender, setNewGender] = useState("");
+  const [prompt, setPrompt] = useState<boolean>(false);
+  const [value, setValue] = useState<string>("");
   const { email, name, gender } = userInfo;
 
   useEffect(() => {
@@ -45,7 +50,24 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
       await AsyncStorage.removeItem("userName");
       navigation.navigate("landing");
     }
+    if (val === "Delete Account") {
+      setPrompt(true);
+    }
+    if (val === "Privacy Policy") {
+      Linking.openURL(
+        "https://www.privacypolicies.com/live/0faead89-cb2e-4012-adb5-ffcc95731be6"
+      );
+    }
+    if (val === "About Somatics") {
+      Linking.openURL("https://www.facebook.com/profile.php?id=61555595253141");
+    }
   };
+
+  function handleChange(text: any) {
+    console.log(text);
+  }
+
+  function handleAccountDeletion() {}
 
   // Store data for settings sections as arrays of objects, with each array representing a section
   const profileSection = [
@@ -55,11 +77,14 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
   ];
 
   const appSection = [
-    { title: "Contact Us", subtitle: null },
+    { title: "Privacy Policy", subtitle: null },
     { title: "About Somatics", subtitle: null },
   ];
 
-  const accountSection = [{ title: "Log out", subtitle: null }];
+  const accountSection = [
+    { title: "Delete Account", subtitle: null },
+    { title: "Log out", subtitle: null },
+  ];
 
   // Function to map through a section of the settings and display each option consistently
   function SettingsSection({ section }) {
@@ -73,7 +98,13 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
               key={title}
               activeOpacity={title == "Log out" ? 0 : 1}
             >
-              <Text style={styles.title}>{title}</Text>
+              <Text
+                style={
+                  title != "Delete Account" ? styles.title : styles.deleteButton
+                }
+              >
+                {title}
+              </Text>
               {/* If a subtitle exists, display it */}
               {subtitle != null && (
                 <Text style={styles.subtitle}>{subtitle}</Text>
@@ -88,6 +119,10 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
                     ? "logout"
                     : title == "Delete Account"
                     ? "delete"
+                    : title == "Privacy Policy"
+                    ? "arrowright"
+                    : title == "About Somatics"
+                    ? "right"
                     : null
                 }
                 size={20}
@@ -103,17 +138,61 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
   return (
     <>
       <SafeAreaView style={{ backgroundColor: "#0C0C0C", flex: 1 }}>
+        {/* deletion popup when user wants to delete account */}
+        {prompt && <BlurView intensity={10} style={styles.coverBlur} />}
+
+        {prompt && (
+          <View style={styles.userDeleteContainer}>
+            <Text style={{ color: "white" }}>Are you sure?</Text>
+            <Text style={{ color: "red" }}>
+              Enter username to DELETE account
+            </Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                onChangeText={(e) => handleChange(e)}
+              />
+            </View>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-around",
+                width: "100%",
+              }}
+            >
+              <TouchableOpacity
+                style={styles.deletionButton}
+                onPress={() => {}}
+              >
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  Delete
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => {
+                  setPrompt(false);
+                }}
+              >
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  Close
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
         {/* Settings options, split into sections */}
         <ScrollView
           contentContainerStyle={styles.containerItems}
           style={styles.sectionContainer}
         >
           <SettingsSection section={profileSection} />
-          {/* <View style={styles.sectionTitleContainer}>
+          <View style={styles.sectionTitleContainer}>
             <AntDesign name="info" height={12} color="white" />
             <Text style={styles.sectionTitle}>App Information</Text>
-          </View> */}
-          {/* <SettingsSection section={appSection} /> */}
+          </View>
+          <SettingsSection section={appSection} />
           <View style={styles.sectionTitleContainer}>
             <AntDesign name="user" height={12} color="white" />
             <Text style={styles.sectionTitle}>Account Management</Text>

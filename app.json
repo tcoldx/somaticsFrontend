@@ -2,7 +2,7 @@
   "expo": {
     "name": "somaticsFrontend",
     "slug": "somaticsFrontend",
-    "version": "1.0.8",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/somaticsLogoBlack.png",
     "userInterfaceStyle": "light",
@@ -14,7 +14,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "icon": "./assets/somaticsLogoBlack.png",
-      "buildNumber": "1.0.8",
+      "buildNumber": "1.1.1",
       "infoPlist": {},
       "supportsTablet": false,
       "bundleIdentifier": "com.somaticsfitness.somatics"
@@ -34,9 +34,19 @@
         "projectId": "74a850b6-bbd2-4f32-b6f1-5ab1c40fb5ce"
       }
     },
-    "runtimeVersion": "1.0.8",
+    "runtimeVersion": "1.1.1",
     "updates": {
       "url": "https://u.expo.dev/74a850b6-bbd2-4f32-b6f1-5ab1c40fb5ce"
-    }
+    },
+    "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "somaticals",
+          "organization": "somatics"
+        }
+      ]
+    ]
   }
 }

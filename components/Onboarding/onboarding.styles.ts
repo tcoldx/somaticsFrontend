@@ -50,6 +50,15 @@ export const slideStyle = StyleSheet.create({
     color: "orange",
     padding: 10,
   },
+  detailsError: {
+    width: "70%",
+    borderColor: "red",
+    borderWidth: 1,
+    borderBottomWidth: 1,
+    borderRadius: 10,
+    color: "orange",
+    padding: 10,
+  },
   heightDetails: {
     width: "45%",
     backgroundColor: "orange",

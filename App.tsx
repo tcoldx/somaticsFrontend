@@ -10,6 +10,22 @@ import InfoSlides from "./pages/InfoSlides/InfoSlides";
 import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails";
 import Statistics from "./pages/Statistics/statistics";
 import Settings from "./pages/Settings/settingPage";
+import * as Sentry from "@sentry/react-native";
+
+import "expo-dev-client";
+
+// Sentry setup initialization!
+Sentry.init({
+  dsn: "https://7cbcfdbec4551da5cc6d195e139eafbc@o4507779665756160.ingest.us.sentry.io/4507779666149376",
+  // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+  // We recommend adjusting this value in production.
+  tracesSampleRate: 1.0,
+  _experiments: {
+    // profilesSampleRate is relative to tracesSampleRate.
+    // Here, we'll capture profiles for 100% of transactions.
+    profilesSampleRate: 1.0,
+  },
+});
 
 export default function App() {
   const [nav, setNav] = useState<any>();
