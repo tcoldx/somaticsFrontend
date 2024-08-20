@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  Alert,
+  Linking,
 } from "react-native";
 import { AntDesign, Fontisto, Ionicons } from "@expo/vector-icons";
 import { checkIfEmail } from "../../utils/checkEmail";
@@ -19,8 +21,6 @@ import { slideStyle, styler } from "./onboarding.styles";
 import SomaLogo from "../../assets/somaticLogo.png";
 import { db, auth } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-
-import { Picker } from "@react-native-picker/picker";
 import { styled } from "nativewind";
 type itemProps = {
   title: string;
@@ -54,9 +54,17 @@ const OnboardingItem = ({
   const [goals, setGoals] = useState<Object[]>([]);
   const [selectedInch, setSelectedInch] = useState("");
   const [selectedFoot, setSelectedFoot] = useState("");
+  const [ageError, setAgeError] = useState<boolean>(false);
+  const [footError, setFootError] = useState<boolean>(false);
+  const [inchError, setInchError] = useState<boolean>(false);
+  const [weightError, setWeightError] = useState<boolean>(false);
+  const [nameError, setNameError] = useState<boolean>(false);
+  const [emailError, setEmailError] = useState<boolean>(false);
+  const [passwordError, setPasswordError] = useState<boolean>(false);
 
   const handleChange = async (text: any) => {
     setName(text);
+    setNameError(false);
     await AsyncStorage.mergeItem(
       "user2",
       JSON.stringify({
@@ -80,6 +88,7 @@ const OnboardingItem = ({
 
   const handleChangeEmail = async (text: any) => {
     setEmail(text);
+    setEmailError(false);
     await AsyncStorage.mergeItem(
       "user2",
       JSON.stringify({
@@ -90,6 +99,7 @@ const OnboardingItem = ({
 
   const handleChangePassword = async (text: any) => {
     setPassword(text);
+    setPasswordError(false);
     await AsyncStorage.mergeItem(
       "user2",
       JSON.stringify({
@@ -103,7 +113,9 @@ const OnboardingItem = ({
 
     if (checkIfEmail(email) && password && name && objVal) {
       setLoading(true);
-
+      setPasswordError(false);
+      setNameError(false);
+      setEmailError(false);
       createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
           const user = userCredential.user;
@@ -121,6 +133,14 @@ const OnboardingItem = ({
           setLoading(false);
           navigation.navigate("home");
         });
+    } else {
+      Alert.alert(
+        "Missing Information",
+        "You are missing information in one or more fields."
+      );
+      setNameError(true);
+      setEmailError(true);
+      setPasswordError(true);
     }
   };
   const StyledViewOne = styled(View);
@@ -183,7 +203,7 @@ const OnboardingItem = ({
           <TouchableOpacity
             activeOpacity={1}
             onPress={async () => {
-              if (index !== 3) {
+              if (index !== 3 && goals.length > 0) {
                 await AsyncStorage.mergeItem(
                   "user2",
                   JSON.stringify({
@@ -191,6 +211,11 @@ const OnboardingItem = ({
                   })
                 );
                 indexFunc(index + 1);
+              } else {
+                Alert.alert(
+                  "Missing Information",
+                  "Please select atleast one goal."
+                );
               }
             }}
             style={styles.button}
@@ -202,18 +227,6 @@ const OnboardingItem = ({
     );
   }
   if (id === 2) {
-    const createArray = (length: number) => {
-      const arr = [];
-      let i = 0;
-      while (i < length) {
-        arr.push(i.toString());
-        i += 1;
-      }
-      return arr;
-    };
-
-    const AVAILABLE_FEET = createArray(8);
-    const AVAILABLE_INCHES = createArray(13);
     return (
       <SafeAreaView style={styles.container}>
         <SafeAreaView
@@ -254,7 +267,7 @@ const OnboardingItem = ({
             </Text>
           </StyledViewOne>
           <TextInput
-            style={slideStyle.details}
+            style={!ageError ? slideStyle.details : slideStyle.detailsError}
             keyboardType="numeric"
             placeholderTextColor="white"
             placeholder={items.age}
@@ -275,15 +288,19 @@ const OnboardingItem = ({
             }}
           >
             <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "orange",
-                width: width / 3,
-                height: height / 23,
-                borderRadius: 10,
-              }}
+              style={
+                !footError
+                  ? {
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "orange",
+                      width: width / 3,
+                      height: height / 23,
+                      borderRadius: 10,
+                    }
+                  : styles.inchError
+              }
             >
               <View
                 style={{
@@ -317,15 +334,19 @@ const OnboardingItem = ({
               ></TextInput>
             </View>
             <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "orange",
-                width: width / 3,
-                height: height / 23,
-                borderRadius: 10,
-              }}
+              style={
+                !inchError
+                  ? {
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "orange",
+                      width: width / 3,
+                      height: height / 23,
+                      borderRadius: 10,
+                    }
+                  : styles.inchError
+              }
             >
               <View
                 style={{
@@ -355,7 +376,7 @@ const OnboardingItem = ({
           </View>
           <TextInput
             placeholderTextColor="white"
-            style={slideStyle.details}
+            style={!weightError ? slideStyle.details : slideStyle.detailsError}
             placeholder={items.weight}
             maxLength={3}
             keyboardType="numeric"
@@ -365,13 +386,37 @@ const OnboardingItem = ({
           />
           <TouchableOpacity
             onPress={async () => {
-              if (
-                index !== 3 &&
-                selectedFoot &&
-                age &&
-                selectedInch &&
-                weight.length > 2
-              ) {
+              let isValid = true;
+
+              if (!age) {
+                setAgeError(true);
+                isValid = false;
+              } else {
+                setAgeError(false);
+              }
+
+              if (!selectedFoot) {
+                setFootError(true);
+                isValid = false;
+              } else {
+                setFootError(false);
+              }
+
+              if (!selectedInch) {
+                setInchError(true);
+                isValid = false;
+              } else {
+                setInchError(false);
+              }
+
+              if (weight.length < 2) {
+                setWeightError(true);
+                isValid = false;
+              } else {
+                setWeightError(false);
+              }
+
+              if (isValid && index !== 3) {
                 await AsyncStorage.mergeItem(
                   "user2",
                   JSON.stringify({
@@ -381,6 +426,12 @@ const OnboardingItem = ({
                   })
                 );
                 indexFunc(index + 1);
+              } else {
+                console.warn("All fields must be filled in");
+                Alert.alert(
+                  "Missing Information",
+                  "Please fill in all fields before proceeding."
+                );
               }
             }}
             style={styles.button}
@@ -554,18 +605,7 @@ const OnboardingItem = ({
             </View>
           </View>
           <View style={styles.loginColumns}>
-            <View
-              style={{
-                width: "90%",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1.4,
-                borderRadius: 10,
-                borderColor: "orange",
-              }}
-            >
+            <View style={!nameError ? styles.inputz : styles.inputzError}>
               <Fontisto name="person" color="white" size={15} />
               <TextInput
                 style={styles.loginInput}
@@ -575,18 +615,7 @@ const OnboardingItem = ({
                 placeholderTextColor="whitesmoke"
               />
             </View>
-            <View
-              style={{
-                width: "90%",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1.4,
-                borderRadius: 10,
-                borderColor: "orange",
-              }}
-            >
+            <View style={!emailError ? styles.inputz : styles.inputzError}>
               <AntDesign name="mail" color="white" size={15} />
               <TextInput
                 style={styles.loginInput}
@@ -596,18 +625,7 @@ const OnboardingItem = ({
                 placeholderTextColor="whitesmoke"
               />
             </View>
-            <View
-              style={{
-                width: "90%",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1.4,
-                borderRadius: 10,
-                borderColor: "orange",
-              }}
-            >
+            <View style={!passwordError ? styles.inputz : styles.inputzError}>
               <AntDesign name="lock" color="white" size={15} />
               <TextInput
                 style={styles.loginInput}
@@ -618,6 +636,33 @@ const OnboardingItem = ({
                 placeholderTextColor="whitesmoke"
               />
             </View>
+            {/*this is the terms of use and policy container*/}
+            <View style={styles.termsContainer}>
+              <Text style={{ color: "white" }}>
+                By signing up you agree to our{" "}
+              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  Linking.openURL(
+                    "https://www.privacypolicies.com/live/0faead89-cb2e-4012-adb5-ffcc95731be6"
+                  )
+                }
+              >
+                <Text style={styles.linkText}>Privacy Policy</Text>
+              </TouchableOpacity>
+            </View>
+            {/*end of the terms of use and policy container*/}
+            <View style={{ display: "flex", flexDirection: "row" }}>
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Already have an account?{" "}
+              </Text>
+              <Text
+                style={styles.linkText}
+                onPress={() => navigation.navigate("login")}
+              >
+                Login
+              </Text>
+            </View>
           </View>
         </View>
         <TouchableOpacity onPress={handleAuthentication} style={styles.button}>
@@ -627,7 +672,7 @@ const OnboardingItem = ({
     );
   }
 };
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     display: "flex",
@@ -637,6 +682,15 @@ const styles = StyleSheet.create({
     width: width,
   },
 
+  inchError: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "red",
+    width: width / 3,
+    height: height / 23,
+    borderRadius: 10,
+  },
   coverBlur: {
     position: "absolute",
     left: 0,
@@ -658,6 +712,17 @@ const styles = StyleSheet.create({
     color: "orange",
     borderBottomWidth: 1,
     paddingLeft: 10,
+  },
+
+  inputzError: {
+    width: "90%",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.4,
+    borderRadius: 10,
+    borderColor: "red",
   },
 
   loginTitle: {
@@ -733,14 +798,30 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   inputz: {
-    borderWidth: 1,
-    borderColor: "rgba(240,99,19,255)",
-    color: "white",
+    width: "90%",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.4,
     borderRadius: 10,
-    height: 45,
-    width: "80%",
-    backgroundColor: "#242424",
-    padding: 12,
+    borderColor: "orange",
+  },
+  termsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  linkText: {
+    color: "rgba(240,99,19,255)",
+    textDecorationLine: "underline",
+    fontSize: 14,
+  },
+  separator: {
+    color: "white",
+    marginHorizontal: 5,
+    fontSize: 14,
   },
 });
 export default OnboardingItem;
