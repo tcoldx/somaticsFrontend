@@ -11,6 +11,65 @@ export const login = StyleSheet.create({
     position: "absolute",
   },
 
+  forgotPassContainer: {
+    position: "absolute",
+    top: "35%",
+    left: "15%",
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#242424",
+    borderRadius: 10,
+    width: "70%",
+    height: "30%",
+    gap: 10,
+    zIndex: 4,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    padding: 20,
+  },
+
+  forgotHeader: {
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  inputx: {
+    borderWidth: 1.4,
+    borderRadius: 10,
+    height: 50,
+    color: "white",
+    fontWeight: "bold",
+    borderColor: "orange",
+  },
+
+  deleteButton: {
+    display: "flex",
+    alignItems: "center",
+    borderRadius: 6,
+    marginTop: 10,
+    justifyContent: "center",
+    height: 40,
+    backgroundColor: "red",
+    width: "20%",
+  },
+  deleteButContainer: {
+    display: "flex",
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  recoverButton: {
+    display: "flex",
+    alignItems: "center",
+    borderRadius: 6,
+    marginTop: 10,
+    justifyContent: "center",
+    height: 40,
+    backgroundColor: "green",
+    width: "50%",
+  },
+
   lineargradient: {
     width: width,
     height: height,
@@ -34,6 +93,16 @@ export const login = StyleSheet.create({
     borderColor: "rgba(240,99,19,255)",
     borderWidth: 1,
     borderRadius: 10,
+  },
+  coverBlur: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: "100%",
+    height: 1000,
+    zIndex: 2,
   },
 
   loginContentContainerFocused: {
@@ -127,7 +196,7 @@ export const login = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
   },
-    
+
   goBack: {
     position: "absolute",
     bottom: 20,
@@ -137,7 +206,7 @@ export const login = StyleSheet.create({
   go: {
     color: "#ffffff",
   },
-    
+
   back: {
     color: "#ffffff",
     fontWeight: "600",

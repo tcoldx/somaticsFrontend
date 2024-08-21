@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Dimensions,
+  Alert,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { login } from "./styles.login";
@@ -16,16 +17,18 @@ import { firebase } from "../../firebase";
 import { checkIfEmail } from "../../utils/checkEmail";
 import { getAuth, signInWithEmailAndPassword, User } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { BlurView } from "expo-blur";
 interface loginProps {
   navigation: any;
   sendInfo: any;
 }
 const { width, height } = Dimensions.get("screen");
 const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [val, setVal] = useState<string>("");
+  const [prompt, setPrompt] = useState<boolean>(false);
   const auth = getAuth();
   useEffect(() => {
     // Listen for changes in the authentication state
@@ -90,27 +93,51 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
 
   const handleLoginAuth = async () => {
     if (checkIfEmail(email) && password) {
-      await AsyncStorage.setItem("userPassword", password);
+      try {
+        await AsyncStorage.setItem("userPassword", password);
 
-      await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
 
-      auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          // User is signed in
-          setLoading(true);
-          const userRef = firebase
-            .firestore()
-            .collection("users")
-            .doc(user.uid);
-          const userData = await userRef.get();
-          const { age, height, name, gender, email } = userData.data();
-          sendInfo({ age, height, name, gender, email, id: user.uid });
-          setLoading(false);
-          navigation.navigate("home");
-        }
-      });
+        auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            // User is signed in
+            setLoading(true);
+            const userRef = firebase
+              .firestore()
+              .collection("users")
+              .doc(user.uid);
+            const userData = await userRef.get();
+            const { age, height, name, gender, email } = userData.data();
+            sendInfo({ age, height, name, gender, email, id: user.uid });
+            setLoading(false);
+            navigation.navigate("home");
+          }
+        });
+      } catch (err) {
+        Alert.alert(
+          "Login Invalid",
+          "You entered the wrong username or password"
+        );
+      }
     }
     return;
+  };
+
+  const handleForgotPasswordAuth = async () => {
+    if (!checkIfEmail(val)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
+      return;
+    }
+    setLoading(true);
+    try {
+      await firebase.auth().sendPasswordResetEmail(val);
+      Alert.alert("Password Recovery", "A password reset email has been sent.");
+      setPrompt(false);
+    } catch (err) {
+      Alert.alert("Error occured", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -122,6 +149,56 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
   }
   return (
     <SafeAreaView style={login.container}>
+      {prompt && <BlurView intensity={10} style={login.coverBlur} />}
+      {prompt && (
+        <View style={login.forgotPassContainer}>
+          <View style={login.forgotHeader}>
+            <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+              Password Recovery
+            </Text>
+          </View>
+          {/* start of subheader*/}
+          <View
+            style={{
+              display: "flex",
+              padding: 10,
+              gap: 10,
+              width: "100%",
+            }}
+          >
+            <Text style={{ color: "white" }}>Please enter your email: </Text>
+            <TextInput
+              style={login.inputx}
+              onChangeText={(e) => {
+                setVal(e);
+              }}
+              value={val}
+            />
+          </View>
+          {/*end of subheader*/}
+
+          {/* start button container*/}
+          <View style={login.deleteButContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                setPrompt(false);
+              }}
+              style={login.deleteButton}
+            >
+              <Text>X</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleForgotPasswordAuth}
+              style={login.recoverButton}
+            >
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Send Recovery
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+      {/* end of button container */}
       <View style={login.loginContentContainer}>
         <View
           style={{
@@ -180,7 +257,17 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
               justifyContent: "flex-start",
               width: width - 30,
             }}
-          ></View>
+          >
+            <TouchableOpacity
+              onPress={() => {
+                setPrompt(true);
+              }}
+            >
+              <Text style={{ color: "orange", fontWeight: "bold" }}>
+                forgot password?
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <TouchableOpacity
           onPress={handleLoginAuth}

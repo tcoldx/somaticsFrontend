@@ -100,49 +100,72 @@ const OnboardingItem = ({
   const handleChangePassword = async (text: any) => {
     setPassword(text);
     setPasswordError(false);
-    await AsyncStorage.mergeItem(
-      "user2",
-      JSON.stringify({
-        password: text,
-      })
-    );
   };
 
   const handleAuthentication = async () => {
     const objVal = await AsyncStorage.getItem("user2");
 
     if (checkIfEmail(email) && password && name && objVal) {
-      setLoading(true);
-      setPasswordError(false);
-      setNameError(false);
-      setEmailError(false);
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(async (userCredential) => {
-          const user = userCredential.user;
+      try {
+        setLoading(true); // Start the loader
+        setPasswordError(false);
+        setNameError(false);
+        setEmailError(false);
 
-          // Save user data to Firestore
-          await db.collection("users").doc(user.uid).set(JSON.parse(objVal));
+        // Check if the email is valid and not already in use
+        const emailQuerySnapshot = await db
+          .collection("users")
+          .where("email", "==", email)
+          .get();
 
-          // Save user data to AsyncStorage (optional, but can be useful for consistency)
-          await AsyncStorage.setItem("user2", objVal);
-        })
-        .catch((err) => {
-          console.log(err.message);
-        })
-        .finally(() => {
-          setLoading(false);
-          navigation.navigate("home");
-        });
+        if (!emailQuerySnapshot.empty) {
+          // Email is already in use, prompt the user
+          Alert.alert(
+            "Invalid Email",
+            "The email is already in use. Please use a different email."
+          );
+          setEmailError(true);
+          setLoading(false); // Stop the loader
+          return;
+        }
+
+        // Proceed with creating a new user
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const user = userCredential.user;
+
+        // Save user data to Firestore
+        await db.collection("users").doc(user.uid).set(JSON.parse(objVal));
+
+        // Save user data to AsyncStorage (optional)
+        await AsyncStorage.setItem("user2", objVal);
+
+        // Navigate to the home screen after everything is complete
+        navigation.navigate("home");
+      } catch (err) {
+        console.log(err.message);
+        Alert.alert(
+          "Error",
+          "There was an error creating your account. Please try again."
+        );
+      } finally {
+        setLoading(false); // Stop the loader
+      }
     } else {
       Alert.alert(
         "Missing Information",
-        "You are missing information in one or more fields."
+        "You are missing information or the email is invalid."
       );
       setNameError(true);
       setEmailError(true);
       setPasswordError(true);
     }
   };
+
   const StyledViewOne = styled(View);
   if (id === 3) {
     return (
@@ -638,18 +661,28 @@ const OnboardingItem = ({
             </View>
             {/*this is the terms of use and policy container*/}
             <View style={styles.termsContainer}>
-              <Text style={{ color: "white" }}>
-                By signing up you agree to our{" "}
-              </Text>
-              <TouchableOpacity
-                onPress={() =>
-                  Linking.openURL(
-                    "https://www.privacypolicies.com/live/0faead89-cb2e-4012-adb5-ffcc95731be6"
-                  )
-                }
-              >
-                <Text style={styles.linkText}>Privacy Policy</Text>
-              </TouchableOpacity>
+              <Text style={styles.text}>By signing up, you agree to our</Text>
+              <View style={styles.linksContainer}>
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL(
+                      "https://www.privacypolicies.com/live/0faead89-cb2e-4012-adb5-ffcc95731be6"
+                    )
+                  }
+                >
+                  <Text style={styles.linkText}>Privacy Policy</Text>
+                </TouchableOpacity>
+                <Text style={styles.text}> and </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL(
+                      "https://www.privacypolicies.com/live/0faead89-cb2e-4012-adb5-ffcc95731be6"
+                    )
+                  }
+                >
+                  <Text style={styles.linkText}>Terms and Conditions</Text>
+                </TouchableOpacity>
+              </View>
             </View>
             {/*end of the terms of use and policy container*/}
             <View style={{ display: "flex", flexDirection: "row" }}>
@@ -732,10 +765,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
+  linksContainer: {
+    flexDirection: "row", // Align links in a row
+    justifyContent: "center", // Center the links below the first line
+    flexWrap: "wrap",
+  },
+
   title: {
     fontWeight: "bold",
     color: "rgba(240,99,19,255)",
     marginBottom: 20,
+  },
+
+  text: {
+    color: "white",
+    fontSize: 14,
+    textAlign: "center",
   },
 
   linearGradient: {
@@ -808,15 +853,14 @@ const styles = StyleSheet.create({
     borderColor: "orange",
   },
   termsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 20,
+    alignItems: "center", // Center aligns the entire container
+    padding: 10,
+    width: "90%",
   },
   linkText: {
     color: "rgba(240,99,19,255)",
     textDecorationLine: "underline",
-    fontSize: 14,
+    fontSize: 15,
   },
   separator: {
     color: "white",
