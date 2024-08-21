@@ -14,8 +14,10 @@ import {
   Dimensions,
   TextInput,
   Linking,
+  Alert,
 } from "react-native";
 import { auth, firebase } from "../../firebase";
+
 const { width } = Dimensions.get("screen");
 const Settings = ({ navigation, userInfo }): JSX.Element => {
   const [newEmail, setNewEmail] = useState("");
@@ -64,10 +66,35 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
   };
 
   function handleChange(text: any) {
-    console.log(text);
+    setValue(text);
   }
 
-  function handleAccountDeletion() {}
+  async function handleAccountDeletion() {
+    const user = auth.currentUser;
+
+    // if entered name matches the login username
+    if (user && value === newName) {
+      try {
+        await firebase.firestore().collection("users").doc(user.uid).delete();
+        // delete the users account
+        await user.delete();
+        // logout now and clear the async storage
+        await AsyncStorage.removeItem("userToken");
+        await AsyncStorage.removeItem("userEmail");
+        await AsyncStorage.removeItem("userName");
+
+        // goto landing page after deletion
+        navigation.navigate("landing");
+      } catch (err) {
+        console.error("Error deleting user:", err);
+      }
+    } else {
+      Alert.alert(
+        "cannot delete account",
+        "username does not match, try again!"
+      );
+    }
+  }
 
   // Store data for settings sections as arrays of objects, with each array representing a section
   const profileSection = [
@@ -151,6 +178,7 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
               <TextInput
                 style={styles.input}
                 onChangeText={(e) => handleChange(e)}
+                value={value}
               />
             </View>
             <View
@@ -163,7 +191,9 @@ const Settings = ({ navigation, userInfo }): JSX.Element => {
             >
               <TouchableOpacity
                 style={styles.deletionButton}
-                onPress={() => {}}
+                onPress={() => {
+                  handleAccountDeletion();
+                }}
               >
                 <Text style={{ color: "white", fontWeight: "bold" }}>
                   Delete

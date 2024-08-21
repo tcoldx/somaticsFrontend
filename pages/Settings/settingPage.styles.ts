@@ -100,7 +100,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#242424",
     borderRadius: 10,
     width: "70%",
-    height: 275,
+    height: "30%",
     gap: 10,
     zIndex: 4,
     display: "flex",
