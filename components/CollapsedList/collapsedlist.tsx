@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { View, Text, Dimensions, TouchableOpacity } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
 import { Styles } from "./collapsedlist.styles";
 
 interface Props {

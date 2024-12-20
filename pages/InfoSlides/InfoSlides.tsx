@@ -31,6 +31,7 @@ const InfoSlides = ({ navigation, usersName }: infoProps): JSX.Element => {
           title={item.title}
           id={item.id}
           options={item.options}
+          equipmentOptions={item.options}
           navigation={navigation}
           index={index}
           indexFunc={setIndex}

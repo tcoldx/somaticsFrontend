@@ -12,8 +12,6 @@ import Statistics from "./pages/Statistics/statistics";
 import Settings from "./pages/Settings/settingPage";
 import * as Sentry from "@sentry/react-native";
 
-import "expo-dev-client";
-
 // Sentry setup initialization!
 Sentry.init({
   dsn: "https://7cbcfdbec4551da5cc6d195e139eafbc@o4507779665756160.ingest.us.sentry.io/4507779666149376",
@@ -37,7 +35,6 @@ export default function App() {
 
   const Stack = createNativeStackNavigator();
 
-  // authenticate the login when app opens
   const handleAuthenticatedLoginInfo = (item: any) => {
     setId(item.id);
     setUserData(item);

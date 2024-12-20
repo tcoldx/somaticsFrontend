@@ -6,7 +6,7 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
-  Button,
+  FlatList,
 } from "react-native";
 import { home, header } from "./home.styles";
 import { All } from "../../utils/workouts";
@@ -14,9 +14,7 @@ import CollectionList from "../../components/CollectionList/CollectionList";
 import FooterNav from "../../components/FooterNav/footernav";
 import Payscreen from "../../components/Payscreen/Payscreen";
 import { auth, firebase } from "../../firebase";
-
 import { sectionTypes } from "../../utils/workoutTypesHome";
-import * as Sentry from "@sentry/react-native";
 
 interface props {
   workoutDetails: any;
@@ -24,6 +22,7 @@ interface props {
   userInfo: any;
   newUsersName: string;
 }
+
 const Home = ({
   workoutDetails,
   navigation,
@@ -33,12 +32,17 @@ const Home = ({
   const [workoutList, setWorkoutList] = useState<any[]>([]);
   const [currentSelect, setCurrentSelect] = useState<any>("Featured");
   const [fetchedName, setFetchedName] = useState<string>("");
-  // State to hold whether the payscreen is visible
   const [payscreenIsVisible, setPayscreenIsVisible] = useState<boolean>(false);
-  const [openNotif, setOpenNotif] = useState<boolean>(false);
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
-  const { name } = userInfo;
+
+  const weeks = [
+    { key: "1", title: "Week 1" },
+    { key: "2", title: "Week 2" },
+    { key: "3", title: "Week 3" },
+    { key: "4", title: "Week 4" },
+  ];
+
   useEffect(() => {
     setWorkoutList(All);
   }, []);
@@ -55,9 +59,6 @@ const Home = ({
     workoutDetails(item);
   };
 
-  const handleNotifOpen = () => {
-    setOpenNotif(!openNotif);
-  };
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
@@ -109,37 +110,11 @@ const Home = ({
               >
                 Standard Tier
               </Text>
-              {/* <Text
-                style={{
-                  color: "white",
-                  padding: 5,
-                  marginLeft: 10,
-                  backgroundColor: "rgba(239, 111, 19, 1)",
-                  borderRadius: 10,
-                  overflow: "hidden",
-                  fontWeight: "bold",
-                }}
-                onPress={() => setPayscreenIsVisible(true)}
-              >
-                Upgrade
-              </Text> */}
             </View>
           </View>
-
-          {/* <TouchableOpacity
-            style={home(width, height).rightNotif}
-            onPress={handleNotifOpen}
-          >
-            <Text style={{ color: "white" }}>
-              <AntDesign name="bells" size={24} color="white" />
-            </Text>
-          </TouchableOpacity> */}
         </View>
-        {/* {openNotif ? <Notification /> : null} */}
-        {/* <View style={header.container}>
-          <SearchBar />
-        </View> */}
-        {/* section header container*/}
+
+        {/* Section Selection List */}
         <View style={home(width, height).subheading}>
           {sectionTypes.map((item) => {
             return (
@@ -166,103 +141,76 @@ const Home = ({
             );
           })}
         </View>
-        <ScrollView
-          contentContainerStyle={{
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          style={{
-            display: "flex",
-            height: height,
-            width: width + 11,
-          }}
-          bounces={true}
-          horizontal={false}
-        >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "87%",
-              marginTop: 40,
-            }}
-          >
-            <View>
-              <Text
-                style={{ color: "white", fontWeight: "bold", fontSize: 23 }}
-              >
-                {currentSelect == "Featured" && "Featured"}
-              </Text>
-            </View>
-          </View>
-          {/** program list container */}
 
-          {currentSelect == "Featured" && (
-            <ScrollView
+        {/* Main Content based on currentSelect */}
+        {currentSelect === "My Plan" ? (
+          <FlatList
+            data={weeks}
+            horizontal
+            pagingEnabled
+            keyExtractor={(item) => item.key}
+            renderItem={({ item }) => (
+              <View style={home(width, height).weekHeaderContainer}>
+                <View style={home(width, height).weekHeader}>
+                  <Text style={home(width, height).textHeader}>
+                    {item.title}
+                  </Text>
+                </View>
+              </View>
+            )}
+            style={{ flexGrow: 1 }} // Ensures it takes up available space
+          />
+        ) : (
+          <ScrollView
+            contentContainerStyle={{
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            style={{ flexGrow: 1, width }} // Adjusted to use available space
+            bounces={true}
+          >
+            <View
               style={{
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 20,
-                width: "90%",
-              }}
-              bounces={false}
-            >
-              <CollectionList
-                itemRetrievalFunc={handleItem}
-                list={workoutList}
-                navigation={navigation}
-              />
-            </ScrollView>
-          )}
-          {/** if workouts have been chosen */}
-          {currentSelect == "Workouts" && (
-            <View
-              style={{
-                display: "flex",
                 alignItems: "center",
-                width: "100%",
-                height: "100%",
-                justifyContent: "center",
-                marginTop: "50%",
+                justifyContent: "space-between",
+                width: "87%",
+                marginTop: 40,
               }}
             >
-              <Text style={{ color: "white", fontWeight: "bold" }}>
-                Coming soon!
-              </Text>
+              <View>
+                <Text
+                  style={{ color: "white", fontWeight: "bold", fontSize: 23 }}
+                >
+                  {currentSelect == "Featured" && "Featured"}
+                </Text>
+              </View>
             </View>
-          )}
-          {currentSelect == "Programs" && (
-            <View
-              style={{
-                display: "flex",
-                alignItems: "center",
-                width: "100%",
-                height: "100%",
-                justifyContent: "center",
-                marginTop: "50%",
-              }}
-            >
-              <Text style={{ color: "white", fontWeight: "bold" }}>
-                Coming soon!
-              </Text>
-            </View>
-          )}
-          {/* <View
-            style={{
-              width: width - 35,
-              marginTop: 40,
-            }}
-          >
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
-              Current Programs
-            </Text>
-            <CurrentProgramList />
-          </View> */}
-        </ScrollView>
+
+            {currentSelect === "Featured" && (
+              <ScrollView
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  marginTop: 20,
+                  width: "90%",
+                }}
+                bounces={false}
+              >
+                <CollectionList
+                  itemRetrievalFunc={handleItem}
+                  list={workoutList}
+                  navigation={navigation}
+                />
+              </ScrollView>
+            )}
+          </ScrollView>
+        )}
+
         <FooterNav navigation={navigation} />
       </SafeAreaView>
+
       {payscreenIsVisible && (
         <Payscreen setPayscreenIsVisible={setPayscreenIsVisible} />
       )}

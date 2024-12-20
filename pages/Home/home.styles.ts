@@ -1,11 +1,9 @@
 import { StyleSheet, Dimensions } from "react-native";
-const { height, width } = Dimensions.get("screen");
 
 export const home = (width: number, height: number) =>
   StyleSheet.create({
     container: {
-      display: "flex",
-      height: "100%",
+      flex: 1,
       width: width,
       backgroundColor: "#0c0c0c",
       alignItems: "center",
@@ -13,6 +11,28 @@ export const home = (width: number, height: number) =>
 
     leftHeader: {
       gap: 10,
+    },
+
+    textHeader: {
+      fontSize: 20,
+      fontWeight: "bold",
+      color: "white",
+    },
+
+    weekHeaderContainer: {
+      width,
+      // Adjust height as needed
+      alignItems: "center",
+      marginTop: 15,
+    },
+
+    weekHeader: {
+      width: width * 0.8, // Adjust width to give some margin
+      height: 50, // Adjust height as needed
+      justifyContent: "center",
+      alignItems: "flex-start",
+      borderRadius: 10,
+      marginHorizontal: 10,
     },
 
     workoutTypeContainer: {

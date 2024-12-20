@@ -31,6 +31,7 @@ type itemProps = {
   index: number;
   username: Function;
   indexFunc: Function;
+  equipmentOptions: any;
 };
 const OnboardingItem = ({
   title,
@@ -40,6 +41,7 @@ const OnboardingItem = ({
   navigation,
   index,
   indexFunc,
+  equipmentOptions,
   username,
 }: itemProps): JSX.Element => {
   const [loading, setLoading] = useState(false);
@@ -51,7 +53,9 @@ const OnboardingItem = ({
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [select, setSelect] = useState(options);
+  const [equipmentArray, setEquipmentArray] = useState(equipmentOptions);
   const [goals, setGoals] = useState<Object[]>([]);
+  const [equipment, setEquipment] = useState<any>();
   const [selectedInch, setSelectedInch] = useState("");
   const [selectedFoot, setSelectedFoot] = useState("");
   const [ageError, setAgeError] = useState<boolean>(false);
@@ -63,12 +67,13 @@ const OnboardingItem = ({
   const [passwordError, setPasswordError] = useState<boolean>(false);
 
   const handleChange = async (text: any) => {
-    setName(text);
+    const checkedText = text.replace(/\s+/g, "");
+        setName(checkedText);
     setNameError(false);
     await AsyncStorage.mergeItem(
       "user2",
       JSON.stringify({
-        name: text,
+        name: checkedText,
       })
     );
   };
@@ -84,6 +89,10 @@ const OnboardingItem = ({
     const filtered = newMap.filter((el: any) => el.selected);
     setGoals(filtered);
     setSelect(newMap);
+  };
+
+  const handleEquipmentSelect = async () => {
+    
   };
 
   const handleChangeEmail = async (text: any) => {
@@ -544,7 +553,7 @@ const OnboardingItem = ({
       </SafeAreaView>
     );
   }
-  if (id === 4) {
+  if (id === 5) {
     return (
       <SafeAreaView style={styles.container}>
         {loading && <BlurView intensity={10} style={styles.coverBlur} />}
@@ -701,6 +710,88 @@ const OnboardingItem = ({
         <TouchableOpacity onPress={handleAuthentication} style={styles.button}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
+      </SafeAreaView>
+    );
+  } 
+  if (id === 4) {
+    (
+      <SafeAreaView style={styles.container}>
+        <SafeAreaView
+          style={{
+            width: "90%",
+            borderRadius: 20,
+            backgroundColor: "black",
+            height: 8,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(240,99,19,255)",
+              height: "100%",
+              width: "75%",
+              borderRadius: 20,
+            }}
+          ></View>
+        </SafeAreaView>
+        <LinearGradient
+          colors={["rgba(240,99,19, 0.2)", "transparent"]}
+          style={styles.linearGradient}
+        />
+        <View style={slideStyle.contContainer}>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+            {title}
+          </Text>
+          <View style={styler.optionContainer}>
+            {select.map((option: any) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => handleSelect(option)}
+                  key={option.id}
+                  activeOpacity={1}
+                  style={
+                    !option.selected
+                      ? styler.optionSelect
+                      : styler.optionSelectFilled
+                  }
+                >
+                  <Text style={styler.text}>{option.name}</Text>
+
+                  <View
+                    style={
+                      option.selected
+                        ? slideStyle.selector
+                        : slideStyle.selectorSecondary
+                    }
+                  >
+                    <AntDesign name="checkcircleo" size={12} color="#242424" />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={async () => {
+              if (index !== 3 && goals.length > 0) {
+                await AsyncStorage.mergeItem(
+                  "user2",
+                  JSON.stringify({
+                    equipment,
+                  })
+                );
+                indexFunc(index + 1);
+              } else {
+                Alert.alert(
+                  "Missing Information",
+                  "Please select atleast one goal."
+                );
+              }
+            }}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Next Step</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }
