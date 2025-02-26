@@ -1,26 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
+
 import {
-  Text,
-  SafeAreaView,
-  ScrollView,
-  View,
   Dimensions,
+  View,
+  SafeAreaView,
+  Text,
   TouchableOpacity,
+  ScrollView,
   FlatList,
 } from "react-native";
 import { home, header } from "./home.styles";
 import { All } from "../../utils/workouts";
+// import { useGlobalState } from "../../App";
+import { sectionTypes } from "../../utils/workoutTypesHome";
 import CollectionList from "../../components/CollectionList/CollectionList";
+import WorkoutAlgorithm from "../../utils/workoutAlgorithm";
 import FooterNav from "../../components/FooterNav/footernav";
 import Payscreen from "../../components/Payscreen/Payscreen";
-import { auth, firebase } from "../../firebase";
-import { sectionTypes } from "../../utils/workoutTypesHome";
+import { auth } from "../../firebase";
 
 interface props {
   workoutDetails: any;
   navigation: any;
   userInfo: any;
   newUsersName: string;
+  workoutPlan: any;
 }
 
 const Home = ({
@@ -28,6 +32,7 @@ const Home = ({
   navigation,
   newUsersName,
   userInfo,
+  workoutPlan,
 }: props): JSX.Element => {
   const [workoutList, setWorkoutList] = useState<any[]>([]);
   const [currentSelect, setCurrentSelect] = useState<any>("Featured");
@@ -35,13 +40,7 @@ const Home = ({
   const [payscreenIsVisible, setPayscreenIsVisible] = useState<boolean>(false);
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
-
-  const weeks = [
-    { key: "1", title: "Week 1" },
-    { key: "2", title: "Week 2" },
-    { key: "3", title: "Week 3" },
-    { key: "4", title: "Week 4" },
-  ];
+  // const userData = useGlobalState();
 
   useEffect(() => {
     setWorkoutList(All);
@@ -60,16 +59,12 @@ const Home = ({
   };
 
   useEffect(() => {
+    // useeffect to get users name from database(firebase)
+    // if user already exists
     const user = auth.currentUser;
     if (user) {
-      const userRef = firebase.firestore().collection("users").doc(user.uid);
-      const fetchUserData = async () => {
-        const userData = await userRef.get();
-        const usersData = userData.data();
-        let backendName = usersData.name;
-        setFetchedName(backendName);
-      };
-      fetchUserData();
+      let backendName = userInfo.name;
+      setFetchedName(backendName);
     }
   }, []);
 
@@ -94,7 +89,8 @@ const Home = ({
               <Text
                 style={{ fontSize: 20, color: "white", fontWeight: "bold" }}
               >
-                {fetchedName ? fetchedName : newUsersName}!
+                {fetchedName ? fetchedName : newUsersName}!{" "}
+                {/*fetch users name conditional*/}
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>
@@ -145,16 +141,24 @@ const Home = ({
         {/* Main Content based on currentSelect */}
         {currentSelect === "My Plan" ? (
           <FlatList
-            data={weeks}
+            data={workoutPlan}
             horizontal
             pagingEnabled
-            keyExtractor={(item) => item.key}
+            keyExtractor={(_, index) => index.toString()}
             renderItem={({ item }) => (
               <View style={home(width, height).weekHeaderContainer}>
                 <View style={home(width, height).weekHeader}>
                   <Text style={home(width, height).textHeader}>
                     {item.title}
                   </Text>
+                  {/* the outer shell of the workout module */}
+                  {item.workouts.map((workout: any, index: any) => {
+                    return (
+                      <View key={index}>
+                        <Text style={{ color: "white" }}>Day {index + 1}</Text>
+                      </View>
+                    );
+                  })}
                 </View>
               </View>
             )}

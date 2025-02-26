@@ -23,7 +23,7 @@ export const home = (width: number, height: number) =>
       width,
       // Adjust height as needed
       alignItems: "center",
-      marginTop: 15,
+      marginTop: 25,
     },
 
     weekHeader: {

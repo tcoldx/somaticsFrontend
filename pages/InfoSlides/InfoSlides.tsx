@@ -25,6 +25,9 @@ const InfoSlides = ({ navigation, usersName }: infoProps): JSX.Element => {
       ref={ref}
       scrollEnabled={false}
       initialScrollIndex={0}
+      onScrollToIndexFailed={(err) => {
+        console.log("scroll failed: ", err);
+      }}
       data={slides}
       renderItem={({ item }) => (
         <OnboardingItem
@@ -32,6 +35,7 @@ const InfoSlides = ({ navigation, usersName }: infoProps): JSX.Element => {
           id={item.id}
           options={item.options}
           equipmentOptions={item.options}
+          levelOptions={item.options}
           navigation={navigation}
           index={index}
           indexFunc={setIndex}
