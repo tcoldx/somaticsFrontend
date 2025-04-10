@@ -10,14 +10,15 @@ import {
   FlatList,
 } from "react-native";
 import { home, header } from "./home.styles";
-import { All } from "../../utils/workouts";
+import useFetchUser from "../../utils/getFirebaseUser";
 // import { useGlobalState } from "../../App";
+import { AntDesign, Ionicons, Feather } from "@expo/vector-icons";
 import { sectionTypes } from "../../utils/workoutTypesHome";
 import CollectionList from "../../components/CollectionList/CollectionList";
-import WorkoutAlgorithm from "../../utils/workoutAlgorithm";
+import useWorkoutList from "../../utils/useWorkoutList";
 import FooterNav from "../../components/FooterNav/footernav";
 import Payscreen from "../../components/Payscreen/Payscreen";
-import { auth } from "../../firebase";
+import Header from "../../components/Header/header";
 
 interface props {
   workoutDetails: any;
@@ -34,39 +35,21 @@ const Home = ({
   userInfo,
   workoutPlan,
 }: props): JSX.Element => {
-  const [workoutList, setWorkoutList] = useState<any[]>([]);
-  const [currentSelect, setCurrentSelect] = useState<any>("Featured");
-  const [fetchedName, setFetchedName] = useState<string>("");
   const [payscreenIsVisible, setPayscreenIsVisible] = useState<boolean>(false);
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
+  const fetchedName = useFetchUser(userInfo);
+  const { handleSelect, workoutList, currentSelect } = useWorkoutList();
   // const userData = useGlobalState();
-
-  useEffect(() => {
-    setWorkoutList(All);
-  }, []);
-
-  const handleSelect = (curr: string) => {
-    setCurrentSelect(curr);
-
-    if (curr === "All") {
-      setWorkoutList(All);
-    }
-  };
+  var planFound = false;
 
   const handleItem = (item: string) => {
     workoutDetails(item);
   };
 
-  useEffect(() => {
-    // useeffect to get users name from database(firebase)
-    // if user already exists
-    const user = auth.currentUser;
-    if (user) {
-      let backendName = userInfo.name;
-      setFetchedName(backendName);
-    }
-  }, []);
+  const handleActivateWorkout = () => {
+    return;
+  };
 
   return (
     <>
@@ -81,33 +64,12 @@ const Home = ({
             marginTop: 20,
           }}
         >
-          <View style={home(width, height).leftHeader}>
-            <View>
-              <Text style={home(width, height).headerone}>Welcome back,</Text>
-            </View>
-            <View>
-              <Text
-                style={{ fontSize: 20, color: "white", fontWeight: "bold" }}
-              >
-                {fetchedName ? fetchedName : newUsersName}!{" "}
-                {/*fetch users name conditional*/}
-              </Text>
-            </View>
-            <View style={{ flexDirection: "row" }}>
-              <Text
-                style={{
-                  color: "gray",
-                  padding: 5,
-                  borderColor: "rgba(128,128,128, .2)",
-                  borderStyle: "solid",
-                  borderWidth: 1,
-                  borderRadius: 10,
-                }}
-              >
-                Standard Tier
-              </Text>
-            </View>
-          </View>
+          <Header
+            width={width}
+            height={height}
+            fetchedName={fetchedName}
+            newUsersName={newUsersName}
+          />
         </View>
 
         {/* Section Selection List */}
@@ -151,11 +113,37 @@ const Home = ({
                   <Text style={home(width, height).textHeader}>
                     {item.title}
                   </Text>
-                  {/* the outer shell of the workout module */}
+                </View>
+
+                {/* the outer shell of the workout module */}
+                <View style={home(width, height).workoutShell}>
                   {item.workouts.map((workout: any, index: any) => {
                     return (
-                      <View key={index}>
-                        <Text style={{ color: "white" }}>Day {index + 1}</Text>
+                      <View style={home(width, height).workoutItem} key={index}>
+                        <Text style={home(width, height).curPlanText}>
+                          Day {workout.day}
+                        </Text>
+                        <Text>
+                          {/* {workout.exercises.map((el: any) => {
+                            return (
+                              <Text key={el.name} style={{ color: "white" }}>
+                                {el.name}
+                              </Text>
+                            );
+                          })} */}
+                        </Text>
+                        <Text></Text>
+                        <TouchableOpacity
+                          style={home(width, height).button}
+                          activeOpacity={1}
+                          onPress={() => handleActivateWorkout()}
+                        >
+                          <Ionicons
+                            name="chevron-forward"
+                            size={24}
+                            color="whitesmoke"
+                          />{" "}
+                        </TouchableOpacity>
                       </View>
                     );
                   })}

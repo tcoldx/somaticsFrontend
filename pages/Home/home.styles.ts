@@ -3,8 +3,8 @@ import { StyleSheet, Dimensions } from "react-native";
 export const home = (width: number, height: number) =>
   StyleSheet.create({
     container: {
-      flex: 1,
       width: width,
+      flex: 1,
       backgroundColor: "#0c0c0c",
       alignItems: "center",
     },
@@ -19,19 +19,45 @@ export const home = (width: number, height: number) =>
       color: "white",
     },
 
-    weekHeaderContainer: {
-      width,
-      // Adjust height as needed
-      alignItems: "center",
-      marginTop: 25,
+    curPlanText: {
+      fontSize: 10,
+      fontWeight: "condensedBold",
+      color: "white",
     },
 
+    weekHeaderContainer: {
+      // Adjust height as needed
+      width,
+      marginTop: 25,
+      alignItems: "center", // there we go this aligns our items in the center
+    },
+
+    workoutShell: {
+      marginTop: 25,
+      display: "flex",
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "space-evenly",
+      gap: 6,
+      rowGap: 10,
+      width: "100%",
+      height: "100%",
+      alignItems: "center",
+    },
+
+    workoutItem: {
+      alignItems: "center",
+      justifyContent: "center",
+      width: "40%",
+      borderRadius: 15,
+      height: "25%",
+      backgroundColor: "black",
+    },
+    // weekheader is the class responsible for overall height of the content container (workoutshell etc)
     weekHeader: {
-      width: width * 0.8, // Adjust width to give some margin
-      height: 50, // Adjust height as needed
+      width: width * 0.9, // Adjust width to give some margin
       justifyContent: "center",
       alignItems: "flex-start",
-      borderRadius: 10,
       marginHorizontal: 10,
     },
 
@@ -100,6 +126,22 @@ export const home = (width: number, height: number) =>
       justifyContent: "flex-start",
       gap: 20,
     },
+
+    button: {
+      width: "25%",
+      height: "25%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#EF6F13",
+      position: "absolute",
+      bottom: 0,
+      right: 0,
+      borderRadius: 10,
+      marginRight: "10%",
+      marginBottom: "10%",
+    },
+
     nodeHeader: {
       position: "absolute",
       flex: 1,

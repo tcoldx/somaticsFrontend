@@ -31,42 +31,117 @@ const WorkoutAlgorithm = (
   userPreferences: UserPreference
 ): Object[] => {
   // Extract selected equipment
-
-  // Determine workout frequency
   const daysPerWeek = parseInt(userPreferences.days);
-  const totalWorkouts = daysPerWeek * 4;
+  const totalWorkouts = daysPerWeek * 20;
 
-  // Ensure we have enough workouts
+  // Shuffle workouts to randomize
   const shuffledWorkouts = workouts.sort(() => 0.5 - Math.random());
+
+  // Ensure we have enough workouts for the total number of days
   const finalWorkouts = shuffledWorkouts.slice(0, totalWorkouts);
 
-  // Distribute workouts across 4 weeks
-  // just to get the functionality down for further algorithm improvement that grows with my knowledge in algorithms
+  // Distribute workouts across 4 weeks with at least 5 workouts per day
+  const workoutsPerDay = 5; // You want at least 5 workouts per day
   const fourWeekPlan = [
     {
       id: "week1",
       title: "Week 1",
       workouts: [
-        { day1: finalWorkouts.slice(0, 1) },
-        { day2: finalWorkouts.slice(1, 3) },
-        { day3: finalWorkouts.slice(3, 6) },
-        { day4: finalWorkouts.slice(6, 10) },
+        { day: 1, exercises: finalWorkouts.slice(0, workoutsPerDay) },
+        {
+          day: 2,
+          exercises: finalWorkouts.slice(workoutsPerDay, workoutsPerDay * 2),
+        },
+        {
+          day: 3,
+          exercises: finalWorkouts.slice(
+            workoutsPerDay * 2,
+            workoutsPerDay * 3
+          ),
+        },
+        {
+          day: 4,
+          exercises: finalWorkouts.slice(
+            workoutsPerDay * 3,
+            workoutsPerDay * 4
+          ),
+        },
       ],
     },
     {
       id: "week2",
       title: "Week 2",
-      workouts: finalWorkouts.slice(daysPerWeek, daysPerWeek * 2),
+      workouts: [
+        { day: 1, exercises: finalWorkouts.slice(0, workoutsPerDay) },
+        {
+          day: 2,
+          exercises: finalWorkouts.slice(workoutsPerDay, workoutsPerDay * 2),
+        },
+        {
+          day: 3,
+          exercises: finalWorkouts.slice(
+            workoutsPerDay * 2,
+            workoutsPerDay * 3
+          ),
+        },
+        {
+          day: 4,
+          exercises: finalWorkouts.slice(
+            workoutsPerDay * 3,
+            workoutsPerDay * 4
+          ),
+        },
+      ],
     },
     {
       id: "week3",
       title: "Week 3",
-      workouts: finalWorkouts.slice(daysPerWeek * 2, daysPerWeek * 3),
+      workouts: [
+        { day: 1, exercises: finalWorkouts.slice(0, workoutsPerDay) },
+        {
+          day: 2,
+          exercises: finalWorkouts.slice(workoutsPerDay, workoutsPerDay * 2),
+        },
+        {
+          day: 3,
+          exercises: finalWorkouts.slice(
+            workoutsPerDay * 2,
+            workoutsPerDay * 3
+          ),
+        },
+        {
+          day: 4,
+          exercises: finalWorkouts.slice(
+            workoutsPerDay * 3,
+            workoutsPerDay * 4
+          ),
+        },
+      ],
     },
     {
       id: "week4",
       title: "Week 4",
-      workouts: finalWorkouts.slice(daysPerWeek * 3, daysPerWeek * 4),
+      workouts: [
+        { day: 1, exercises: finalWorkouts.slice(0, workoutsPerDay) },
+        {
+          day: 2,
+          exercises: finalWorkouts.slice(workoutsPerDay, workoutsPerDay * 2),
+        },
+        {
+          day: 3,
+          exercises: finalWorkouts.slice(
+            workoutsPerDay * 2,
+            workoutsPerDay * 3
+          ),
+        },
+        {
+          day: 4,
+          exercises: finalWorkouts.slice(
+            workoutsPerDay * 3,
+            workoutsPerDay * 4
+          ),
+        },
+      ],
     },
   ];
   return fourWeekPlan;
