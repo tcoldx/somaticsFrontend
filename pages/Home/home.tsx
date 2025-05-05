@@ -21,7 +21,7 @@ import Payscreen from "../../components/Payscreen/Payscreen";
 import Header from "../../components/Header/header";
 
 interface props {
-  workoutDetails: any;
+  workoutDetails: Function;
   navigation: any;
   userInfo: any;
   newUsersName: string;
@@ -41,10 +41,13 @@ const Home = ({
   const fetchedName = useFetchUser(userInfo);
   const { handleSelect, workoutList, currentSelect } = useWorkoutList();
   // const userData = useGlobalState();
-  var planFound = false;
+  var isLocked = false;
+  // gets the current day in nums 0 = "sunday" 1 = "monday" etc
+  var currDay = new Date().getDay();
 
   const handleItem = (item: string) => {
     workoutDetails(item);
+    navigation.navigate("details");
   };
 
   const handleActivateWorkout = () => {
@@ -118,6 +121,8 @@ const Home = ({
                 {/* the outer shell of the workout module */}
                 <View style={home(width, height).workoutShell}>
                   {item.workouts.map((workout: any, index: any) => {
+                    {
+                    }
                     return (
                       <View style={home(width, height).workoutItem} key={index}>
                         <Text style={home(width, height).curPlanText}>
@@ -132,17 +137,16 @@ const Home = ({
                             );
                           })} */}
                         </Text>
-                        <Text></Text>
                         <TouchableOpacity
                           style={home(width, height).button}
                           activeOpacity={1}
-                          onPress={() => handleActivateWorkout()}
+                          onPress={() => handleItem(item.exercises)}
                         >
                           <Ionicons
                             name="chevron-forward"
                             size={24}
                             color="whitesmoke"
-                          />{" "}
+                          />
                         </TouchableOpacity>
                       </View>
                     );

@@ -89,32 +89,32 @@ export default function App() {
 
   // call the workout algorithm function to get the users workout plan
 
-  useEffect(() => {
-    const user = auth.currentUser;
-    if (user && exercises.length === 0) {
-      // Fetch exercises only if not already loaded
-      const fetchWorkoutData = async () => {
-        try {
-          const workoutData = await firebase
-            .firestore()
-            .collection("exercises")
-            .get();
-          const workoutDataArray = workoutData.docs.map((doc) => doc.data());
-          setExercises(workoutDataArray);
-        } catch (error) {
-          console.error("Error fetching exercises:", error);
-          Sentry.captureException(error); // Log error in Sentry
-        }
-      };
-      fetchWorkoutData();
-    }
-  }, [auth.currentUser]);
+  // useEffect(() => {
+  //   const user = auth.currentUser;
+  //   if (user && exercises.length === 0) {
+  //     // Fetch exercises only if not already loaded
+  //     const fetchWorkoutData = async () => {
+  //       try {
+  //         const workoutData = await firebase
+  //           .firestore()
+  //           .collection("exercises")
+  //           .get();
+  //         const workoutDataArray = workoutData.docs.map((doc) => doc.data());
+  //         setExercises(workoutDataArray);
+  //       } catch (error) {
+  //         console.error("Error fetching exercises:", error);
+  //         Sentry.captureException(error); // Log error in Sentry
+  //       }
+  //     };
+  //     fetchWorkoutData();
+  //   }
+  // }, [auth.currentUser]);
 
-  useEffect(() => {
-    if (userData && exercises.length > 0) {
-      setWorkoutPlan(WorkoutAlgorithm(exercises, userData)); // Ensure data is fully loaded before calling
-    }
-  }, [userData, exercises]);
+  // useEffect(() => {
+  //   if (userData && exercises.length > 0) {
+  //     setWorkoutPlan(WorkoutAlgorithm(exercises, userData)); // Ensure data is fully loaded before calling
+  //   }
+  // }, [userData, exercises]);
 
   return (
     <StateContext.Provider value={userData}>

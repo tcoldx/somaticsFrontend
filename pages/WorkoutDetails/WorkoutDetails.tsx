@@ -181,6 +181,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
   const flatListRef = useRef<FlatList>(null);
   const handleDone = (): void => {
     // call stop time cause that means the workout is finished
+
     handleStopTime();
   };
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
@@ -352,7 +353,7 @@ const WorkoutDetails = ({ details, navigation }: DetailProps): JSX.Element => {
               pagingEnabled={true}
               scrollEnabled={true}
               data={details.workouts}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => `${item.id} - ${index}`} // this way each id is guaranteed unique
               renderItem={({ item, index }: any) => {
                 return (
                   <WorkoutDetailItem

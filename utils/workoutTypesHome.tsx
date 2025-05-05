@@ -9,7 +9,7 @@ export const bodyPartTypes = [
 ];
 
 export const sectionTypes = [
-  { name: "My Plan", id: 1 },
+  // { name: "My Plan", id: 1 },
   { name: "Featured", id: 2 },
   // { name: "Programs", id: 3 },
 ];
