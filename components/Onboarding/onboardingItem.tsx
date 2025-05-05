@@ -31,6 +31,8 @@ type itemProps = {
   index: number;
   username: Function;
   indexFunc: Function;
+  equipmentOptions: any;
+  levelOptions: any;
 };
 const OnboardingItem = ({
   title,
@@ -40,6 +42,8 @@ const OnboardingItem = ({
   navigation,
   index,
   indexFunc,
+  equipmentOptions,
+  levelOptions,
   username,
 }: itemProps): JSX.Element => {
   const [loading, setLoading] = useState(false);
@@ -51,7 +55,11 @@ const OnboardingItem = ({
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [select, setSelect] = useState(options);
+  const [equipmentSelect, setEquipmentSelect] = useState(equipmentOptions);
   const [goals, setGoals] = useState<Object[]>([]);
+  const [equipment, setEquipment] = useState<any>();
+  const [levelSelect, setFitnessLevelSelect] = useState(levelOptions);
+  const [fitnessLevel, setFitnessLevel] = useState<any>([]);
   const [selectedInch, setSelectedInch] = useState("");
   const [selectedFoot, setSelectedFoot] = useState("");
   const [ageError, setAgeError] = useState<boolean>(false);
@@ -61,14 +69,27 @@ const OnboardingItem = ({
   const [nameError, setNameError] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<boolean>(false);
   const [passwordError, setPasswordError] = useState<boolean>(false);
+  const [days, setDays] = useState<object[]>([
+    { id: 1, name: "1 Day", selected: false },
+    { id: 2, name: "2 Days", selected: false },
+    { id: 3, name: "3 Days", selected: false },
+    { id: 4, name: "4 Days", selected: false },
+    { id: 5, name: "5 Days", selected: false },
+    { id: 6, name: "6 Days", selected: false },
+    { id: 7, name: "7 Days", selected: false },
+  ]);
+  const [amountOfDays, setAmountOfDays] = useState<any[]>(null);
 
   const handleChange = async (text: any) => {
-    setName(text);
+    const checkedText = text.replace(/\s+/g, "");
+    console.log(text);
+    setName(checkedText);
     setNameError(false);
+    console.log("the checked text", checkedText);
     await AsyncStorage.mergeItem(
       "user2",
       JSON.stringify({
-        name: text,
+        name: checkedText,
       })
     );
   };
@@ -84,6 +105,42 @@ const OnboardingItem = ({
     const filtered = newMap.filter((el: any) => el.selected);
     setGoals(filtered);
     setSelect(newMap);
+  };
+
+  const handleEquipmentSelect = async (data: any) => {
+    let newMap = equipmentSelect.map((val: any) => {
+      if (val.id === data.id) {
+        return { ...val, selected: !val.selected };
+      } else {
+        return val;
+      }
+    });
+    const filtered = newMap.filter((el: any) => el.selected);
+    setEquipment(filtered);
+    setEquipmentSelect(newMap);
+  };
+
+  const handleLevelSelect = async (data: any) => {
+    let newArr = levelSelect.map((el: any) => {
+      // only allow one selection
+      if (el === data) {
+        return { ...el, selected: !el.selected };
+      } else {
+        return el;
+      }
+    });
+    const filtered = newArr.filter((el: any) => el.selected); // the filtered array with the selected values only!
+    setFitnessLevel(filtered);
+    setFitnessLevelSelect(newArr);
+  };
+
+  const handleDaysAWeek = (data: any) => {
+    const updatedDays = days.map((el: any) => ({
+      ...el,
+      selected: el.id === data.id, // True for the selected item, false for others
+    }));
+    setDays(updatedDays);
+    setAmountOfDays(updatedDays.filter((el) => el.selected === true));
   };
 
   const handleChangeEmail = async (text: any) => {
@@ -105,64 +162,85 @@ const OnboardingItem = ({
   const handleAuthentication = async () => {
     const objVal = await AsyncStorage.getItem("user2");
 
-    if (checkIfEmail(email) && password && name && objVal) {
-      try {
-        setLoading(true); // Start the loader
-        setPasswordError(false);
-        setNameError(false);
-        setEmailError(false);
+    // Input validation before making Firebase calls
+    if (!checkIfEmail(email)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
+      setEmailError(true);
+      return;
+    }
 
-        // Check if the email is valid and not already in use
-        const emailQuerySnapshot = await db
-          .collection("users")
-          .where("email", "==", email)
-          .get();
+    if (password.length < 6) {
+      Alert.alert(
+        "Weak Password",
+        "Password must be at least 6 characters long."
+      );
+      setPasswordError(true);
+      return;
+    }
 
-        if (!emailQuerySnapshot.empty) {
-          // Email is already in use, prompt the user
+    if (name.trim().length === 0) {
+      Alert.alert("Missing Name", "Please enter your name.");
+      setNameError(true);
+      return;
+    }
+
+    if (!objVal) {
+      Alert.alert("Missing Data", "Unable to retrieve user data.");
+      return;
+    }
+
+    // If all validations pass, proceed to Firebase authentication
+    try {
+      setLoading(true);
+      setPasswordError(false);
+      setNameError(false);
+      setEmailError(false);
+
+      // Create user with Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Save user data to Firestore
+      await db.collection("users").doc(user.uid).set(JSON.parse(objVal));
+
+      // Save user data to AsyncStorage
+      await AsyncStorage.setItem("user2", objVal);
+
+      username(name); // Update username state
+      navigation.navigate("home"); // Navigate to home screen
+    } catch (err: any) {
+      switch (err.code) {
+        case "auth/email-already-in-use":
           Alert.alert(
-            "Invalid Email",
-            "The email is already in use. Please use a different email."
+            "Email in Use",
+            "This email is already associated with an account."
           );
           setEmailError(true);
-          setLoading(false); // Stop the loader
-          return;
-        }
-
-        // Proceed with creating a new user
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        const user = userCredential.user;
-
-        // Save user data to Firestore
-        await db.collection("users").doc(user.uid).set(JSON.parse(objVal));
-
-        // Save user data to AsyncStorage (optional)
-        await AsyncStorage.setItem("user2", objVal);
-
-        // Navigate to the home screen after everything is complete
-        navigation.navigate("home");
-      } catch (err) {
-        console.log(err.message);
-        Alert.alert(
-          "Error",
-          "There was an error creating your account. Please try again."
-        );
-      } finally {
-        setLoading(false); // Stop the loader
+          break;
+        case "auth/invalid-email":
+          Alert.alert("Invalid Email", "Please enter a valid email address.");
+          setEmailError(true);
+          break;
+        case "auth/weak-password":
+          Alert.alert(
+            "Weak Password",
+            "Password must be at least 6 characters long."
+          );
+          setPasswordError(true);
+          break;
+        default:
+          Alert.alert(
+            "Error",
+            "An unexpected error occurred. Please try again."
+          );
+          break;
       }
-    } else {
-      Alert.alert(
-        "Missing Information",
-        "You are missing information or the email is invalid."
-      );
-      setNameError(true);
-      setEmailError(true);
-      setPasswordError(true);
+    } finally {
+      setLoading(false); // Stop the loader
     }
   };
 
@@ -544,7 +622,7 @@ const OnboardingItem = ({
       </SafeAreaView>
     );
   }
-  if (id === 4) {
+  if (id === 7) {
     return (
       <SafeAreaView style={styles.container}>
         {loading && <BlurView intensity={10} style={styles.coverBlur} />}
@@ -701,6 +779,256 @@ const OnboardingItem = ({
         <TouchableOpacity onPress={handleAuthentication} style={styles.button}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
+
+  if (id === 6) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <SafeAreaView
+          style={{
+            width: "90%",
+            borderRadius: 20,
+            backgroundColor: "black",
+            height: 8,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(240,99,19,255)",
+              height: "100%",
+              width: "75%",
+              borderRadius: 20,
+            }}
+          ></View>
+        </SafeAreaView>
+        <LinearGradient
+          colors={["rgba(240,99,19, 0.2)", "transparent"]}
+          style={styles.linearGradient}
+        />
+        <View style={slideStyle.contContainer}>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+            {title}
+          </Text>
+          <View style={styler.optionContainer}>
+            {days?.map((option: any) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => handleDaysAWeek(option)}
+                  key={option.id}
+                  activeOpacity={1}
+                  style={
+                    !option.selected
+                      ? styler.optionSelect
+                      : styler.optionSelectFilled
+                  }
+                >
+                  <Text style={styler.text}>{option.name}</Text>
+
+                  <View
+                    style={
+                      option.selected
+                        ? slideStyle.selector
+                        : slideStyle.selectorSecondary
+                    }
+                  >
+                    <AntDesign name="checkcircleo" size={12} color="#242424" />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={async () => {
+              if (amountOfDays.length > 0) {
+                console.log("works!");
+                await AsyncStorage.mergeItem(
+                  "user2",
+                  JSON.stringify({
+                    days: amountOfDays[0].name,
+                  })
+                );
+                indexFunc(index + 1);
+              } else {
+                Alert.alert(
+                  "Missing Information",
+                  "Please select atleast one goal."
+                );
+              }
+            }}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Next Step</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (id === 5) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <SafeAreaView
+          style={{
+            width: "90%",
+            borderRadius: 20,
+            backgroundColor: "black",
+            height: 8,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(240,99,19,255)",
+              height: "100%",
+              width: "75%",
+              borderRadius: 20,
+            }}
+          ></View>
+        </SafeAreaView>
+        <LinearGradient
+          colors={["rgba(240,99,19, 0.2)", "transparent"]}
+          style={styles.linearGradient}
+        />
+        <View style={slideStyle.contContainer}>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+            {title}
+          </Text>
+          <View style={styler.optionContainer}>
+            {levelSelect?.map((option: any) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => handleLevelSelect(option)}
+                  key={option.id}
+                  activeOpacity={1}
+                  style={
+                    !option.selected
+                      ? styler.optionSelect
+                      : styler.optionSelectFilled
+                  }
+                >
+                  <Text style={styler.text}>{option.name}</Text>
+
+                  <View
+                    style={
+                      option.selected
+                        ? slideStyle.selector
+                        : slideStyle.selectorSecondary
+                    }
+                  >
+                    <AntDesign name="checkcircleo" size={12} color="#242424" />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={async () => {
+              if (index !== 3 && levelSelect.length > 0) {
+                await AsyncStorage.mergeItem(
+                  "user2",
+                  JSON.stringify({
+                    fitLevel: fitnessLevel,
+                  })
+                );
+                indexFunc(index + 1);
+              } else {
+                Alert.alert(
+                  "Missing Information",
+                  "Please select atleast one goal."
+                );
+              }
+            }}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Next Step</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (id === 4) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <SafeAreaView
+          style={{
+            width: "90%",
+            borderRadius: 20,
+            backgroundColor: "black",
+            height: 8,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(240,99,19,255)",
+              height: "100%",
+              width: "75%",
+              borderRadius: 20,
+            }}
+          ></View>
+        </SafeAreaView>
+        <LinearGradient
+          colors={["rgba(240,99,19, 0.2)", "transparent"]}
+          style={styles.linearGradient}
+        />
+        <View style={slideStyle.contContainer}>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+            {title}
+          </Text>
+          <View style={styler.optionContainer}>
+            {equipmentSelect.map((el) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => handleEquipmentSelect(el)}
+                  key={el.id}
+                  activeOpacity={1}
+                  style={
+                    !el.selected
+                      ? styler.optionSelect
+                      : styler.optionSelectFilled
+                  }
+                >
+                  <Text style={styler.text}>{el.name}</Text>
+
+                  <View
+                    style={
+                      el.selected
+                        ? slideStyle.selector
+                        : slideStyle.selectorSecondary
+                    }
+                  >
+                    <AntDesign name="checkcircleo" size={12} color="#242424" />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={async () => {
+              if (index != 4 && equipment.length > 0) {
+                await AsyncStorage.mergeItem(
+                  "user2",
+                  JSON.stringify({
+                    equipment,
+                  })
+                );
+                indexFunc(index + 1);
+              } else {
+                Alert.alert(
+                  "Missing Information",
+                  "Please select atleast one item."
+                );
+              }
+            }}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Next Step</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }

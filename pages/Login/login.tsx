@@ -13,114 +13,146 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { login } from "./styles.login";
 import SomaLogo from "../../assets/somaticLogo.png";
-import { firebase } from "../../firebase";
-import { checkIfEmail } from "../../utils/checkEmail";
-import { getAuth, signInWithEmailAndPassword, User } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  User,
+  sendPasswordResetEmail,
+} from "firebase/auth";
+import firebase from "firebase/compat/app";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
-interface loginProps {
+import { checkIfEmail } from "../../utils/checkEmail";
+
+interface LoginProps {
   navigation: any;
-  sendInfo: any;
+  sendInfo: (info: any) => void;
 }
-const { width, height } = Dimensions.get("screen");
-const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
+
+const { width } = Dimensions.get("screen");
+
+const Login = ({ navigation, sendInfo }: LoginProps): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [val, setVal] = useState<string>("");
   const [prompt, setPrompt] = useState<boolean>(false);
   const auth = getAuth();
+
   useEffect(() => {
-    // Listen for changes in the authentication state
-    const auth = getAuth();
-
-    // Listen for changes in the ID token (token refresh)
-    const unsubscribeToken = auth.onIdTokenChanged(
-      async (user: User | null) => {
-        if (user) {
-          const token = await user.getIdToken();
-          try {
-            // Save the token to AsyncStorage
-            await AsyncStorage.setItem("userToken", token);
-
-            // Save user information to AsyncStorage
-            await AsyncStorage.setItem("userEmail", user.email || "");
-            await AsyncStorage.setItem("userName", user.displayName || "");
-          } catch (error) {
-            console.error(
-              "Error saving user data to AsyncStorage:",
-              error.message
-            );
-          } finally {
-            setLoading(false);
-          }
-        }
-      }
-    );
-
-    // Check for a stored token on app launch
+    // this function is responsible for what happens after the user has logged in (auto-login)
     const checkStoredToken = async () => {
+      setLoading(true);
       try {
-        const storedToken = await AsyncStorage.getItem("userToken");
-        if (storedToken) {
-          // Retrieve user information from AsyncStorage
-          const userEmail = await AsyncStorage.getItem("userEmail");
-          const userName = await AsyncStorage.getItem("userName");
-          const password = await AsyncStorage.getItem("userPassword");
-          // Use the stored token to authenticate the user
-          await signInWithEmailAndPassword(auth, userEmail, password); // Use user's email and a placeholder password
-          navigation.navigate("home");
-          // Now you can use userEmail and userName as needed
+        const storedEmail = await AsyncStorage.getItem("userEmail");
+        const storedPassword = await AsyncStorage.getItem("userPassword");
+        if (storedEmail && storedPassword) {
+          await signInWithEmailAndPassword(auth, storedEmail, storedPassword);
+          console.log("the email and password were authenticated");
+          // need to send the users username to global state
+          const userUID = auth.currentUser.uid;
+          const getUser = firebase
+            .firestore()
+            .collection("users")
+            .doc(userUID)
+            .get();
 
-          console.log("User authenticated using stored token");
+          const userData = (await getUser)?.data();
+
+          const {
+            age,
+            height,
+            name,
+            gender,
+            email: userEmail,
+            fitLevel,
+            equipment,
+            weight,
+            goals,
+            days,
+          } = userData;
+          sendInfo({
+            name: name,
+            id: userUID,
+            goals,
+            weight,
+            age,
+            days,
+            equipment,
+            fitLevel,
+            userEmail,
+            gender,
+            height,
+          });
+          navigation.navigate("home");
         }
-      } catch (error) {
-        console.error(
-          "Error retrieving user token from AsyncStorage:",
-          error.message
-        );
+      } catch (error: any) {
+        console.error("Error during auto-login:", error.message);
       } finally {
         setLoading(false);
       }
     };
 
     checkStoredToken();
-
-    return () => {
-      unsubscribeToken();
-    };
-  }, []); // Run only once when component mounts
+  }, []);
 
   const handleLoginAuth = async () => {
-    if (checkIfEmail(email) && password) {
-      try {
-        await AsyncStorage.setItem("userPassword", password);
-
-        await signInWithEmailAndPassword(auth, email, password);
-
-        auth.onAuthStateChanged(async (user) => {
-          if (user) {
-            // User is signed in
-            setLoading(true);
-            const userRef = firebase
-              .firestore()
-              .collection("users")
-              .doc(user.uid);
-            const userData = await userRef.get();
-            const { age, height, name, gender, email } = userData.data();
-            sendInfo({ age, height, name, gender, email, id: user.uid });
-            setLoading(false);
-            navigation.navigate("home");
-          }
-        });
-      } catch (err) {
-        Alert.alert(
-          "Login Invalid",
-          "You entered the wrong username or password"
-        );
-      }
+    if (!checkIfEmail(email) || !password) {
+      Alert.alert("Invalid Input", "Please provide valid email and password.");
+      return;
     }
-    return;
+
+    setLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      await AsyncStorage.setItem("userEmail", email);
+      await AsyncStorage.setItem("userPassword", password);
+
+      const userRef = firebase.firestore().collection("users").doc(user.uid);
+      const userData = await userRef.get();
+
+      if (userData.exists) {
+        const {
+          age,
+          height,
+          name,
+          gender,
+          email: userEmail,
+          fitLevel,
+          equipment,
+          goals,
+          days,
+        } = userData.data();
+        sendInfo({
+          age,
+          height,
+          equipment,
+          name,
+          fitLevel,
+          goals,
+          days,
+          gender,
+          email: userEmail,
+          id: user.uid,
+        });
+        navigation.navigate("home");
+      } else {
+        console.error("User data not found in Firestore.");
+      }
+    } catch (error: any) {
+      Alert.alert(
+        "Login Error",
+        error.message || "An unexpected error occurred."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleForgotPasswordAuth = async () => {
@@ -128,13 +160,14 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
       Alert.alert("Invalid Email", "Please enter a valid email address.");
       return;
     }
+
     setLoading(true);
     try {
-      await firebase.auth().sendPasswordResetEmail(val);
-      Alert.alert("Password Recovery", "A password reset email has been sent.");
+      await sendPasswordResetEmail(auth, val);
+      Alert.alert("Success", "A password reset email has been sent.");
       setPrompt(false);
-    } catch (err) {
-      Alert.alert("Error occured", err.message);
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "An error occurred.");
     } finally {
       setLoading(false);
     }
@@ -147,6 +180,7 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
       </View>
     );
   }
+
   return (
     <SafeAreaView style={login.container}>
       {prompt && <BlurView intensity={10} style={login.coverBlur} />}
@@ -157,32 +191,19 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
               Password Recovery
             </Text>
           </View>
-          {/* start of subheader*/}
-          <View
-            style={{
-              display: "flex",
-              padding: 10,
-              gap: 10,
-              width: "100%",
-            }}
-          >
-            <Text style={{ color: "white" }}>Please enter your email: </Text>
+          <View style={{ padding: 10, gap: 10, width: "100%" }}>
+            <Text style={{ color: "white" }}>Please enter your email:</Text>
             <TextInput
               style={login.inputx}
-              onChangeText={(e) => {
-                setVal(e);
-              }}
+              onChangeText={setVal}
               value={val}
+              placeholder="Email"
+              placeholderTextColor="gray"
             />
           </View>
-          {/*end of subheader*/}
-
-          {/* start button container*/}
           <View style={login.deleteButContainer}>
             <TouchableOpacity
-              onPress={() => {
-                setPrompt(false);
-              }}
+              onPress={() => setPrompt(false)}
               style={login.deleteButton}
             >
               <Text>X</Text>
@@ -198,28 +219,18 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
           </View>
         </View>
       )}
-      {/* end of button container */}
       <View style={login.loginContentContainer}>
         <View
           style={{
-            display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "center",
-            width: width,
             marginBottom: 40,
           }}
         >
           <Image source={SomaLogo} style={login.logo} />
           <Text style={login.title}>Somatics</Text>
         </View>
-        <View
-          style={{
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <View style={{ alignItems: "center", width: "100%" }}>
           <View style={login.inputWrap}>
             <AntDesign
               name="mail"
@@ -231,8 +242,8 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
               style={login.input}
               placeholder="Email"
               value={email}
-              onChangeText={(e) => setEmail(e)}
-              placeholderTextColor={"gray"}
+              onChangeText={setEmail}
+              placeholderTextColor="gray"
             />
           </View>
           <View style={login.inputWrapSecond}>
@@ -243,31 +254,19 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
               style={{ paddingLeft: 10 }}
             />
             <TextInput
-              onChangeText={(e) => setPassword(e)}
               style={login.input}
-              value={password}
               placeholder="Password"
-              placeholderTextColor={"gray"}
+              value={password}
+              onChangeText={setPassword}
+              placeholderTextColor="gray"
+              secureTextEntry
             />
           </View>
-          <View
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "flex-start",
-              width: width - 30,
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                setPrompt(true);
-              }}
-            >
-              <Text style={{ color: "orange", fontWeight: "bold" }}>
-                forgot password?
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => setPrompt(true)}>
+            <Text style={{ color: "orange", fontWeight: "bold" }}>
+              Forgot password?
+            </Text>
+          </TouchableOpacity>
         </View>
         <TouchableOpacity
           onPress={handleLoginAuth}
@@ -282,10 +281,11 @@ const Login = ({ navigation, sendInfo }: loginProps): JSX.Element => {
           onPress={() => navigation.navigate("landing")}
         >
           <Text style={login.go}>Go</Text>
-          <Text style={login.back}>back</Text>
+          <Text style={login.back}>Back</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
+
 export default Login;
