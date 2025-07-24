@@ -4,10 +4,12 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "./statistics.styles";
-import { auth, firebase } from "../../firebase";
+import { auth, db, firebase } from "../../firebase";
 import moment from "moment";
 import { Skeleton } from "@rneui/themed";
 import { BlurView } from "expo-blur";
@@ -20,6 +22,11 @@ import {
 import StatChart from "../../components/StatChart/statchart";
 import FooterNav from "../../components/FooterNav/footernav";
 import { _DEFAULT_INITIAL_PLAYBACK_STATUS } from "expo-av/build/AV";
+import WorkoutTrackAdder from "../../components/WorkoutTrackAdder/workouttrackadd";
+import { getAuth } from "firebase/auth";
+import { collection, doc, getDoc, getDocs, getFirestore, } from "firebase/firestore";
+import WorkoutCard from "../../components/WorkoutCard/workoutcard";
+const {width, height} = Dimensions.get("screen");
 interface statProps {
   navigation: any;
   userId: any;
@@ -29,17 +36,10 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   const [panel, setPanel] = useState<boolean>(false);
   const [tempId, setTempId] = useState<string>("");
   const [chartData, setChartData] = useState<any>([0, 0, 0, 0, 0, 0, 0]);
-  const [switcher, setSwitcher] = useState(0);
-
-  const selector = (val: number) => {
-    if (val === 0) {
-      setSwitcher(0);
-    }
-    if (val === 1) {
-      setSwitcher(1);
-    }
-  };
-
+  const [switcher, setSwitcher] = useState("left");
+  const [openSwitch, setOpenSwitch] = useState(0);
+  const [fetchedExercises, setFetchedExercises] = useState<any[]>();
+  
   const workoutRef = firebase.firestore().collection("programs");
   const getPrograms = async () => {
     let usersId = auth.currentUser.uid;
@@ -59,6 +59,25 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
     });
     setWorkoutHistory(list);
   };
+
+ const fetchUserCustomExercises = async () => {
+   const auth = getAuth();
+  const user = auth.currentUser;
+  if (user) {
+  const exerciseRef = collection(db, "customworkouts");
+      const exerciseSnap = await getDocs(exerciseRef);
+       if (!exerciseSnap.empty) {
+        const exercises = exerciseSnap.docs.map(doc => {
+           return doc.data();
+        })
+        setFetchedExercises(exercises);
+      } else {
+        console.warn("exercise data not found")
+      }
+
+  }
+   
+};
   // function to make the chart algorithm
   const workoutChartAlgorithm = async () => {
     /** ts in ms */
@@ -103,7 +122,11 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   // invoke the get program function as soon as app starts
   useEffect(() => {
     getPrograms();
-  }, [panel, workoutHistory.length]);
+  }, [panel]);
+
+  useEffect(() => {
+    fetchUserCustomExercises();
+}, [])
 
   // invoke the chart algorithm for the workouts
   useEffect(() => {
@@ -139,9 +162,24 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
       });
     }
   };
+
+  const handleOpen = (switcher: any) => {
+    setOpenSwitch(switcher);
+  };
+
+ const handleView = (workout: any) => {
+  navigation.navigate("statDetail", { workout });
+};
+
   return (
     <SafeAreaView style={styles.container}>
-      {panel && <BlurView intensity={10} style={styles.coverBlur} />}
+      {(panel || openSwitch) && <BlurView intensity={10} style={styles.coverBlur} />}
+      {openSwitch && (
+        <View style={styles.trackAddContainer}>
+          {/* the workout tracker component */}
+        <WorkoutTrackAdder openSwitchFunction={handleOpen}/>
+        </View>
+      )} 
       {panel && (
         <View style={styles.deletionContainer}>
           <Text style={{ color: "red", fontWeight: "bold", fontSize: 20 }}>
@@ -166,7 +204,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
         </View>
       )}
       <View style={styles.chartContainer}>
-        <StatChart activityData={chartData} selector={selector} />
+        <StatChart activityData={chartData} />
       </View>
       <View style={styles.statHeaders}>
         <View style={styles.statHeader}>
@@ -262,62 +300,96 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
         <Text style={{ fontWeight: "bold", fontSize: 18, color: "white" }}>
           Previous Workouts
         </Text>
+        <TouchableOpacity style={styles.trackAddButton} activeOpacity={0.8} onPress={() => handleOpen(1)}>
+        <Text style={{color: "white", fontSize: 12, fontWeight: "bold"}}>
+          + Track New Workout
+        </Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.historyContainer}>
-        {workoutHistory.length < 1 ? (
-          <Text
-            style={{
-              marginBottom: 20,
-              color: "white",
-              fontSize: 20,
-              fontWeight: "bold",
-            }}
+      <View style={styles.historyViewSwitch}>
+        <TouchableOpacity activeOpacity={1} style={[styles.subHeadSwitcher, {borderColor: `${switcher === "left" ? "#EF6F13" : "transparent"}`} ]} 
+        onPress={() => setSwitcher("left")}
+        >
+          <Text style={styles.subheader}>Programs</Text>
+          </TouchableOpacity>
+          <TouchableOpacity activeOpacity={1} style={[styles.subHeadSwitcher, {borderColor: `${switcher === "right" ? "#EF6F13" : "transparent"}`} ]}
+          onPress={() => setSwitcher("right")}
           >
-            No Data
-          </Text>
-        ) : (
-          <ScrollView contentContainerStyle={styles.workoutHistoryContentWrap}>
-            {workoutHistory.map((workout: any) => {
-              return (
-                <View style={styles.workoutContainer} key={workout.id}>
-                  <View
-                    style={{
-                      gap: 3,
-                      display: "flex",
-                      alignItems: "flex-start",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text style={styles.workoutContainerText}>
-                      {workout.name}
-                    </Text>
-                    <Text style={{ color: "gray", fontWeight: "bold" }}>
-                      Day: {workout.day}
-                    </Text>
-                  </View>
-                  <AntDesign
-                    name="closesquare"
-                    style={{
-                      borderWidth: 1,
-                      borderColor: "#EF6F13",
-                      color: "whitesmoke",
-                      borderRadius: 4,
-                    }}
-                    size={30}
-                    onPress={() => handleDelete(workout.workoutId)}
-                  />
-                </View>
-              );
-            })}
-          </ScrollView>
-        )}
-        {!workoutHistory.length && (
-          <Skeleton animation="wave" width={100} height={20} />
-        )}
+          <Text style={styles.subheader}>Tracker</Text>
+          </TouchableOpacity>
       </View>
-      <FooterNav navigation={navigation} />
-    </SafeAreaView>
-  );
-};
+<View style={styles.historyContainer}>
+  {switcher === "left" ? (
+    workoutHistory.length < 1 ? (
+      <Text
+        style={{
+          marginBottom: 20,
+          color: "white",
+          fontSize: 20,
+          fontWeight: "bold",
+        }}
+      >
+        No Data
+      </Text>
+    ) : (
+      <ScrollView contentContainerStyle={styles.workoutHistoryContentWrap}>
+        {workoutHistory.map((workout: any) => (
+          <View style={styles.workoutContainer} key={workout.id}>
+            <View
+              style={{
+                gap: 3,
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={styles.workoutContainerText}>
+                {workout.name}
+              </Text>
+              <Text style={{ color: "gray", fontWeight: "bold" }}>
+                Day: {workout.day}
+              </Text>
+            </View>
+            <AntDesign
+              name="closesquare"
+              style={{
+                borderWidth: 1,
+                borderColor: "#EF6F13",
+                color: "whitesmoke",
+                borderRadius: 4,
+              }}
+              size={30}
+              onPress={() => handleDelete(workout.workoutId)}
+            />
+          </View>
+        ))}
+      </ScrollView>
+    )
+  ) : (
+    <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
+      {fetchedExercises.length < 1 ? (
+      <Text style={{ color: "white", fontSize: 20 }}>
+        No Data
+      </Text>
+      ) : (
+        <FlatList
+          data={fetchedExercises}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
+          renderItem={({ item }) => (
+        <WorkoutCard workout={item} onView={handleView}/>
+
+  )}
+/>
+      )
+}
+    </View>
+  )}
+</View>
+
+<FooterNav navigation={navigation} />
+</SafeAreaView>
+  )};
+
 
 export default Statistics;

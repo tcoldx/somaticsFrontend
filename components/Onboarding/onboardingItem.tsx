@@ -82,10 +82,8 @@ const OnboardingItem = ({
 
   const handleChange = async (text: any) => {
     const checkedText = text.replace(/\s+/g, "");
-    console.log(text);
     setName(checkedText);
     setNameError(false);
-    console.log("the checked text", checkedText);
     await AsyncStorage.mergeItem(
       "user2",
       JSON.stringify({
