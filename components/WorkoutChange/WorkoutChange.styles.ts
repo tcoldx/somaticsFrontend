@@ -3,9 +3,12 @@ const { width, height } = Dimensions.get("screen");
 
 export const styles = StyleSheet.create({
     container: {
-        display: "flex",
-        alignItems: "center",
-        height: "100%"
+         display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    backgroundColor: "#0c0c0c",
+    width: width,
+    height: "100%",
     },
 
     backArrowContainer: {
@@ -15,6 +18,11 @@ export const styles = StyleSheet.create({
         width: 50,
         zIndex: 3,
         height: 50,
+    },
+
+    weightContain: {
+        display: "flex",
+        flexDirection: "column",
     },
 
     secondHeader: {
@@ -192,7 +200,7 @@ export const styles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 10,
         maxHeight: "100%",
-        marginTop: 10,
+        marginTop: "30%"
     },
 
     searchContainer: {
@@ -216,12 +224,6 @@ export const styles = StyleSheet.create({
         padding: 10,
 
     },
-
-    weightContain: {
-        display: "flex",
-        flexDirection: "column",
-    },
-
     weight: {
         display: "flex",
         justifyContent: "center",

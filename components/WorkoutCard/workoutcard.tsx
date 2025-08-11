@@ -1,19 +1,58 @@
-    import { View, Text, TouchableOpacity, FlatList } from "react-native";
+    import { View, Text, TouchableOpacity, FlatList, Alert } from "react-native";
     import moment from "moment";
+    import {
+      FontAwesome5,
+    } from "@expo/vector-icons";
     import {styles} from "./workoutcard.styles";
+import { useState } from "react";
+import firebase from "firebase/compat";
 
+
+const exerciseRef = firebase.firestore().collection("customworkouts");
     const WorkoutCard = ({ workout, onView }) => {
+        const [open, setOpen] = useState<boolean>(false);
+
+        const handleDelete = (id: any): any => {
+            if (id) {
+              return exerciseRef.onSnapshot((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          if (id === workout.docId) {
+            doc.ref.delete();
+          } else {
+            Alert.alert("something went wrong..")
+          }
+        });
+          });
+            }
+        };
+  
+
     return (
         <TouchableOpacity activeOpacity={1} style={styles.cardContainer} onPress={() => onView(workout)}>
         <View style={styles.cardHeader}>
-            <Text style={styles.workoutName}>{workout.workoutName}</Text>
-            <Text style={styles.workoutDate}>
-            {moment(workout.createdAt).format("MMM D, YYYY")}
-            </Text>
+            <Text style={styles.workoutName}>{workout.workoutName} {""} <Text style={{color: "lightgray", fontSize: 16}}>{moment(workout.createdAt).format("MMM D, YYYY")}</Text></Text>
+           <View> 
+            <TouchableOpacity 
+            onPress={() => {
+                setOpen(!open);
+            }}
+            style={{display: "flex", alignItems: "center", justifyContent: "center",  width: 50,height: 50}}>
+                <Text style={{color: "#555", fontSize: 30, marginBottom: 8}}>...</Text>
+            </TouchableOpacity>
+            { open && 
+            
+                <TouchableOpacity style={styles.dropDown} onPress={() => handleDelete(workout.docId)}>
+                <Text style={{color: "#555"}}>Delete</Text>
+                </TouchableOpacity>
+      
+    }
+      </View>
         </View>
         <Text style={styles.workoutDesc} numberOfLines={2}>
             {workout.workoutDesc || "No description"}
         </Text>
+        <View style={styles.seperator}>
+        </View>
         <View style={styles.statsRow}>
             <View style={styles.statItem}>
             <Text style={styles.statValue}>{workout.exercises?.length || 0}</Text>

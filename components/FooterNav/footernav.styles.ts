@@ -14,6 +14,22 @@ export const footer = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
   },
+  stat: {
+    width: 50,
+    height: 50,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+
+  settings: {
+    width: 50,
+    height: 50,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+
   linearGradient: {
     position: "absolute",
     left: 0,

@@ -8,26 +8,19 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  FontAwesome5,
+} from "@expo/vector-icons";
 import moment from "moment";
 import {styles} from "./workoutedit.styles";
-const { width } = Dimensions.get("window");
 
 
-const WorkoutDetail = () => {
-  const navigation = useNavigation();
+const WorkoutDetail = ({navigation}) => {
   const route = useRoute<any>();
   const { workout } = route.params;
 const [totalSets, setTotalSets] = useState<number>(0);
   // Top right Edit button
-  useLayoutEffect(() => {
-    navigation.setOptions({
-
-      headerStyle: { backgroundColor: "#0F0F0F" },
-      headerTintColor: "#fff",
-      title: "Workout Details",
-    });
-  }, [navigation, workout]);
 
   const getSets = () => {
      const total = workout.exercises.reduce((sum: number, exercise: any) => {
@@ -36,6 +29,11 @@ const [totalSets, setTotalSets] = useState<number>(0);
   setTotalSets(total);
   }
 
+  const handleEdit = (): any => {
+    // send the same workout info to the edit component
+        navigation.navigate("editWorkout", {workout});
+  };
+
   useEffect(() => {
 getSets();
   }, [])
@@ -43,10 +41,29 @@ getSets();
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-         <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+         <TouchableOpacity onPress={() => navigation.goBack()} style={{ 
+          width: "10%",
+          height: "5%",
+           margin: 5,
+           display: "flex",
+           justifyContent: "center",
+           alignItems: "center",
+           }}>
     <Text style={{ color: "#EF6F13", fontSize: 16 }}>Back</Text>
   </TouchableOpacity>
+        <View style={styles.firstLine}>
         <Text style={styles.name}>{workout.workoutName}</Text>
+        <TouchableOpacity onPress={handleEdit} style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "10%",
+          height: "30%",
+        }}>
+        
+        <FontAwesome5  size={20} color={"#EF6F13"} name={"pen"}/>
+        </TouchableOpacity>
+        </View>
 
         <Text style={styles.date}>
           {moment(workout.createdAt).format("MMM D, YYYY")}

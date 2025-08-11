@@ -96,4 +96,11 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
+
+  firstLine: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 });

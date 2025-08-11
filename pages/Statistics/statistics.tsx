@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   FlatList,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "./statistics.styles";
@@ -24,7 +25,7 @@ import FooterNav from "../../components/FooterNav/footernav";
 import { _DEFAULT_INITIAL_PLAYBACK_STATUS } from "expo-av/build/AV";
 import WorkoutTrackAdder from "../../components/WorkoutTrackAdder/workouttrackadd";
 import { getAuth } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, getFirestore, } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where, } from "firebase/firestore";
 import WorkoutCard from "../../components/WorkoutCard/workoutcard";
 const {width, height} = Dimensions.get("screen");
 interface statProps {
@@ -38,7 +39,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   const [chartData, setChartData] = useState<any>([0, 0, 0, 0, 0, 0, 0]);
   const [switcher, setSwitcher] = useState("left");
   const [openSwitch, setOpenSwitch] = useState(0);
-  const [fetchedExercises, setFetchedExercises] = useState<any[]>();
+  const [fetchedExercises, setFetchedExercises] = useState<any[]>([]);
   
   const workoutRef = firebase.firestore().collection("programs");
   const getPrograms = async () => {
@@ -65,58 +66,40 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   const user = auth.currentUser;
   if (user) {
   const exerciseRef = collection(db, "customworkouts");
-      const exerciseSnap = await getDocs(exerciseRef);
-       if (!exerciseSnap.empty) {
-        const exercises = exerciseSnap.docs.map(doc => {
-           return doc.data();
-        })
-        setFetchedExercises(exercises);
-      } else {
-        console.warn("exercise data not found")
-      }
+  const q = query(exerciseRef, where("userId", "==", user.uid));
+      const exerciseSnap = onSnapshot(q, (snapshot) => {
+        if (snapshot.empty) {
+          setFetchedExercises([]);
+          return;
+        }
+         const exercises = snapshot.docs.map(doc => ({
+      docId: doc.id,
+      ...doc.data()
+    }));
+    setFetchedExercises(exercises);
+      })
 
+      return () => exerciseSnap(); // return the callback of the snapshot to update the state every change.
   }
    
 };
+
+
   // function to make the chart algorithm
   const workoutChartAlgorithm = async () => {
-    /** ts in ms */
-    const to_day = (ts) => {
-      const d = new Date(ts);
-      return d.toISOString().slice(0, 10);
-    };
-    /** ts in ms */
-    const to_day_of_week = (ts) => {
-      const d = new Date(ts);
-      return d.getDay();
-    };
-    /** ts in ms */
-    const to_week = (ts) => {
-      const d = new Date(ts);
-      return `${d.getFullYear()}W${moment(ts).isoWeek()}`;
-    };
+   const to_day_of_week_monday_start = (ts) => {
+  const day = new Date(ts).getDay();
+  return (day + 6) % 7; 
+};
+  
+  const histogram = new Map(Array.from({ length: 7 }, (_, i) => [i, 0]));
+  for (const workout of fetchedExercises) {
+    
+    const dow = to_day_of_week_monday_start(workout.createdAt);
+    histogram.set(dow, (histogram.get(dow) ?? 0) + 1);
+  }
 
-    // the algorithm itself
-    const histogram_by_day = new Map();
-    const histogram_by_day_of_week = new Map();
-    const histogram_by_week = new Map();
-    for (let day_of_week = 0; day_of_week < 7; day_of_week++) {
-      histogram_by_day_of_week.set(day_of_week, 0);
-    }
-    for (const workout of workoutHistory) {
-      const day = to_day(workout.date.seconds * 1000); // in ms
-      const day_of_week = to_day_of_week(workout.date.seconds * 1000); // in ms
-      const week = to_week(workout.date.seconds * 1000); // in ms
-      histogram_by_day.set(day, (histogram_by_day.get(day) ?? 0) + 1);
-      histogram_by_day_of_week.set(
-        day_of_week,
-        (histogram_by_day_of_week.get(day_of_week) ?? 0) + 1
-      );
-      histogram_by_week.set(week, (histogram_by_week.get(week) ?? 0) + 1);
-    }
-
-    const counts = [...histogram_by_day_of_week.values()];
-    setChartData(counts);
+  setChartData([...histogram.values()]);
   };
 
   // invoke the get program function as soon as app starts
@@ -133,21 +116,23 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
     workoutChartAlgorithm();
   }, [panel, workoutHistory]);
 
-  const calories = workoutHistory.map((el: any) => el.calories_burned);
-  let sum = 0;
-  let calSum = 0;
+const totalCalories = fetchedExercises?.reduce(
+  (acc, curr) => acc + (curr.caloriesBurned || 0),
+  0
+);
 
-  const totalCalories = calories.reduce(
-    (acc: number, curr: number) => acc + curr,
-    calSum
-  );
-  const minutes_from_backend = workoutHistory.map(
-    (el) => el.total_time_minutes
-  );
-  const totalMinutes = minutes_from_backend.reduce(
-    (acc: number, curr: number) => acc + curr,
-    sum
-  );
+function durationToMinutes(duration: string): number {
+  const [hh, mm] = duration.split(":").map(Number);
+  return (hh || 0) * 60 + (mm || 0);
+}
+// Calculate total duration in minutes
+const totalMinutes = fetchedExercises?.reduce(
+  (acc, curr) => acc + durationToMinutes(curr.workoutDuration || "00:00"),
+  0
+);
+
+  
+
   const handleDelete = (id: string) => {
     setPanel(true);
     setTempId(id);
@@ -228,7 +213,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
             }}
           >
             <Text style={{ fontWeight: "bold", fontSize: 15, color: "white" }}>
-              {workoutHistory.length ? Math.round(totalCalories) : 0}
+              {fetchedExercises.length ? Math.round(totalCalories) : 0}
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 13, color: "gray" }}>
               KCal Burnt
@@ -288,7 +273,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
             }}
           >
             <Text style={{ fontWeight: "bold", fontSize: 15, color: "white" }}>
-              {workoutHistory.length}
+              {fetchedExercises.length}
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 13, color: "gray" }}>
               Workouts
@@ -367,8 +352,9 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
     )
   ) : (
     <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
-      {fetchedExercises.length < 1 ? (
-      <Text style={{ color: "white", fontSize: 20 }}>
+      {(fetchedExercises?.length) < 1 ? (
+        
+      <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
         No Data
       </Text>
       ) : (
@@ -377,7 +363,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
           renderItem={({ item }) => (
-        <WorkoutCard workout={item} onView={handleView}/>
+        <WorkoutCard workout={item}  onView={handleView}/>
 
   )}
 />

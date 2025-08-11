@@ -20,6 +20,7 @@ import * as Sentry from "@sentry/react-native"; // sentry import
 import firebase from "firebase/compat";
 import { auth } from "./firebase";
 import WorkoutEdit from "./pages/WorkoutEdit/workoutedit";
+import WorkoutChange from "./components/WorkoutChange/WorkoutChange";
 const StateContext = createContext(null); // context provider returns an object
 const ExerciseContext = createContext(null);
 // Sentry setup initialization!
@@ -205,6 +206,15 @@ export default function App() {
                 }}
                 component={WorkoutEdit}
               />
+
+              <Stack.Screen name="editWorkout"  
+              options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                  title: "editWorkout",
+                }}
+                component={WorkoutChange}
+                />
               <Stack.Screen
                 name="stats"
                 options={{
