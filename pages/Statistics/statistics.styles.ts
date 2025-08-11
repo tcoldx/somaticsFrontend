@@ -98,10 +98,35 @@ export const styles = StyleSheet.create({
     width: "93%",
   },
 
+  trackAddButton: {
+    display: "flex",
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "orange",
+    borderRadius: 8,
+  },
+
+ 
+
+  trackAddContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 10, 
+    right: 0,
+    top: height / 15,
+    zIndex: 2,
+    display: "flex",
+    backgroundColor: "#111111",
+    borderRadius: 8,
+    width: "95%",
+    height: "95%"
+  },
   history: {
     display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     width: "93%",
     marginTop: 30,
   },
@@ -135,4 +160,88 @@ export const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: "#242424",
   },
+
+  historyViewSwitch: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "90%",
+    maxHeight: "auto",
+  },
+
+  subHeadSwitcher: {
+    borderBottomWidth: 3.5,
+    borderRadius: 1,
+    padding: 10,
+    width: "50%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  subheader: {
+    fontStyle: "normal",
+    fontWeight: "bold",
+    color: "white",
+  },
+  exerciseItemContain: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: width - 50,
+    height: 300,
+    borderRadius: 6,
+    backgroundColor: "#242424",
+  },
+
+  card: {
+  backgroundColor: "#1e1e1e",
+  borderRadius: 16,
+  padding: 16,
+  width: "100%",
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.3,
+  shadowRadius: 8,
+  elevation: 6,
+},
+cardHeader: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginBottom: 6,
+},
+cardTitle: {
+  fontSize: 18,
+  fontWeight: "bold",
+  color: "#fff",
+},
+cardDate: {
+  fontSize: 13,
+  color: "#aaa",
+},
+cardDesc: {
+  color: "#ccc",
+  fontStyle: "italic",
+  marginBottom: 10,
+},
+cardStats: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginBottom: 12,
+},
+stat: {
+  color: "#ffa726", // light orange
+  fontSize: 14,
+},
+exerciseList: {
+  borderTopColor: "#333",
+  borderTopWidth: 1,
+  paddingTop: 10,
+},
+exerciseItem: {
+  color: "#eee",
+  fontSize: 14,
+  marginBottom: 4,
+},
+
 });

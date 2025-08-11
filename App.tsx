@@ -19,7 +19,8 @@ import Settings from "./pages/Settings/settingPage";
 import * as Sentry from "@sentry/react-native"; // sentry import
 import firebase from "firebase/compat";
 import { auth } from "./firebase";
-import WorkoutAlgorithm from "./utils/workoutAlgorithm";
+import WorkoutEdit from "./pages/WorkoutEdit/workoutedit";
+import WorkoutChange from "./components/WorkoutChange/WorkoutChange";
 const StateContext = createContext(null); // context provider returns an object
 const ExerciseContext = createContext(null);
 // Sentry setup initialization!
@@ -196,6 +197,24 @@ export default function App() {
                   <WorkoutDetails {...props} details={workoutDetail} />
                 )}
               </Stack.Screen>
+              <Stack.Screen
+                name="statDetail"
+                options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                  title: "statDetail-page",
+                }}
+                component={WorkoutEdit}
+              />
+
+              <Stack.Screen name="editWorkout"  
+              options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                  title: "editWorkout",
+                }}
+                component={WorkoutChange}
+                />
               <Stack.Screen
                 name="stats"
                 options={{

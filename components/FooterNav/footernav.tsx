@@ -14,12 +14,16 @@ const FooterNav = ({ navigation }: FooterProps) => {
       end={[1.0, 0.5]}
     >
       <View style={footer.footContainer}>
+        <TouchableOpacity 
+        onPress={() => navigation.navigate("stats")}
+        style={footer.stat}>
         <Feather
           name="bar-chart"
           size={24}
           color="white"
-          onPress={() => navigation.navigate("stats")}
+          
         />
+        </TouchableOpacity>
         <TouchableOpacity
           style={{
             display: "flex",
@@ -34,12 +38,13 @@ const FooterNav = ({ navigation }: FooterProps) => {
         >
           <Ionicons name="home" size={24} color="whitesmoke" />
         </TouchableOpacity>
+        <TouchableOpacity style={footer.stat} onPress={() => navigation.navigate("settings")}>
         <AntDesign
           name="setting"
           size={24}
           color="white"
-          onPress={() => navigation.navigate("settings")}
         />
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );

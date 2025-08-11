@@ -5,10 +5,9 @@ import React, { useState } from "react";
 
 interface activeData {
   activityData: any[];
-  selector: Function;
 }
 
-const StatChart = ({ activityData, selector }: activeData) => {
+const StatChart = ({ activityData }: activeData) => {
   const { width } = Dimensions.get("screen");
   const [active, setActive] = useState(0);
   return (
@@ -31,7 +30,6 @@ const StatChart = ({ activityData, selector }: activeData) => {
             onPress={() => {
               setActive(0);
               // passing the number 0 to selector when the week button is clicked
-              selector(0);
             }}
           >
             <Text
