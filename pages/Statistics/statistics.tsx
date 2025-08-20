@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   FlatList,
+  KeyboardAvoidingView,
   Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -87,7 +88,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
 
   // function to make the chart algorithm
   const workoutChartAlgorithm = async () => {
-   const to_day_of_week_monday_start = (ts) => {
+   const to_day_of_week_monday_start = (ts: any) => {
   const day = new Date(ts).getDay();
   return (day + 6) % 7; 
 };
@@ -114,7 +115,7 @@ const Statistics = ({ navigation, userId }: statProps): JSX.Element => {
   // invoke the chart algorithm for the workouts
   useEffect(() => {
     workoutChartAlgorithm();
-  }, [panel, workoutHistory]);
+  }, [panel, fetchedExercises]);
 
 const totalCalories = fetchedExercises?.reduce(
   (acc, curr) => acc + (curr.caloriesBurned || 0),
@@ -135,7 +136,6 @@ const totalMinutes = fetchedExercises?.reduce(
 
   const handleDelete = (id: string) => {
     setPanel(true);
-    setTempId(id);
     if (panel) {
       return workoutRef.onSnapshot((querySnapshot) => {
         querySnapshot.forEach((doc) => {

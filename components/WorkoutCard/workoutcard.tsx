@@ -11,18 +11,12 @@ import firebase from "firebase/compat";
 const exerciseRef = firebase.firestore().collection("customworkouts");
     const WorkoutCard = ({ workout, onView }) => {
         const [open, setOpen] = useState<boolean>(false);
-
+      
         const handleDelete = (id: any): any => {
             if (id) {
-              return exerciseRef.onSnapshot((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          if (id === workout.docId) {
-            doc.ref.delete();
-          } else {
-            Alert.alert("something went wrong..")
-          }
-        });
-          });
+              return exerciseRef.doc(id).delete().then(() => console.log("doc deleted"));
+            } else {
+                Alert.alert("no send!");
             }
         };
   
@@ -30,7 +24,7 @@ const exerciseRef = firebase.firestore().collection("customworkouts");
     return (
         <TouchableOpacity activeOpacity={1} style={styles.cardContainer} onPress={() => onView(workout)}>
         <View style={styles.cardHeader}>
-            <Text style={styles.workoutName}>{workout.workoutName} {""} <Text style={{color: "lightgray", fontSize: 16}}>{moment(workout.createdAt).format("MMM D, YYYY")}</Text></Text>
+            <Text style={styles.workoutName}>{workout.workoutName}  <Text style={{color: "lightgray", fontSize: 16}}>{moment(workout.createdAt).format("MMM D, YYYY")}</Text></Text>
            <View> 
             <TouchableOpacity 
             onPress={() => {

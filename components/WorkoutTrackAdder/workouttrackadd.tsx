@@ -9,7 +9,9 @@ import {
   Keyboard,
   ScrollView,
   Pressable,
+  KeyboardAvoidingView,
   Alert,
+  Platform,
 } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { collection, doc, getDoc, getDocs, getFirestore } from "firebase/firestore";
@@ -271,6 +273,11 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
   }, [workoutList]);
 
   return (
+    <KeyboardAvoidingView 
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    style={{ flex: 1 }}
+    
+    >
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         {/* -------- header -------- */}
@@ -641,6 +648,7 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
         )}
       </View>
     </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
