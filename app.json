@@ -2,7 +2,7 @@
   "expo": {
     "name": "somaticsFrontend",
     "slug": "somaticsFrontend",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "orientation": "portrait",
     "icon": "./assets/somaticsLogoBlack.png",
     "userInterfaceStyle": "light",
@@ -16,7 +16,7 @@
     ],
     "ios": {
       "icon": "./assets/somaticsLogoBlack.png",
-      "buildNumber": "1.1.4",
+      "buildNumber": "1.1.5",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -38,7 +38,7 @@
         "projectId": "74a850b6-bbd2-4f32-b6f1-5ab1c40fb5ce"
       }
     },
-    "runtimeVersion": "1.1.4",
+    "runtimeVersion": "1.1.5",
     "updates": {
       "url": "https://u.expo.dev/74a850b6-bbd2-4f32-b6f1-5ab1c40fb5ce"
     },

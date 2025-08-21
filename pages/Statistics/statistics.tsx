@@ -158,14 +158,14 @@ const totalMinutes = fetchedExercises?.reduce(
 
   return (
     <SafeAreaView style={styles.container}>
-      {(panel || openSwitch) && <BlurView intensity={10} style={styles.coverBlur} />}
-      {openSwitch && (
+      {(panel || openSwitch) ? <BlurView intensity={10} style={styles.coverBlur} /> : null}
+      {openSwitch ? (
         <View style={styles.trackAddContainer}>
           {/* the workout tracker component */}
         <WorkoutTrackAdder openSwitchFunction={handleOpen}/>
         </View>
-      )} 
-      {panel && (
+      ) : null} 
+      {panel ? (
         <View style={styles.deletionContainer}>
           <Text style={{ color: "red", fontWeight: "bold", fontSize: 20 }}>
             BEFORE YOU DELETE?!
@@ -187,7 +187,7 @@ const totalMinutes = fetchedExercises?.reduce(
             <Text style={{ color: "white", fontWeight: "bold" }}>Close</Text>
           </TouchableOpacity>
         </View>
-      )}
+      ) : null}
       <View style={styles.chartContainer}>
         <StatChart activityData={chartData} />
       </View>
@@ -329,10 +329,10 @@ const totalMinutes = fetchedExercises?.reduce(
               }}
             >
               <Text style={styles.workoutContainerText}>
-                {workout.name}
+                {workout.name.toString()}
               </Text>
               <Text style={{ color: "gray", fontWeight: "bold" }}>
-                Day: {workout.day}
+                Day: {workout.day?.toString?.() ?? ""}
               </Text>
             </View>
             <AntDesign

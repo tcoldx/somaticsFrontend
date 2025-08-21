@@ -373,8 +373,8 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
             overflow: "hidden",
           }}
         >
-          {workoutList.map((exercise: any, exIdx) => (
-            <View key={exIdx} style={{ flexDirection: "column" }}>
+          {workoutList.map((exercise: any, exIdx: number) => (
+            <View key={exercise.name} style={{ flexDirection: "column" }}>
               {/* exercise header */}
               <View
                 style={{
@@ -397,7 +397,7 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-                {openMenuIdx === exercise && (
+                {openMenuIdx === exercise ? (
                   <TouchableOpacity
                     activeOpacity={1}
                     style={styles.dropDownHamburger}
@@ -407,7 +407,7 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
                   >
                     <Text style={{ color: "white" }}>Delete</Text>
                   </TouchableOpacity>
-                )}
+                ) : null}
               </View>
 
               {/* table headers */}
@@ -419,7 +419,9 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
               </View>
 
               {/* sets */}
-              {exercise.sets.map((el: any, idx: number) => (
+                {exercise.sets.map((el: any, idx: number) => {
+
+                  return (
                 <View key={idx} style={styles.rowContent}>
                   <View style={styles.set}>
                     <Text style={[styles.header, styles.headerText]}>
@@ -568,7 +570,8 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
                     <Text style={{ color: "white", fontSize: 18 }}>✕</Text>
                   </TouchableOpacity>
                 </View>
-              ))}
+                  )
+})}
 
               {/* add‑set button */}
               <TouchableOpacity
@@ -593,7 +596,7 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
         </View>
 
         {/* dropdown container*/}
-        {drop && (
+        {drop ? (
           <>
             <Pressable
               style={{
@@ -629,15 +632,18 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
                         placeholderTextColor="orange"
                       />
                     </View>
-                    {exerciseData.map((exercise: any) => (
+                    {exerciseData.map((exercise: any, idx: number) => {
+                      const key = exercise.id || idx; 
+                      return (
                       <TouchableOpacity
-                        key={exercise.id}
+                        key={key}
                         style={styles.dropDownItem}
                         onPress={() => handleAddWorkout(exercise.name)}
                       >
                         <Text style={{ color: "white" }}>{exercise.name}</Text>
                       </TouchableOpacity>
-                    ))}
+                      )
+})}
                   </View>
                 ) : (
                   <Text>loading...</Text>
@@ -645,7 +651,7 @@ const WorkoutTrackAdder = ({ openSwitchFunction }: Props) => {
               </ScrollView>
             </View>
           </>
-        )}
+        ) : null}
       </View>
     </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

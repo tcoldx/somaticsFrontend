@@ -24,7 +24,10 @@ const exerciseRef = firebase.firestore().collection("customworkouts");
     return (
         <TouchableOpacity activeOpacity={1} style={styles.cardContainer} onPress={() => onView(workout)}>
         <View style={styles.cardHeader}>
-            <Text style={styles.workoutName}>{workout.workoutName}  <Text style={{color: "lightgray", fontSize: 16}}>{moment(workout.createdAt).format("MMM D, YYYY")}</Text></Text>
+            <View>
+            <Text style={styles.workoutName}>{workout.workoutName.toString()}  </Text>
+            <Text style={{color: "lightgray", fontSize: 16}}>{moment(workout.createdAt?.toDate?.() ?? workout.createdAt).format("MMM D, YYYY")}</Text>
+            </View>
            <View> 
             <TouchableOpacity 
             onPress={() => {
@@ -49,15 +52,15 @@ const exerciseRef = firebase.firestore().collection("customworkouts");
         </View>
         <View style={styles.statsRow}>
             <View style={styles.statItem}>
-            <Text style={styles.statValue}>{workout.exercises?.length || 0}</Text>
+            <Text style={styles.statValue}>{workout.exercises?.length.toString() || 0}</Text>
             <Text style={styles.statLabel}>Sets Logged</Text>
             </View>
             <View style={styles.statItem}>
-            <Text style={styles.statValue}>{workout.workoutDuration}</Text>
+            <Text style={styles.statValue}>{workout.workoutDuration.toString()}</Text>
             <Text style={styles.statLabel}>Duration</Text>
             </View>
             <View style={styles.statItem}>
-            <Text style={styles.statCal}>{workout.caloriesBurned}</Text>
+            <Text style={styles.statCal}>{workout.caloriesBurned.toString()}</Text>
             <Text style={styles.statLabel}>Est Calories</Text>
             </View>
         </View>

@@ -584,15 +584,19 @@ const totalDurationInMinutes = parseHHMMtoMinutes(duration);
                         placeholderTextColor="orange"
                       />
                     </View>
-                    {exerciseData.map((exercise: any) => (
+                    {exerciseData.map((exercise: any, idx: number) => {
+
+                      const key = exercise.id || idx;
+                      return (
                       <TouchableOpacity
-                        key={exercise.id}
+                        key={key}
                         style={styles.dropDownItem}
                         onPress={() => handleAddWorkout(exercise.name)}
                       >
                         <Text style={{color: "white"}}>{exercise.name}</Text>
                       </TouchableOpacity>
-                    ))}
+                      )
+})}
                   </View>
                 ) : (
                   <Text>loading...</Text>
