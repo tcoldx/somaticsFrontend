@@ -90,6 +90,21 @@ export const slideStyle = StyleSheet.create({
     flexDirection: "row",
     gap: 40,
   },
+
+  backButton: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    top: "30%",
+    width: "100%",
+    height: "auto",
+    borderRadius: 8,
+    backgroundColor: "#ffffff",
+    padding: 10,
+    borderColor: "orange",
+    borderWidth: 1,
+  }
 });
 
 export const styler = StyleSheet.create({

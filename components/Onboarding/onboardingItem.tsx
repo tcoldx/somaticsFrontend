@@ -10,6 +10,8 @@ import {
   Image,
   Alert,
   Linking,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { AntDesign, Fontisto, Ionicons } from "@expo/vector-icons";
 import { checkIfEmail } from "../../utils/checkEmail";
@@ -161,6 +163,7 @@ const OnboardingItem = ({
     const objVal = await AsyncStorage.getItem("user2");
 
     // Input validation before making Firebase calls
+   
     if (!checkIfEmail(email)) {
       Alert.alert("Invalid Email", "Please enter a valid email address.");
       setEmailError(true);
@@ -327,6 +330,10 @@ const OnboardingItem = ({
   }
   if (id === 2) {
     return (
+      <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+      >
       <SafeAreaView style={styles.container}>
         <SafeAreaView
           style={{
@@ -420,6 +427,8 @@ const OnboardingItem = ({
                 </Text>
               </View>
               <TextInput
+                          keyboardType="numeric"
+
                 style={{
                   position: "absolute",
                   width: "100%",
@@ -460,6 +469,8 @@ const OnboardingItem = ({
                 <Text style={{ color: "white" }}>In</Text>
               </View>
               <TextInput
+                          keyboardType="numeric"
+
                 style={{
                   position: "absolute",
                   width: "100%",
@@ -474,6 +485,7 @@ const OnboardingItem = ({
             </View>
           </View>
           <TextInput
+          
             placeholderTextColor="white"
             style={!weightError ? slideStyle.details : slideStyle.detailsError}
             placeholder={items.weight}
@@ -539,6 +551,7 @@ const OnboardingItem = ({
           </TouchableOpacity>
         </View>
       </SafeAreaView>
+      </KeyboardAvoidingView>
     );
   }
 
@@ -622,6 +635,7 @@ const OnboardingItem = ({
   }
   if (id === 7) {
     return (
+      
       <SafeAreaView style={styles.container}>
         {loading && <BlurView intensity={10} style={styles.coverBlur} />}
         {loading && (
@@ -668,6 +682,7 @@ const OnboardingItem = ({
             style={styles.linearGradient}
           />
         </SafeAreaView>
+      
         <View style={styles.loginContainer}>
           <View
             style={{
@@ -774,10 +789,13 @@ const OnboardingItem = ({
             </View>
           </View>
         </View>
+         
         <TouchableOpacity onPress={handleAuthentication} style={styles.button}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
       </SafeAreaView>
+            
+
     );
   }
 
@@ -840,8 +858,7 @@ const OnboardingItem = ({
           <TouchableOpacity
             activeOpacity={1}
             onPress={async () => {
-              if (amountOfDays.length > 0) {
-                console.log("works!");
+              if (amountOfDays !== null && amountOfDays.length > 0) {
                 await AsyncStorage.mergeItem(
                   "user2",
                   JSON.stringify({
@@ -852,7 +869,7 @@ const OnboardingItem = ({
               } else {
                 Alert.alert(
                   "Missing Information",
-                  "Please select atleast one goal."
+                  "Please select atleast one."
                 );
               }
             }}
@@ -924,7 +941,7 @@ const OnboardingItem = ({
           <TouchableOpacity
             activeOpacity={1}
             onPress={async () => {
-              if (index !== 3 && levelSelect.length > 0) {
+              if (index === 4 && fitnessLevel.length > 0) {
                 await AsyncStorage.mergeItem(
                   "user2",
                   JSON.stringify({
@@ -977,7 +994,7 @@ const OnboardingItem = ({
             {title}
           </Text>
           <View style={styler.optionContainer}>
-            {equipmentSelect.map((el) => {
+            {equipmentSelect.map((el: any) => {
               return (
                 <TouchableOpacity
                   onPress={() => handleEquipmentSelect(el)}
@@ -1007,7 +1024,7 @@ const OnboardingItem = ({
           <TouchableOpacity
             activeOpacity={1}
             onPress={async () => {
-              if (index != 4 && equipment.length > 0) {
+              if (index != 4 && equipment?.length > 0) {
                 await AsyncStorage.mergeItem(
                   "user2",
                   JSON.stringify({

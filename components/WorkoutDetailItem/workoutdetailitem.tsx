@@ -155,10 +155,10 @@ const WorkoutDetailItem = ({
               width: "100%",
             }}
           >
-            {item.names?.map((item: any, index) => {
+            {item.names?.map((item: any, index: number) => {
               return (
                 <View
-                  key={item.id}
+                  key={item.id || index}
                   style={{
                     backgroundColor: "#242424",
                     width: "100%",

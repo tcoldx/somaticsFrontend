@@ -135,11 +135,12 @@ const totalMinutes = fetchedExercises?.reduce(
   
 
   const handleDelete = (id: string) => {
-    setPanel(true);
+    console.log("f: ", id);
     if (panel) {
       return workoutRef.onSnapshot((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           if (id === doc.data().workoutId) {
+            console.log("s: ", doc.data().workoutId);
             doc.ref.delete();
           }
         });
@@ -344,7 +345,10 @@ const totalMinutes = fetchedExercises?.reduce(
                 borderRadius: 4,
               }}
               size={30}
-              onPress={() => handleDelete(workout.workoutId)}
+              onPress={() => {
+                setPanel(true);
+                setTempId(workout.workoutId);
+              }}
             />
           </View>
         ))}
