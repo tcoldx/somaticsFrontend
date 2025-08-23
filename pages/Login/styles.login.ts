@@ -199,8 +199,9 @@ export const login = StyleSheet.create({
 
   goBack: {
     position: "absolute",
-    bottom: 20,
+    bottom: 30,
     flexDirection: "row",
+    padding: 15,
   },
 
   go: {
