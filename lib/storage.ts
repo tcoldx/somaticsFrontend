@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppData, GameStats, UserProfile, WorkoutPlan, CompletedWorkout } from './types';
 
-const STORAGE_KEY = 'fitquest_data';
+const STORAGE_KEY = 'somatics_data';
+const LEGACY_KEY = 'fitquest_data';
 
 const DEFAULT_STATS: GameStats = {
   totalXP: 0,
@@ -22,9 +23,21 @@ const DEFAULT_APP_DATA: AppData = {
 
 export async function loadAppData(): Promise<AppData> {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    let raw = await AsyncStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      raw = await AsyncStorage.getItem(LEGACY_KEY);
+      if (raw) {
+        await AsyncStorage.setItem(STORAGE_KEY, raw);
+      }
+    }
     if (!raw) return { ...DEFAULT_APP_DATA };
     const parsed = JSON.parse(raw) as AppData;
+    if (parsed.userProfile && !parsed.userProfile.equipment) {
+      parsed.userProfile.equipment = 'full_gym';
+    }
+    if (parsed.workoutPlan && !parsed.workoutPlan.equipment) {
+      parsed.workoutPlan.equipment = 'full_gym';
+    }
     return {
       ...DEFAULT_APP_DATA,
       ...parsed,
@@ -80,6 +93,7 @@ export async function completeWorkout(
 
 export async function resetAppData(): Promise<void> {
   await AsyncStorage.removeItem(STORAGE_KEY);
+  await AsyncStorage.removeItem(LEGACY_KEY);
 }
 
 export async function getCompletedDates(): Promise<string[]> {

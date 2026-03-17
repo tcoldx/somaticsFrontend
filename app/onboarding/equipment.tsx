@@ -7,32 +7,33 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { COLORS, FITNESS_GOALS } from '@/lib/constants';
-import { GoalId } from '@/lib/types';
+import { COLORS, EQUIPMENT_OPTIONS, EquipmentType } from '@/lib/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function GoalsScreen() {
+export default function EquipmentScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [selected, setSelected] = useState<GoalId[]>([]);
+  const params = useLocalSearchParams<{ goals: string; commitment: string }>();
+  const [selected, setSelected] = useState<EquipmentType | null>(null);
 
-  const toggle = (id: GoalId) => {
+  const handleSelect = (id: EquipmentType) => {
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]
-    );
+    setSelected(id);
   };
 
   const handleNext = () => {
-    if (selected.length === 0) return;
+    if (!selected) return;
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
-    router.push({ pathname: '/onboarding/commitment', params: { goals: selected.join(',') } });
+    router.push({
+      pathname: '/onboarding/class-selection',
+      params: { goals: params.goals, commitment: params.commitment, equipment: selected },
+    });
   };
 
   return (
@@ -43,9 +44,9 @@ export default function GoalsScreen() {
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: '25%' }]} />
+          <View style={[styles.progressFill, { width: '75%' }]} />
         </View>
-        <Text style={styles.stepText}>1 / 4</Text>
+        <Text style={styles.stepText}>3 / 4</Text>
       </View>
 
       <ScrollView
@@ -54,49 +55,60 @@ export default function GoalsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.titleSection}>
-          <Text style={styles.eyebrow}>STEP 1 — GOALS</Text>
-          <Text style={styles.title}>{"WHAT'S YOUR"}{'\n'}MISSION?</Text>
-          <Text style={styles.subtitle}>Choose all that apply. Your quest engine will filter workouts to your goals.</Text>
+          <Text style={styles.eyebrow}>STEP 3 — EQUIPMENT</Text>
+          <Text style={styles.title}>{"WHAT'S YOUR\nARSENAL?"}</Text>
+          <Text style={styles.subtitle}>
+            Your Quest Engine will build workouts using only the tools you have available.
+          </Text>
         </View>
 
-        <View style={styles.goalGrid}>
-          {FITNESS_GOALS.map((goal) => {
-            const isSelected = selected.includes(goal.id as GoalId);
+        <View style={styles.cardGrid}>
+          {EQUIPMENT_OPTIONS.map((option) => {
+            const isSelected = selected === option.id;
             return (
               <TouchableOpacity
-                key={goal.id}
-                style={[styles.goalCard, isSelected && styles.goalCardSelected]}
-                onPress={() => toggle(goal.id as GoalId)}
+                key={option.id}
+                style={[styles.card, isSelected && styles.cardSelected]}
+                onPress={() => handleSelect(option.id)}
                 activeOpacity={0.8}
               >
-                <View style={[styles.goalIconWrapper, isSelected && styles.goalIconWrapperSelected]}>
-                  <Text style={styles.goalIcon}>{goal.icon}</Text>
+                <View style={[styles.iconWrapper, isSelected && styles.iconWrapperSelected]}>
+                  <Text style={styles.icon}>{option.icon}</Text>
                 </View>
-                <Text style={[styles.goalLabel, isSelected && styles.goalLabelSelected]}>
-                  {goal.label}
-                </Text>
-                <Text style={styles.goalDesc}>{goal.description}</Text>
-                {isSelected && (
-                  <View style={styles.checkMark}>
-                    <Text style={styles.checkText}>✓</Text>
-                  </View>
-                )}
+
+                <View style={styles.cardContent}>
+                  <Text style={[styles.cardLabel, isSelected && styles.cardLabelSelected]}>
+                    {option.label}
+                  </Text>
+                  <Text style={styles.cardDescription}>{option.description}</Text>
+                  <Text style={styles.cardSubtitle}>{option.subtitle}</Text>
+                </View>
+
+                <View style={[styles.radio, isSelected && styles.radioSelected]}>
+                  {isSelected && <View style={styles.radioDot} />}
+                </View>
               </TouchableOpacity>
             );
           })}
+        </View>
+
+        <View style={styles.note}>
+          <Text style={styles.noteText}>
+            💡 You can update your equipment profile anytime from your profile settings.
+          </Text>
         </View>
       </ScrollView>
 
       {/* Bottom CTA */}
       <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 16 }]}>
         <TouchableOpacity
-          style={[styles.nextBtn, selected.length === 0 && styles.nextBtnDisabled]}
+          style={[styles.nextBtn, !selected && styles.nextBtnDisabled]}
           onPress={handleNext}
-          disabled={selected.length === 0}
+          disabled={!selected}
           activeOpacity={0.85}
         >
           <Text style={styles.nextBtnText}>
-            {selected.length > 0 ? `CONTINUE  →` : 'SELECT AT LEAST ONE'}
+            {selected ? 'CHOOSE YOUR CLASS  →' : 'SELECT YOUR EQUIPMENT'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -149,7 +161,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 8,
-    gap: 28,
+    gap: 24,
   },
   titleSection: { gap: 10 },
   eyebrow: {
@@ -170,66 +182,94 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  goalGrid: {
+  cardGrid: {
     gap: 12,
   },
-  goalCard: {
+  card: {
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 10,
-    borderWidth: 1,
+    borderRadius: 12,
+    borderWidth: 1.5,
     borderColor: COLORS.obsidianBorder,
-    padding: 16,
+    padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
   },
-  goalCardSelected: {
+  cardSelected: {
     borderColor: COLORS.ember,
     backgroundColor: COLORS.emberGlow,
+    shadowColor: COLORS.ember,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4,
   },
-  goalIconWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 10,
+  iconWrapper: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
     backgroundColor: COLORS.obsidianCardAlt,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  goalIconWrapperSelected: {
+  iconWrapperSelected: {
     backgroundColor: COLORS.emberGlowStrong,
   },
-  goalIcon: {
-    fontSize: 24,
+  icon: {
+    fontSize: 28,
   },
-  goalLabel: {
-    color: COLORS.textLight,
-    fontSize: 14,
-    fontWeight: '800',
-    letterSpacing: 1,
+  cardContent: {
     flex: 1,
+    gap: 3,
   },
-  goalLabelSelected: {
+  cardLabel: {
+    color: COLORS.textLight,
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+  },
+  cardLabelSelected: {
     color: COLORS.ember,
   },
-  goalDesc: {
+  cardDescription: {
     color: COLORS.textLightMuted,
     fontSize: 12,
-    position: 'absolute',
-    bottom: 8,
-    left: 78,
+    fontWeight: '600',
   },
-  checkMark: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: COLORS.ember,
+  cardSubtitle: {
+    color: COLORS.textLightMuted,
+    fontSize: 11,
+    fontStyle: 'italic',
+  },
+  radio: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: COLORS.obsidianBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkText: {
-    color: COLORS.white,
+  radioSelected: {
+    borderColor: COLORS.ember,
+  },
+  radioDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.ember,
+  },
+  note: {
+    backgroundColor: COLORS.obsidianCard,
+    borderRadius: 8,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.obsidianBorder,
+  },
+  noteText: {
+    color: COLORS.textLightMuted,
     fontSize: 13,
-    fontWeight: '900',
+    lineHeight: 19,
   },
   bottomBar: {
     paddingHorizontal: 20,

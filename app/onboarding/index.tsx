@@ -27,26 +27,22 @@ export default function OnboardingWelcome() {
   const titleY = useSharedValue(40);
   const subtitleOpacity = useSharedValue(0);
   const buttonOpacity = useSharedValue(0);
-  const buttonScale = useSharedValue(0.8);
+  const buttonScale = useSharedValue(0.85);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    titleOpacity.value = withDelay(400, withTiming(1, { duration: 700 }));
-    titleY.value = withDelay(400, withSpring(0, { damping: 12, stiffness: 80 }));
-    subtitleOpacity.value = withDelay(800, withTiming(1, { duration: 600 }));
-    buttonOpacity.value = withDelay(1200, withTiming(1, { duration: 600 }));
-    buttonScale.value = withDelay(1200, withSpring(1, { damping: 12, stiffness: 100 }));
+    titleOpacity.value = withDelay(300, withTiming(1, { duration: 700 }));
+    titleY.value = withDelay(300, withSpring(0, { damping: 12, stiffness: 80 }));
+    subtitleOpacity.value = withDelay(700, withTiming(1, { duration: 600 }));
+    buttonOpacity.value = withDelay(1100, withTiming(1, { duration: 600 }));
+    buttonScale.value = withDelay(1100, withSpring(1, { damping: 12, stiffness: 100 }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const titleStyle = useAnimatedStyle(() => ({
     opacity: titleOpacity.value,
     transform: [{ translateY: titleY.value }],
   }));
-
-  const subtitleStyle = useAnimatedStyle(() => ({
-    opacity: subtitleOpacity.value,
-  }));
-
+  const subtitleStyle = useAnimatedStyle(() => ({ opacity: subtitleOpacity.value }));
   const buttonStyle = useAnimatedStyle(() => ({
     opacity: buttonOpacity.value,
     transform: [{ scale: buttonScale.value }],
@@ -54,58 +50,53 @@ export default function OnboardingWelcome() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Background pattern */}
+      {/* Background lines */}
       <View style={styles.bgPattern}>
-        {Array.from({ length: 8 }).map((_, i) => (
+        {Array.from({ length: 10 }).map((_, i) => (
           <View
             key={i}
-            style={[
-              styles.bgLine,
-              {
-                top: (height / 8) * i,
-                opacity: 0.04 + i * 0.005,
-              },
-            ]}
+            style={[styles.bgLine, { top: (height / 10) * i, opacity: 0.03 + i * 0.003 }]}
           />
         ))}
       </View>
 
       {/* Ember glow orb */}
       <View style={styles.glowOrb} />
+      <View style={styles.glowOrbBottom} />
 
       <View style={[styles.content, { paddingBottom: insets.bottom + 40 }]}>
         {/* Badge */}
         <Animated.View style={[styles.badge, subtitleStyle]}>
-          <Text style={styles.badgeText}>⚔️  RPG FITNESS  ⚔️</Text>
+          <Text style={styles.badgeText}>⚡  PERFORMANCE OS  ⚡</Text>
         </Animated.View>
 
         {/* Title */}
         <Animated.View style={titleStyle}>
-          <Text style={styles.titleLine1}>FIT</Text>
-          <Text style={styles.titleLine2}>QUEST</Text>
+          <Text style={styles.titleLine1}>SOMA</Text>
+          <Text style={styles.titleLine2}>TICS</Text>
         </Animated.View>
 
         {/* Tagline */}
         <Animated.Text style={[styles.tagline, subtitleStyle]}>
-          {"Your fitness journey is a hero's quest."}{'\n'}Level up. Earn XP. Become legendary.
+          {"Forge your body. Ascend your limits."}{'\n'}Level up. Earn XP. Become legendary.
         </Animated.Text>
 
-        {/* Stats preview */}
-        <Animated.View style={[styles.statsRow, subtitleStyle]}>
+        {/* Feature pillars */}
+        <Animated.View style={[styles.pillarsRow, subtitleStyle]}>
           {[
             { label: 'XP SYSTEM', icon: '⚡' },
-            { label: 'AI QUESTS', icon: '🤖' },
             { label: 'HERO CLASS', icon: '🏆' },
-          ].map((stat) => (
-            <View key={stat.label} style={styles.statItem}>
-              <Text style={styles.statIcon}>{stat.icon}</Text>
-              <Text style={styles.statLabel}>{stat.label}</Text>
+            { label: 'CHAPTERS', icon: '📖' },
+          ].map((item) => (
+            <View key={item.label} style={styles.pillar}>
+              <Text style={styles.pillarIcon}>{item.icon}</Text>
+              <Text style={styles.pillarLabel}>{item.label}</Text>
             </View>
           ))}
         </Animated.View>
 
-        {/* CTA Button */}
-        <Animated.View style={buttonStyle}>
+        {/* CTA */}
+        <Animated.View style={[styles.ctaWrapper, buttonStyle]}>
           <TouchableOpacity
             style={styles.ctaButton}
             onPress={() => router.push('/onboarding/goals')}
@@ -114,7 +105,7 @@ export default function OnboardingWelcome() {
             <Text style={styles.ctaText}>BEGIN YOUR QUEST</Text>
             <Text style={styles.ctaArrow}>→</Text>
           </TouchableOpacity>
-          <Text style={styles.ctaSubtext}>Free · No account required</Text>
+          <Text style={styles.ctaSubtext}>4 quick steps · Takes under 2 minutes</Text>
         </Animated.View>
       </View>
     </View>
@@ -138,12 +129,21 @@ const styles = StyleSheet.create({
   },
   glowOrb: {
     position: 'absolute',
-    top: height * 0.15,
-    left: width * 0.5 - 150,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: 'rgba(255, 140, 0, 0.06)',
+    top: height * 0.08,
+    left: width * 0.5 - 180,
+    width: 360,
+    height: 360,
+    borderRadius: 180,
+    backgroundColor: 'rgba(255, 140, 0, 0.05)',
+  },
+  glowOrbBottom: {
+    position: 'absolute',
+    bottom: height * 0.05,
+    right: -60,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(255, 140, 0, 0.03)',
   },
   content: {
     flex: 1,
@@ -157,61 +157,68 @@ const styles = StyleSheet.create({
     borderColor: COLORS.ember,
     borderRadius: 4,
     paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingVertical: 7,
     backgroundColor: COLORS.emberGlow,
   },
   badgeText: {
     color: COLORS.ember,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
     letterSpacing: 3,
   },
   titleLine1: {
     color: COLORS.white,
-    fontSize: 80,
+    fontSize: 90,
     fontWeight: '900',
-    lineHeight: 80,
+    lineHeight: 90,
     letterSpacing: -2,
     textAlign: 'center',
   },
   titleLine2: {
     color: COLORS.ember,
-    fontSize: 80,
+    fontSize: 90,
     fontWeight: '900',
-    lineHeight: 80,
+    lineHeight: 90,
     letterSpacing: -2,
     textAlign: 'center',
-    marginTop: -8,
+    marginTop: -10,
   },
   tagline: {
     color: COLORS.textLightMuted,
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 25,
     textAlign: 'center',
     letterSpacing: 0.3,
   },
-  statsRow: {
+  pillarsRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
+    width: '100%',
   },
-  statItem: {
+  pillar: {
     flex: 1,
     alignItems: 'center',
-    gap: 6,
+    gap: 7,
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 8,
-    paddingVertical: 12,
+    borderRadius: 10,
+    paddingVertical: 14,
     borderWidth: 1,
     borderColor: COLORS.obsidianBorder,
   },
-  statIcon: {
+  pillarIcon: {
     fontSize: 22,
   },
-  statLabel: {
+  pillarLabel: {
     color: COLORS.textLightMuted,
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 1.5,
+    textAlign: 'center',
+  },
+  ctaWrapper: {
+    width: '100%',
+    alignItems: 'center',
+    gap: 12,
   },
   ctaButton: {
     flexDirection: 'row',
@@ -222,6 +229,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 8,
     gap: 10,
+    width: '100%',
     shadowColor: COLORS.ember,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
@@ -243,6 +251,5 @@ const styles = StyleSheet.create({
     color: COLORS.textLightMuted,
     fontSize: 12,
     textAlign: 'center',
-    marginTop: 10,
   },
 });

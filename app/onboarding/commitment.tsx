@@ -30,7 +30,7 @@ export default function CommitmentScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
     router.push({
-      pathname: '/onboarding/class-selection',
+      pathname: '/onboarding/equipment',
       params: { goals: params.goals, commitment: selected },
     });
   };
@@ -43,14 +43,15 @@ export default function CommitmentScreen() {
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: '66%' }]} />
+          <View style={[styles.progressFill, { width: '50%' }]} />
         </View>
-        <Text style={styles.stepText}>2 / 3</Text>
+        <Text style={styles.stepText}>2 / 4</Text>
       </View>
 
       <View style={[styles.content, { paddingBottom: insets.bottom + 20 }]}>
         <View style={styles.titleSection}>
           <Text style={styles.eyebrow}>STEP 2 — COMMITMENT</Text>
+
           <Text style={styles.title}>HOW HARD{'\n'}DO YOU TRAIN?</Text>
           <Text style={styles.subtitle}>
             Choose your weekly training frequency. Be honest — consistency beats intensity.
@@ -106,7 +107,7 @@ export default function CommitmentScreen() {
           activeOpacity={0.85}
         >
           <Text style={styles.nextBtnText}>
-            {selected ? 'CHOOSE YOUR CLASS  →' : 'SELECT AN OPTION'}
+            {selected ? 'SELECT EQUIPMENT  →' : 'SELECT AN OPTION'}
           </Text>
         </TouchableOpacity>
       </View>

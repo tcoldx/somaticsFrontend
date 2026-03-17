@@ -5,13 +5,17 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
+  TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect } from 'expo-router';
-import { COLORS, BADGES } from '@/lib/constants';
-import { loadAppData } from '@/lib/storage';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { COLORS, BADGES, HERO_CLASSES } from '@/lib/constants';
+import { loadAppData, getCompletedDates } from '@/lib/storage';
 import { getXPProgress } from '@/lib/leveling';
-import { AppData } from '@/lib/types';
+import { AppData, GlobalRankingEntry } from '@/lib/types';
+import { getGlobalRankings } from '@/lib/supabase';
+import { useAuth } from '@fastshot/auth';
 
 const { width } = Dimensions.get('window');
 const DAY_SIZE = (width - 40 - 6 * 6) / 7;
@@ -31,8 +35,6 @@ function CalendarView({ completedDates }: { completedDates: Set<string> }) {
     ...Array(firstDay).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
-
-  // Pad to complete weeks
   while (cells.length % 7 !== 0) cells.push(null);
 
   const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -53,18 +55,18 @@ function CalendarView({ completedDates }: { completedDates: Set<string> }) {
           const isToday = day === today;
           return (
             <View
-              key={`day-${day}`}
+              key={dateStr}
               style={[
                 calStyles.cell,
-                isToday && calStyles.cellToday,
                 isCompleted && calStyles.cellCompleted,
+                isToday && !isCompleted && calStyles.cellToday,
               ]}
             >
               <Text
                 style={[
-                  calStyles.cellText,
-                  isToday && calStyles.cellTextToday,
-                  isCompleted && calStyles.cellTextCompleted,
+                  calStyles.dayNum,
+                  isCompleted && calStyles.dayNumCompleted,
+                  isToday && !isCompleted && calStyles.dayNumToday,
                 ]}
               >
                 {day}
@@ -78,207 +80,26 @@ function CalendarView({ completedDates }: { completedDates: Set<string> }) {
   );
 }
 
-export default function HistoryScreen() {
-  const insets = useSafeAreaInsets();
-  const [appData, setAppData] = useState<AppData | null>(null);
-  const [completedDates, setCompletedDates] = useState<Set<string>>(new Set());
-
-  useFocusEffect(
-    useCallback(() => {
-      loadAppData().then((data) => {
-        setAppData(data);
-        const dates = new Set(
-          data.completedWorkouts.map((w) => w.completedAt.split('T')[0])
-        );
-        setCompletedDates(dates);
-      });
-    }, [])
-  );
-
-  if (!appData) {
-    return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <View style={styles.loading}>
-          <Text style={styles.loadingText}>LOADING...</Text>
-        </View>
-      </View>
-    );
-  }
-
-  const { gameStats, completedWorkouts } = appData;
-  const xpData = getXPProgress(gameStats.totalXP);
-
-  return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 20 }]}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerEyebrow}>CHRONICLES</Text>
-          <Text style={styles.headerTitle}>PROGRESSION</Text>
-        </View>
-
-        {/* XP Progression Card */}
-        <View style={styles.xpCard}>
-          <View style={styles.xpCardGlow} />
-          <View style={styles.xpCardContent}>
-            <Text style={styles.cardLabel}>HERO PROGRESSION</Text>
-            <View style={styles.xpMainRow}>
-              <View>
-                <Text style={styles.levelBig}>{xpData.level}</Text>
-                <Text style={styles.levelLabel}>CURRENT LEVEL</Text>
-              </View>
-              <View style={styles.xpDetails}>
-                <View style={styles.xpDetailRow}>
-                  <Text style={styles.xpDetailLabel}>TOTAL XP</Text>
-                  <Text style={styles.xpDetailValue}>{gameStats.totalXP.toLocaleString()}</Text>
-                </View>
-                <View style={styles.xpDetailRow}>
-                  <Text style={styles.xpDetailLabel}>NEXT LEVEL</Text>
-                  <Text style={styles.xpDetailValue}>{xpData.xpNeeded - xpData.currentXP} XP</Text>
-                </View>
-                <View style={styles.xpDetailRow}>
-                  <Text style={styles.xpDetailLabel}>WORKOUTS</Text>
-                  <Text style={styles.xpDetailValue}>{gameStats.totalWorkouts}</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* XP Progress bar */}
-            <View style={styles.xpBarContainer}>
-              <View style={styles.xpBarTrack}>
-                <View
-                  style={[
-                    styles.xpBarFill,
-                    { width: `${xpData.percentage * 100}%` },
-                  ]}
-                />
-              </View>
-              <Text style={styles.xpBarText}>
-                {xpData.currentXP} / {xpData.xpNeeded} XP TO LEVEL {xpData.level + 1}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Streak Stats */}
-        <View style={styles.streakRow}>
-          <View style={styles.streakStat}>
-            <Text style={styles.streakStatEmoji}>🔥</Text>
-            <Text style={styles.streakStatValue}>{gameStats.currentStreak}</Text>
-            <Text style={styles.streakStatLabel}>CURRENT STREAK</Text>
-          </View>
-          <View style={styles.streakStatDivider} />
-          <View style={styles.streakStat}>
-            <Text style={styles.streakStatEmoji}>🏆</Text>
-            <Text style={styles.streakStatValue}>{gameStats.maxStreak}</Text>
-            <Text style={styles.streakStatLabel}>BEST STREAK</Text>
-          </View>
-        </View>
-
-        {/* Calendar */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>TRAINING CALENDAR</Text>
-        </View>
-        <View style={styles.calendarCard}>
-          <CalendarView completedDates={completedDates} />
-        </View>
-
-        {/* Badge Gallery */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>BADGE GALLERY</Text>
-          <Text style={styles.sectionCount}>
-            {gameStats.earnedBadges.length}/{BADGES.length}
-          </Text>
-        </View>
-        <View style={styles.badgeGrid}>
-          {BADGES.map((badge) => {
-            const earned = gameStats.earnedBadges.includes(badge.id as never);
-            return (
-              <View
-                key={badge.id}
-                style={[
-                  styles.badgeCard,
-                  earned && { borderColor: badge.color, backgroundColor: `${badge.color}10` },
-                ]}
-              >
-                <Text style={[styles.badgeIcon, !earned && styles.badgeIconLocked]}>
-                  {earned ? badge.icon : '🔒'}
-                </Text>
-                <Text style={[styles.badgeName, earned && { color: badge.color }]}>
-                  {badge.name}
-                </Text>
-                <Text style={styles.badgeDesc}>{badge.description}</Text>
-              </View>
-            );
-          })}
-        </View>
-
-        {/* Recent Workouts */}
-        {completedWorkouts.length > 0 && (
-          <>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>RECENT QUESTS</Text>
-            </View>
-            <View style={styles.recentList}>
-              {[...completedWorkouts]
-                .reverse()
-                .slice(0, 10)
-                .map((cw, idx) => {
-                  const workout = appData.workoutPlan?.workouts.find(
-                    (w) => w.id === cw.workoutId
-                  );
-                  return (
-                    <View key={`${cw.workoutId}-${idx}`} style={styles.recentItem}>
-                      <View style={styles.recentLeft}>
-                        <Text style={styles.recentCheck}>✓</Text>
-                        <View>
-                          <Text style={styles.recentName}>
-                            {workout?.name ?? 'WORKOUT'}
-                          </Text>
-                          <Text style={styles.recentDate}>
-                            {new Date(cw.completedAt).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })}
-                          </Text>
-                        </View>
-                      </View>
-                      <Text style={styles.recentXP}>+{cw.xpEarned} XP</Text>
-                    </View>
-                  );
-                })}
-            </View>
-          </>
-        )}
-      </ScrollView>
-    </View>
-  );
-}
-
 const calStyles = StyleSheet.create({
   container: { gap: 12 },
   monthTitle: {
     color: COLORS.white,
     fontSize: 14,
     fontWeight: '800',
-    letterSpacing: 1.5,
-    marginBottom: 4,
+    letterSpacing: 2,
+    textAlign: 'center',
   },
   dayNamesRow: {
     flexDirection: 'row',
-    gap: 6,
+    justifyContent: 'space-between',
   },
   dayName: {
-    width: DAY_SIZE,
-    textAlign: 'center',
     color: COLORS.textLightMuted,
     fontSize: 9,
     fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+    width: DAY_SIZE,
+    textAlign: 'center',
   },
   grid: {
     flexDirection: 'row',
@@ -288,68 +109,370 @@ const calStyles = StyleSheet.create({
   cell: {
     width: DAY_SIZE,
     height: DAY_SIZE,
-    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.obsidianCardAlt,
+    borderRadius: 8,
+    gap: 2,
+  },
+  cellCompleted: {
+    backgroundColor: COLORS.ember,
   },
   cellToday: {
     borderWidth: 1.5,
     borderColor: COLORS.ember,
-    backgroundColor: COLORS.emberGlow,
   },
-  cellCompleted: {
-    backgroundColor: COLORS.greenGlow,
-    borderWidth: 1,
-    borderColor: COLORS.green,
-  },
-  cellText: {
+  dayNum: {
     color: COLORS.textLightMuted,
     fontSize: 12,
     fontWeight: '600',
   },
-  cellTextToday: {
-    color: COLORS.ember,
-    fontWeight: '900',
+  dayNumCompleted: {
+    color: COLORS.white,
+    fontWeight: '800',
   },
-  cellTextCompleted: {
-    color: COLORS.green,
-    fontWeight: '900',
+  dayNumToday: {
+    color: COLORS.ember,
+    fontWeight: '800',
   },
   completedDot: {
-    position: 'absolute',
-    bottom: 3,
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: COLORS.green,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.6)',
   },
 });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.obsidian,
+function GlobalRankingRow({
+  entry,
+  rank,
+  isCurrentUser,
+}: {
+  entry: GlobalRankingEntry;
+  rank: number;
+  isCurrentUser: boolean;
+}) {
+  const classInfo = HERO_CLASSES[entry.hero_class as keyof typeof HERO_CLASSES];
+  const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+
+  return (
+    <View style={[rankStyles.row, isCurrentUser && rankStyles.rowCurrent]}>
+      <Text style={[rankStyles.rankText, rank <= 3 && { fontSize: 18 }]}>{rankEmoji}</Text>
+      <View style={rankStyles.heroInfo}>
+        <Text style={rankStyles.heroClass}>
+          {classInfo?.icon ?? '⚡'} {classInfo?.name ?? entry.hero_class.toUpperCase()}
+        </Text>
+        {isCurrentUser && <Text style={rankStyles.youBadge}>YOU</Text>}
+      </View>
+      <View style={rankStyles.stats}>
+        <Text style={rankStyles.level}>LV {entry.level}</Text>
+        <Text style={rankStyles.xp}>{entry.total_xp.toLocaleString()} XP</Text>
+      </View>
+    </View>
+  );
+}
+
+const rankStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    backgroundColor: COLORS.obsidianCard,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.obsidianBorder,
   },
+  rowCurrent: {
+    borderColor: COLORS.ember,
+    backgroundColor: COLORS.emberGlow,
+  },
+  rankText: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: COLORS.textLightMuted,
+    width: 32,
+    textAlign: 'center',
+  },
+  heroInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  heroClass: {
+    color: COLORS.textLight,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  youBadge: {
+    backgroundColor: COLORS.ember,
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    color: COLORS.white,
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
+  stats: { alignItems: 'flex-end', gap: 2 },
+  level: {
+    color: COLORS.ember,
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  xp: {
+    color: COLORS.textLightMuted,
+    fontSize: 11,
+    fontWeight: '600',
+  },
+});
+
+export default function HistoryScreen() {
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { user } = useAuth();
+  const [appData, setAppData] = useState<AppData | null>(null);
+  const [completedDates, setCompletedDates] = useState<Set<string>>(new Set());
+  const [rankings, setRankings] = useState<GlobalRankingEntry[]>([]);
+  const [rankingsLoading, setRankingsLoading] = useState(false);
+
+  const loadData = useCallback(async () => {
+    const data = await loadAppData();
+    setAppData(data);
+    const dates = await getCompletedDates();
+    setCompletedDates(new Set(dates));
+  }, []);
+
+  const loadRankings = useCallback(async () => {
+    setRankingsLoading(true);
+    const data = await getGlobalRankings();
+    setRankings(data.map((entry, idx) => ({ ...entry, rank: idx + 1 })));
+    setRankingsLoading(false);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+      loadRankings();
+    }, [loadData, loadRankings])
+  );
+
+  if (!appData) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator color={COLORS.ember} />
+      </View>
+    );
+  }
+
+  const { gameStats, workoutPlan, completedWorkouts } = appData;
+  const xpData = getXPProgress(gameStats.totalXP);
+  const recentWorkouts = [...completedWorkouts].reverse().slice(0, 10);
+
+  // Find current user's rank
+  const myRank = user?.id ? rankings.findIndex((r) => r.id === user.id) : -1;
+
+  return (
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 20 }]}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerEyebrow}>ACHIEVEMENT HALL</Text>
+          <Text style={styles.headerTitle}>CHRONICLES</Text>
+        </View>
+
+        {/* XP Progression */}
+        <View style={styles.card}>
+          <View style={styles.cardGlow} />
+          <View style={styles.cardContent}>
+            <Text style={styles.cardLabel}>XP PROGRESSION</Text>
+            <View style={styles.xpMainRow}>
+              <View>
+                <Text style={styles.xpLevel}>Level {xpData.level}</Text>
+                <Text style={styles.xpTotalValue}>{gameStats.totalXP.toLocaleString()} XP</Text>
+              </View>
+              <View style={styles.xpNextLevel}>
+                <Text style={styles.xpNextLabel}>NEXT LEVEL</Text>
+                <Text style={styles.xpNextValue}>{xpData.xpNeeded - xpData.currentXP} XP</Text>
+              </View>
+            </View>
+            <View style={styles.xpBarTrack}>
+              <View style={[styles.xpBarFill, { width: `${xpData.percentage * 100}%` }]} />
+            </View>
+            <Text style={styles.xpBarLabel}>
+              {xpData.currentXP} / {xpData.xpNeeded} XP to Level {xpData.level + 1}
+            </Text>
+          </View>
+        </View>
+
+        {/* Streak Stats */}
+        <View style={styles.streakGrid}>
+          <View style={styles.streakStat}>
+            <Text style={styles.streakStatIcon}>🔥</Text>
+            <Text style={styles.streakStatValue}>{gameStats.currentStreak}</Text>
+            <Text style={styles.streakStatLabel}>CURRENT{'\n'}STREAK</Text>
+          </View>
+          <View style={styles.streakDivider} />
+          <View style={styles.streakStat}>
+            <Text style={styles.streakStatIcon}>👑</Text>
+            <Text style={styles.streakStatValue}>{gameStats.maxStreak}</Text>
+            <Text style={styles.streakStatLabel}>BEST{'\n'}STREAK</Text>
+          </View>
+          <View style={styles.streakDivider} />
+          <View style={styles.streakStat}>
+            <Text style={styles.streakStatIcon}>⚔️</Text>
+            <Text style={styles.streakStatValue}>{gameStats.totalWorkouts}</Text>
+            <Text style={styles.streakStatLabel}>TOTAL{'\n'}QUESTS</Text>
+          </View>
+        </View>
+
+        {/* Training Calendar */}
+        <View style={styles.card}>
+          <View style={[styles.cardGlow, { backgroundColor: COLORS.ember }]} />
+          <View style={styles.cardContent}>
+            <Text style={styles.cardLabel}>TRAINING CALENDAR</Text>
+            <CalendarView completedDates={completedDates} />
+          </View>
+        </View>
+
+        {/* Global Ranking */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>GLOBAL RANKING</Text>
+          {myRank >= 0 && (
+            <View style={styles.myRankBadge}>
+              <Text style={styles.myRankText}>YOUR RANK: #{myRank + 1}</Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.rankingCard}>
+          {rankingsLoading ? (
+            <View style={styles.rankingLoading}>
+              <ActivityIndicator color={COLORS.ember} size="small" />
+              <Text style={styles.rankingLoadingText}>Fetching rankings...</Text>
+            </View>
+          ) : rankings.length === 0 ? (
+            <View style={styles.rankingEmpty}>
+              <Text style={styles.rankingEmptyIcon}>🌍</Text>
+              <Text style={styles.rankingEmptyTitle}>CONNECT SUPABASE</Text>
+              <Text style={styles.rankingEmptyText}>
+                Global rankings sync when Supabase is connected to your project.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.rankingList}>
+              {rankings.slice(0, 10).map((entry, idx) => (
+                <GlobalRankingRow
+                  key={entry.id}
+                  entry={entry}
+                  rank={idx + 1}
+                  isCurrentUser={entry.id === user?.id}
+                />
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* Badges Gallery */}
+        <Text style={styles.sectionTitle}>BADGE COLLECTION</Text>
+        <View style={styles.badgeGrid}>
+          {BADGES.map((badge) => {
+            const isEarned = gameStats.earnedBadges.includes(badge.id as never);
+            return (
+              <View
+                key={badge.id}
+                style={[styles.badgeCard, isEarned && { borderColor: badge.color }]}
+              >
+                <View
+                  style={[
+                    styles.badgeIconWrapper,
+                    isEarned
+                      ? { backgroundColor: `${badge.color}20` }
+                      : { backgroundColor: COLORS.obsidianCardAlt },
+                  ]}
+                >
+                  <Text style={[styles.badgeIcon, !isEarned && styles.badgeIconLocked]}>
+                    {isEarned ? badge.icon : '🔒'}
+                  </Text>
+                </View>
+                <Text style={[styles.badgeName, isEarned && { color: badge.color }]}>
+                  {badge.name}
+                </Text>
+                <Text style={styles.badgeDesc}>{badge.description}</Text>
+              </View>
+            );
+          })}
+        </View>
+
+        {/* Recent Quests */}
+        {recentWorkouts.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>RECENT QUESTS</Text>
+            <View style={styles.recentList}>
+              {recentWorkouts.map((cw) => {
+                const workout = workoutPlan?.workouts.find((w) => w.id === cw.workoutId);
+                return (
+                  <View key={cw.workoutId + cw.completedAt} style={styles.recentItem}>
+                    <View style={styles.recentItemLeft}>
+                      <Text style={styles.recentItemName}>
+                        {workout?.name ?? 'Quest Completed'}
+                      </Text>
+                      <Text style={styles.recentItemDate}>
+                        {new Date(cw.completedAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </Text>
+                    </View>
+                    <View style={styles.recentXPBadge}>
+                      <Text style={styles.recentXPText}>+{cw.xpEarned} XP</Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </>
+        )}
+
+        {/* Premium Analytics Tease */}
+        <TouchableOpacity
+          style={styles.analyticsTease}
+          onPress={() => router.push('/paywall')}
+          activeOpacity={0.85}
+        >
+          <View style={styles.analyticsBlur}>
+            <View style={styles.analyticsBlurLine} />
+            <View style={styles.analyticsBlurLine} />
+            <View style={[styles.analyticsBlurLine, { width: '60%' }]} />
+          </View>
+          <View style={styles.analyticsLock}>
+            <Text style={styles.analyticsLockIcon}>🔒</Text>
+            <Text style={styles.analyticsLockTitle}>ADVANCED ANALYTICS</Text>
+            <Text style={styles.analyticsLockSub}>Unlock with Somatics+</Text>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.obsidian },
   loading: {
     flex: 1,
+    backgroundColor: COLORS.obsidian,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  loadingText: {
-    color: COLORS.ember,
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: 2,
-  },
-  scrollContent: {
-    padding: 20,
-    gap: 16,
-  },
-  header: {
-    gap: 2,
-    marginBottom: 4,
-  },
+  scrollContent: { padding: 20, gap: 16 },
+  header: { gap: 2, marginBottom: 4 },
   headerEyebrow: {
     color: COLORS.ember,
     fontSize: 10,
@@ -358,113 +481,96 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: COLORS.white,
-    fontSize: 26,
+    fontSize: 32,
     fontWeight: '900',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
-  // XP Card
-  xpCard: {
+  // Cards
+  card: {
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: COLORS.obsidianBorder,
     overflow: 'hidden',
-    shadowColor: COLORS.ember,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
   },
-  xpCardGlow: {
+  cardGlow: {
     height: 2,
     backgroundColor: COLORS.ember,
   },
-  xpCardContent: {
-    padding: 20,
-    gap: 16,
-  },
+  cardContent: { padding: 20, gap: 14 },
   cardLabel: {
     color: COLORS.textLightMuted,
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 2,
   },
+  // XP
   xpMainRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 20,
-  },
-  levelBig: {
-    color: COLORS.ember,
-    fontSize: 56,
-    fontWeight: '900',
-    lineHeight: 60,
-  },
-  levelLabel: {
-    color: COLORS.textLightMuted,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    marginTop: 2,
-  },
-  xpDetails: {
-    flex: 1,
-    gap: 8,
-    paddingTop: 8,
-  },
-  xpDetailRow: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
-  xpDetailLabel: {
-    color: COLORS.textLightMuted,
-    fontSize: 11,
-    fontWeight: '600',
+  xpLevel: {
+    color: COLORS.ember,
+    fontSize: 14,
+    fontWeight: '800',
     letterSpacing: 1,
   },
-  xpDetailValue: {
+  xpTotalValue: {
     color: COLORS.white,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: 28,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+    marginTop: 2,
   },
-  xpBarContainer: { gap: 6 },
+  xpNextLevel: { alignItems: 'flex-end' },
+  xpNextLabel: {
+    color: COLORS.textLightMuted,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+  },
+  xpNextValue: {
+    color: COLORS.gold,
+    fontSize: 16,
+    fontWeight: '900',
+    marginTop: 2,
+  },
   xpBarTrack: {
-    height: 8,
+    height: 6,
     backgroundColor: COLORS.obsidianBorder,
-    borderRadius: 4,
+    borderRadius: 3,
     overflow: 'hidden',
   },
   xpBarFill: {
     height: '100%',
     backgroundColor: COLORS.ember,
-    borderRadius: 4,
+    borderRadius: 3,
   },
-  xpBarText: {
+  xpBarLabel: {
     color: COLORS.textLightMuted,
-    fontSize: 10,
-    fontWeight: '600',
-    letterSpacing: 0.5,
+    fontSize: 11,
+    textAlign: 'center',
   },
-  // Streak row
-  streakRow: {
+  // Streak grid
+  streakGrid: {
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: COLORS.obsidianBorder,
+    padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
   },
   streakStat: {
     flex: 1,
     alignItems: 'center',
     gap: 4,
   },
-  streakStatEmoji: { fontSize: 28 },
+  streakStatIcon: { fontSize: 26 },
   streakStatValue: {
     color: COLORS.white,
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '900',
   },
   streakStatLabel: {
@@ -472,10 +578,11 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 1.5,
+    textAlign: 'center',
   },
-  streakStatDivider: {
+  streakDivider: {
     width: 1,
-    height: 60,
+    height: 48,
     backgroundColor: COLORS.obsidianBorder,
   },
   // Section
@@ -490,21 +597,62 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
+    marginTop: 4,
   },
-  sectionCount: {
+  myRankBadge: {
+    backgroundColor: COLORS.emberGlow,
+    borderWidth: 1,
+    borderColor: COLORS.ember,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  myRankText: {
     color: COLORS.ember,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1,
   },
-  // Calendar
-  calendarCard: {
+  // Rankings
+  rankingCard: {
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: COLORS.obsidianBorder,
+    overflow: 'hidden',
+    padding: 12,
+  },
+  rankingLoading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
     padding: 16,
   },
-  // Badge grid
+  rankingLoadingText: {
+    color: COLORS.textLightMuted,
+    fontSize: 13,
+  },
+  rankingEmpty: {
+    alignItems: 'center',
+    padding: 24,
+    gap: 8,
+  },
+  rankingEmptyIcon: { fontSize: 36 },
+  rankingEmptyTitle: {
+    color: COLORS.textLight,
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+  },
+  rankingEmptyText: {
+    color: COLORS.textLightMuted,
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  rankingList: { gap: 6 },
+  // Badges
   badgeGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -513,19 +661,22 @@ const styles = StyleSheet.create({
   badgeCard: {
     width: (width - 40 - 10) / 2,
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: COLORS.obsidianBorder,
-    padding: 16,
+    padding: 14,
     gap: 6,
     alignItems: 'center',
   },
-  badgeIcon: {
-    fontSize: 32,
+  badgeIconWrapper: {
+    width: 52,
+    height: 52,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  badgeIconLocked: {
-    opacity: 0.4,
-  },
+  badgeIcon: { fontSize: 26 },
+  badgeIconLocked: { opacity: 0.4 },
   badgeName: {
     color: COLORS.textLightMuted,
     fontSize: 11,
@@ -536,53 +687,75 @@ const styles = StyleSheet.create({
   badgeDesc: {
     color: COLORS.textLightMuted,
     fontSize: 10,
-    textAlign: 'center',
     lineHeight: 14,
+    textAlign: 'center',
     opacity: 0.7,
   },
-  // Recent
-  recentList: {
+  // Recent quests
+  recentList: { gap: 8 },
+  recentItem: {
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: COLORS.obsidianBorder,
-    overflow: 'hidden',
-  },
-  recentItem: {
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.obsidianBorder,
   },
-  recentLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  recentCheck: {
-    color: COLORS.green,
-    fontSize: 16,
-    fontWeight: '900',
-    width: 24,
-    textAlign: 'center',
-  },
-  recentName: {
+  recentItemLeft: { flex: 1, gap: 3 },
+  recentItemName: {
     color: COLORS.textLight,
     fontSize: 13,
     fontWeight: '700',
-    letterSpacing: 0.5,
   },
-  recentDate: {
+  recentItemDate: {
     color: COLORS.textLightMuted,
     fontSize: 11,
-    marginTop: 2,
   },
-  recentXP: {
-    color: COLORS.ember,
-    fontSize: 13,
-    fontWeight: '800',
+  recentXPBadge: {
+    backgroundColor: COLORS.emberGlow,
+    borderWidth: 1,
+    borderColor: COLORS.ember,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  recentXPText: { color: COLORS.ember, fontSize: 12, fontWeight: '900' },
+  // Analytics tease
+  analyticsTease: {
+    backgroundColor: COLORS.obsidianCard,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: COLORS.premiumGold,
+    padding: 20,
+    alignItems: 'center',
+    gap: 12,
+    overflow: 'hidden',
+  },
+  analyticsBlur: {
+    width: '100%',
+    gap: 10,
+  },
+  analyticsBlurLine: {
+    height: 10,
+    backgroundColor: COLORS.obsidianBorder,
+    borderRadius: 5,
+    width: '100%',
+  },
+  analyticsLock: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  analyticsLockIcon: { fontSize: 28 },
+  analyticsLockTitle: {
+    color: COLORS.premiumGold,
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: 2,
+  },
+  analyticsLockSub: {
+    color: COLORS.textLightMuted,
+    fontSize: 12,
   },
 });

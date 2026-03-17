@@ -22,7 +22,7 @@ import Animated, {
   withDelay,
   withSequence,
 } from 'react-native-reanimated';
-import { COLORS, HERO_CLASSES } from '@/lib/constants';
+import { COLORS, HERO_CLASSES, CHAPTER_NAMES } from '@/lib/constants';
 import { loadAppData, completeWorkout } from '@/lib/storage';
 import {
   calculateWorkoutXP,
@@ -32,6 +32,8 @@ import {
 } from '@/lib/leveling';
 import { Workout, AppData } from '@/lib/types';
 import ParticleEffect from '@/components/ParticleEffect';
+import { syncStatsToSupabase, logWorkoutToSupabase } from '@/lib/supabase';
+import { useAuth } from '@fastshot/auth';
 
 const { width, height } = Dimensions.get('window');
 
@@ -100,12 +102,12 @@ function LevelUpModal({
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (visible) {
       opacity.value = withTiming(1, { duration: 300 });
       scale.value = withSpring(1, { damping: 10, stiffness: 100 });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const modalStyle = useAnimatedStyle(() => ({
@@ -138,6 +140,7 @@ export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
 
   const [appData, setAppData] = useState<AppData | null>(null);
   const [workout, setWorkout] = useState<Workout | null>(null);
@@ -218,6 +221,12 @@ export default function WorkoutDetailScreen() {
 
     await completeWorkout(workout.id, xpEarned, updatedStats, updatedPlan);
 
+    // Sync to Supabase if authenticated
+    if (user?.id) {
+      await logWorkoutToSupabase(user.id, workout.id, workout.name, xpEarned);
+      await syncStatsToSupabase(user.id, updatedStats);
+    }
+
     // Show particles
     setShowParticles(true);
 
@@ -275,6 +284,7 @@ export default function WorkoutDetailScreen() {
   }
 
   const heroClass = HERO_CLASSES[appData.userProfile.heroClass];
+  const chapter = CHAPTER_NAMES.find((c) => c.week === workout.week);
 
   const difficultyColor = {
     Beginner: '#4CAF50',
@@ -308,7 +318,12 @@ export default function WorkoutDetailScreen() {
           <Text style={styles.closeBtnText}>✕</Text>
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerWeek}>WEEK {workout.week} · DAY {workout.day}</Text>
+          {chapter && (
+            <View style={[styles.chapterPill, { backgroundColor: `${chapter.color}20`, borderColor: `${chapter.color}50` }]}>
+              <Text style={[styles.chapterPillText, { color: chapter.color }]}>{chapter.title}</Text>
+            </View>
+          )}
+          <Text style={styles.headerWeek}>DAY {workout.day}</Text>
         </View>
         <View style={[styles.xpBadge, { backgroundColor: COLORS.emberGlow, borderColor: COLORS.ember }]}>
           <Text style={styles.xpBadgeText}>+{workout.totalXP} XP</Text>
@@ -544,12 +559,12 @@ const lvStyles = StyleSheet.create({
     backgroundColor: COLORS.obsidianCard,
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: COLORS.gold,
+    borderColor: COLORS.premiumGold,
     padding: 36,
     alignItems: 'center',
     gap: 12,
     width: width * 0.8,
-    shadowColor: COLORS.gold,
+    shadowColor: COLORS.premiumGold,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 20,
@@ -557,7 +572,7 @@ const lvStyles = StyleSheet.create({
   },
   emoji: { fontSize: 52 },
   title: {
-    color: COLORS.gold,
+    color: COLORS.premiumGold,
     fontSize: 28,
     fontWeight: '900',
     letterSpacing: 4,
@@ -575,7 +590,7 @@ const lvStyles = StyleSheet.create({
     lineHeight: 22,
   },
   btn: {
-    backgroundColor: COLORS.gold,
+    backgroundColor: COLORS.premiumGold,
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 32,
@@ -638,6 +653,18 @@ const styles = StyleSheet.create({
   headerCenter: {
     flex: 1,
     alignItems: 'center',
+    gap: 2,
+  },
+  chapterPill: {
+    borderRadius: 4,
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  chapterPillText: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 2,
   },
   headerWeek: {
     color: COLORS.textLightMuted,

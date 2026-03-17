@@ -16,15 +16,17 @@ import Animated, {
   withTiming,
   withDelay,
 } from 'react-native-reanimated';
-import { COLORS, HERO_CLASSES } from '@/lib/constants';
+import { COLORS, HERO_CLASSES, BADGES, CHAPTER_NAMES } from '@/lib/constants';
 import { loadAppData } from '@/lib/storage';
 import { getXPProgress } from '@/lib/leveling';
 import XPBar from '@/components/XPBar';
 import { AppData } from '@/lib/types';
+import { useAuth } from '@fastshot/auth';
 
 export default function Dashboard() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const [appData, setAppData] = useState<AppData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -38,12 +40,12 @@ export default function Dashboard() {
   }, []);
 
   useFocusEffect(
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useCallback(() => {
       loadData();
       headerOpacity.value = withDelay(100, withTiming(1, { duration: 500 }));
       headerY.value = withDelay(100, withSpring(0, { damping: 12, stiffness: 100 }));
       cardScale.value = withDelay(200, withSpring(1, { damping: 14, stiffness: 100 }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadData])
   );
 
@@ -57,13 +59,12 @@ export default function Dashboard() {
     opacity: headerOpacity.value,
     transform: [{ translateY: headerY.value }],
   }));
-  const cardStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: cardScale.value }],
-  }));
+  const cardStyle = useAnimatedStyle(() => ({ transform: [{ scale: cardScale.value }] }));
 
   if (!appData || !appData.userProfile) {
     return (
       <View style={styles.loading}>
+        <Text style={styles.loadingBrand}>SOMATICS</Text>
         <Text style={styles.loadingText}>LOADING...</Text>
       </View>
     );
@@ -73,7 +74,6 @@ export default function Dashboard() {
   const heroClass = HERO_CLASSES[userProfile.heroClass];
   const xpData = getXPProgress(gameStats.totalXP);
 
-  // Get next uncompleted workout
   const nextWorkout = workoutPlan?.workouts.find((w) => !w.completed);
   const completedCount = workoutPlan?.workouts.filter((w) => w.completed).length ?? 0;
   const totalWorkouts = workoutPlan?.workouts.length ?? 0;
@@ -85,41 +85,45 @@ export default function Dashboard() {
     return 'GOOD EVENING,';
   };
 
+  const nextChapter = nextWorkout ? CHAPTER_NAMES.find((c) => c.week === nextWorkout.week) : null;
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 20 }]}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={COLORS.ember}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.ember} />
         }
       >
         {/* Header */}
         <Animated.View style={[styles.header, headerStyle]}>
           <View>
             <Text style={styles.greeting}>{getGreeting()}</Text>
-            <Text style={styles.heroTitle}>{heroClass.name}</Text>
+            <Text style={styles.heroTitle}>
+              {user?.email?.split('@')[0]?.toUpperCase() ?? heroClass.name}
+            </Text>
           </View>
-          <View style={[styles.classIcon, { backgroundColor: heroClass.bgColor, borderColor: heroClass.color }]}>
+          <TouchableOpacity
+            style={[styles.classIcon, { backgroundColor: heroClass.bgColor, borderColor: heroClass.color }]}
+            onPress={() => router.push('/(tabs)/profile')}
+          >
             <Text style={styles.classEmoji}>{heroClass.icon}</Text>
-          </View>
+          </TouchableOpacity>
         </Animated.View>
 
         {/* Hero Status Card */}
         <Animated.View style={cardStyle}>
           <View style={styles.statusCard}>
-            {/* Ember glow top border */}
-            <View style={styles.statusCardGlow} />
-
+            <View style={[styles.statusCardTop, { backgroundColor: heroClass.color }]} />
             <View style={styles.statusCardContent}>
               <View style={styles.statusRow}>
                 <View>
-                  <Text style={styles.statusLabel}>HERO STATUS</Text>
-                  <Text style={styles.statusClass}>{heroClass.subtitle}</Text>
+                  <Text style={styles.statusLabel}>HERO CLASS</Text>
+                  <Text style={[styles.statusClass, { color: heroClass.color }]}>
+                    {heroClass.icon} {heroClass.name}
+                  </Text>
+                  <Text style={styles.statusSubtitle}>{heroClass.subtitle}</Text>
                 </View>
                 <View style={styles.levelCircle}>
                   <Text style={styles.levelCircleLabel}>LVL</Text>
@@ -176,9 +180,9 @@ export default function Dashboard() {
 
         {/* Daily Quest */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>DAILY QUEST</Text>
+          <Text style={styles.sectionTitle}>{"TODAY'S QUEST"}</Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/workout')}>
-            <Text style={styles.seeAll}>VIEW ALL →</Text>
+            <Text style={styles.seeAll}>ALL CHAPTERS →</Text>
           </TouchableOpacity>
         </View>
 
@@ -186,17 +190,25 @@ export default function Dashboard() {
           <TouchableOpacity
             style={styles.questCard}
             onPress={() =>
-              router.push({
-                pathname: '/workout/[id]',
-                params: { id: nextWorkout.id },
-              })
+              router.push({ pathname: '/workout/[id]', params: { id: nextWorkout.id } })
             }
             activeOpacity={0.85}
           >
             <View style={styles.questTop}>
-              <View style={styles.questBadge}>
-                <Text style={styles.questBadgeText}>WEEK {nextWorkout.week}</Text>
-              </View>
+              {nextChapter ? (
+                <View style={[styles.chapterBadge, { borderColor: nextChapter.color }]}>
+                  <Text style={[styles.chapterTitle, { color: nextChapter.color }]}>
+                    {nextChapter.title}
+                  </Text>
+                  <Text style={[styles.chapterSubtitle, { color: nextChapter.color }]}>
+                    {nextChapter.subtitle}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.questBadge}>
+                  <Text style={styles.questBadgeText}>WEEK {nextWorkout.week}</Text>
+                </View>
+              )}
               <View style={styles.questXP}>
                 <Text style={styles.questXPText}>+{nextWorkout.totalXP} XP</Text>
               </View>
@@ -218,64 +230,88 @@ export default function Dashboard() {
               </View>
             </View>
             <View style={styles.questStartBtn}>
-              <Text style={styles.questStartText}>START QUEST  →</Text>
+              <Text style={styles.questStartText}>ENTER QUEST  →</Text>
             </View>
           </TouchableOpacity>
         ) : (
           <View style={styles.allDoneCard}>
             <Text style={styles.allDoneEmoji}>🏆</Text>
-            <Text style={styles.allDoneTitle}>ALL QUESTS COMPLETE!</Text>
-            <Text style={styles.allDoneText}>{"You've conquered your training cycle."}</Text>
+            <Text style={styles.allDoneTitle}>ALL CHAPTERS COMPLETE!</Text>
+            <Text style={styles.allDoneText}>{"You've ascended your full training cycle."}</Text>
             <TouchableOpacity
               style={styles.regenBtn}
               onPress={() => router.push('/(tabs)/workout')}
             >
-              <Text style={styles.regenBtnText}>GENERATE NEW CYCLE</Text>
+              <Text style={styles.regenBtnText}>VIEW QUEST BOARD</Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Quick Stats */}
-        <Text style={styles.sectionTitle}>BADGES EARNED</Text>
+        {/* Badges */}
+        <Text style={[styles.sectionTitle, { marginTop: 4 }]}>BADGES EARNED</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.badgesScroll}>
           {gameStats.earnedBadges.length > 0 ? (
-            gameStats.earnedBadges.map((badgeId) => (
-              <View key={badgeId} style={styles.badgeChip}>
-                <Text style={styles.badgeChipText}>{badgeId.toUpperCase().replace(/_/g, ' ')}</Text>
-              </View>
-            ))
+            gameStats.earnedBadges.map((badgeId) => {
+              const badge = BADGES.find((b) => b.id === badgeId);
+              return (
+                <View key={badgeId} style={[styles.badgeChip, { borderColor: badge?.color ?? COLORS.gold }]}>
+                  <Text style={styles.badgeChipIcon}>{badge?.icon ?? '🏅'}</Text>
+                  <Text style={[styles.badgeChipText, { color: badge?.color ?? COLORS.gold }]}>
+                    {badge?.name ?? badgeId.toUpperCase().replace(/_/g, ' ')}
+                  </Text>
+                </View>
+              );
+            })
           ) : (
             <View style={styles.noBadgesCard}>
               <Text style={styles.noBadgesText}>Complete quests to earn badges! 🏅</Text>
             </View>
           )}
         </ScrollView>
+
+        {/* Somatics+ Teaser */}
+        <TouchableOpacity
+          style={styles.premiumTeaser}
+          onPress={() => router.push('/paywall')}
+          activeOpacity={0.85}
+        >
+          <View style={styles.premiumLeft}>
+            <Text style={styles.premiumIcon}>⚡</Text>
+            <View>
+              <Text style={styles.premiumTitle}>SOMATICS+</Text>
+              <Text style={styles.premiumSubtitle}>Unlock Chapters III & IV + Analytics</Text>
+            </View>
+          </View>
+          <Text style={styles.premiumArrow}>→</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.obsidian,
-  },
+  container: { flex: 1, backgroundColor: COLORS.obsidian },
   loading: {
     flex: 1,
     backgroundColor: COLORS.obsidian,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 12,
+  },
+  loadingBrand: {
+    color: COLORS.ember,
+    fontSize: 32,
+    fontWeight: '900',
+    letterSpacing: 6,
   },
   loadingText: {
-    color: COLORS.ember,
-    fontSize: 14,
+    color: COLORS.textLightMuted,
+    fontSize: 12,
     fontWeight: '700',
-    letterSpacing: 2,
+    letterSpacing: 3,
   },
-  scrollContent: {
-    padding: 20,
-    gap: 16,
-  },
+  scrollContent: { padding: 20, gap: 16 },
+  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -284,15 +320,15 @@ const styles = StyleSheet.create({
   },
   greeting: {
     color: COLORS.textLightMuted,
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
     letterSpacing: 2,
   },
   heroTitle: {
     color: COLORS.white,
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '900',
-    letterSpacing: 2,
+    letterSpacing: 1,
     marginTop: 2,
   },
   classIcon: {
@@ -303,30 +339,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1.5,
   },
-  classEmoji: {
-    fontSize: 26,
-  },
+  classEmoji: { fontSize: 26 },
   // Status Card
   statusCard: {
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: COLORS.obsidianBorder,
     overflow: 'hidden',
-    shadowColor: COLORS.ember,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
   },
-  statusCardGlow: {
-    height: 2,
-    backgroundColor: COLORS.ember,
+  statusCardTop: {
+    height: 3,
   },
-  statusCardContent: {
-    padding: 20,
-    gap: 16,
-  },
+  statusCardContent: { padding: 20, gap: 16 },
   statusRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -340,14 +365,20 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   statusClass: {
-    color: COLORS.textLight,
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '900',
+    letterSpacing: 1.5,
+  },
+  statusSubtitle: {
+    color: COLORS.textLightMuted,
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 2,
   },
   levelCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 10,
+    width: 60,
+    height: 60,
+    borderRadius: 12,
     backgroundColor: COLORS.emberGlow,
     borderWidth: 1.5,
     borderColor: COLORS.ember,
@@ -362,24 +393,16 @@ const styles = StyleSheet.create({
   },
   levelCircleNumber: {
     color: COLORS.ember,
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '900',
-    lineHeight: 28,
+    lineHeight: 30,
   },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 4,
-  },
-  statValue: {
-    color: COLORS.white,
-    fontSize: 20,
-    fontWeight: '900',
-  },
+  statItem: { flex: 1, alignItems: 'center', gap: 4 },
+  statValue: { color: COLORS.white, fontSize: 20, fontWeight: '900' },
   statLabel: {
     color: COLORS.textLightMuted,
     fontSize: 9,
@@ -407,9 +430,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  streakFlame: {
-    fontSize: 32,
-  },
+  streakFlame: { fontSize: 34 },
   streakLabel: {
     color: COLORS.textLightMuted,
     fontSize: 10,
@@ -417,21 +438,13 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginBottom: 2,
   },
-  streakValue: {
-    color: COLORS.white,
-    fontSize: 24,
-    fontWeight: '900',
-  },
-  streakUnit: {
-    fontSize: 14,
-    color: COLORS.textLightMuted,
-    fontWeight: '600',
-  },
+  streakValue: { color: COLORS.white, fontSize: 26, fontWeight: '900' },
+  streakUnit: { fontSize: 14, color: COLORS.textLightMuted, fontWeight: '600' },
   streakRight: {
     alignItems: 'center',
     backgroundColor: COLORS.obsidianCardAlt,
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 8,
   },
   streakMaxLabel: {
@@ -440,11 +453,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
-  streakMaxValue: {
-    color: COLORS.gold,
-    fontSize: 18,
-    fontWeight: '900',
-  },
+  streakMaxValue: { color: COLORS.gold, fontSize: 20, fontWeight: '900' },
   // Section
   sectionHeader: {
     flexDirection: 'row',
@@ -458,23 +467,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 2,
   },
-  seeAll: {
-    color: COLORS.ember,
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
+  seeAll: { color: COLORS.ember, fontSize: 11, fontWeight: '700', letterSpacing: 1 },
   // Quest Card
   questCard: {
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: 'rgba(255, 140, 0, 0.25)',
     padding: 20,
     gap: 10,
     shadowColor: COLORS.ember,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 4,
   },
@@ -482,6 +486,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  chapterBadge: {
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  chapterTitle: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 2,
+  },
+  chapterSubtitle: {
+    fontSize: 7,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    marginTop: 1,
   },
   questBadge: {
     backgroundColor: COLORS.obsidianCardAlt,
@@ -505,41 +527,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.ember,
   },
-  questXPText: {
-    color: COLORS.ember,
-    fontSize: 12,
-    fontWeight: '900',
-    letterSpacing: 1,
-  },
+  questXPText: { color: COLORS.ember, fontSize: 12, fontWeight: '900', letterSpacing: 1 },
   questName: {
     color: COLORS.white,
     fontSize: 22,
     fontWeight: '900',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
-  questType: {
-    color: COLORS.textLightMuted,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  questMeta: {
-    flexDirection: 'row',
-    gap: 16,
-    marginTop: 4,
-  },
-  questMetaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  questMetaIcon: {
-    fontSize: 14,
-  },
-  questMetaText: {
-    color: COLORS.textLightMuted,
-    fontSize: 12,
-    fontWeight: '600',
-  },
+  questType: { color: COLORS.textLightMuted, fontSize: 13, fontWeight: '600' },
+  questMeta: { flexDirection: 'row', gap: 16, marginTop: 4 },
+  questMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  questMetaIcon: { fontSize: 14 },
+  questMetaText: { color: COLORS.textLightMuted, fontSize: 12, fontWeight: '600' },
   questStartBtn: {
     backgroundColor: COLORS.ember,
     borderRadius: 8,
@@ -563,17 +562,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  allDoneEmoji: { fontSize: 40 },
+  allDoneEmoji: { fontSize: 44 },
   allDoneTitle: {
     color: COLORS.gold,
     fontSize: 18,
     fontWeight: '900',
     letterSpacing: 2,
   },
-  allDoneText: {
-    color: COLORS.textLightMuted,
-    fontSize: 14,
-  },
+  allDoneText: { color: COLORS.textLightMuted, fontSize: 14 },
   regenBtn: {
     backgroundColor: COLORS.gold,
     borderRadius: 8,
@@ -588,21 +584,20 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
   },
   // Badges
-  badgesScroll: {
-    marginHorizontal: -20,
-    paddingHorizontal: 20,
-  },
+  badgesScroll: { marginHorizontal: -20, paddingHorizontal: 20 },
   badgeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     backgroundColor: COLORS.obsidianCard,
-    borderRadius: 6,
-    paddingHorizontal: 14,
+    borderRadius: 8,
+    paddingHorizontal: 12,
     paddingVertical: 8,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: COLORS.gold,
   },
+  badgeChipIcon: { fontSize: 14 },
   badgeChipText: {
-    color: COLORS.gold,
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 1,
@@ -614,8 +609,38 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.obsidianBorder,
   },
-  noBadgesText: {
+  noBadgesText: { color: COLORS.textLightMuted, fontSize: 13 },
+  // Premium Teaser
+  premiumTeaser: {
+    backgroundColor: COLORS.obsidianCard,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: COLORS.premiumGold,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  premiumLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  premiumIcon: { fontSize: 28 },
+  premiumTitle: {
+    color: COLORS.premiumGold,
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: 2,
+  },
+  premiumSubtitle: {
     color: COLORS.textLightMuted,
-    fontSize: 13,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  premiumArrow: {
+    color: COLORS.premiumGold,
+    fontSize: 20,
+    fontWeight: '700',
   },
 });

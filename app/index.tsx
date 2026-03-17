@@ -1,26 +1,33 @@
 import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { useAuth } from '@fastshot/auth';
 import { loadAppData } from '@/lib/storage';
 import { COLORS } from '@/lib/constants';
 
 export default function Index() {
-  const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [onboardingDone, setOnboardingDone] = useState(false);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
     loadAppData().then((data) => {
       setOnboardingDone(data?.onboardingCompleted ?? false);
-      setIsLoading(false);
+      setDataLoading(false);
     });
-  }, []);
+  }, [isAuthenticated]);
 
-  if (isLoading) {
+  if (authLoading || dataLoading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color={COLORS.ember} />
+        <Text style={styles.brand}>SOMATICS</Text>
+        <ActivityIndicator size="large" color={COLORS.ember} style={{ marginTop: 24 }} />
       </View>
     );
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
   }
 
   if (!onboardingDone) {
@@ -36,5 +43,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.obsidian,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  brand: {
+    color: COLORS.ember,
+    fontSize: 28,
+    fontWeight: '900',
+    letterSpacing: 6,
   },
 });
