@@ -42,6 +42,9 @@ app-example
 .vscode
 .expo/
 
+/ios
+/android
+
 # Fastshot-specific excludes
 .fastshot-logs/
 examples/
