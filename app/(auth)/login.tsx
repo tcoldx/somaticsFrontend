@@ -11,8 +11,8 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import { Link } from 'expo-router';
-import { useAuth } from '@fastshot/auth';
+import { Link, useRouter} from 'expo-router';
+import { useAuth } from '../../lib/AuthProvider';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,8 +27,8 @@ const { height } = Dimensions.get('window');
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
-  const { signInWithEmail, signInWithGoogle, signInWithApple, isLoading, error, clearError } = useAuth();
-
+  const {  isLoading, signIn } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -59,8 +59,10 @@ export default function LoginScreen() {
       Alert.alert('Missing Info', 'Please enter your email and password.');
       return;
     }
-    clearError?.();
-    await signInWithEmail(email.trim(), password);
+    
+    await signIn(email.trim(), password);
+    // now we navigate to the main screen if user is already signed up!
+    router.replace('/(tabs)');
   };
 
   return (
@@ -82,9 +84,6 @@ export default function LoginScreen() {
         >
           {/* Logo Section */}
           <Animated.View style={[styles.logoSection, logoStyle]}>
-            <View style={styles.logoBadge}>
-              <Text style={styles.logoBadgeText}>⚡ PERFORMANCE OS</Text>
-            </View>
             <Text style={styles.logoLine1}>SOMA</Text>
             <Text style={styles.logoLine2}>TICS</Text>
             <Text style={styles.tagline}>Train like a legend. Become one.</Text>
@@ -94,12 +93,12 @@ export default function LoginScreen() {
           <Animated.View style={[styles.formContainer, formStyle]}>
             <Text style={styles.formTitle}>SIGN IN</Text>
             <Text style={styles.formSubtitle}>Access your hero profile</Text>
-
+{/* 
             {error && (
               <View style={styles.errorBanner}>
                 <Text style={styles.errorText}>⚠️  {error.message}</Text>
               </View>
-            )}
+            )} */}
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>EMAIL</Text>
@@ -154,7 +153,7 @@ export default function LoginScreen() {
 
             <TouchableOpacity
               style={styles.socialBtn}
-              onPress={signInWithGoogle}
+              // onPress={signInWithGoogle}
               disabled={isLoading}
               activeOpacity={0.85}
             >
@@ -165,7 +164,7 @@ export default function LoginScreen() {
             {Platform.OS === 'ios' && (
               <TouchableOpacity
                 style={styles.socialBtn}
-                onPress={signInWithApple}
+                // onPress={signInWithApple}
                 disabled={isLoading}
                 activeOpacity={0.85}
               >

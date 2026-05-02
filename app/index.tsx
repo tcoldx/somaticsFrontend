@@ -6,18 +6,19 @@ import { loadAppData } from '@/lib/storage';
 import { COLORS } from '@/lib/constants';
 
 export default function Index() {
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, signUp, isLoading } = useAuth();
   const [onboardingDone, setOnboardingDone] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
-
   useEffect(() => {
-    loadAppData().then((data) => {
-      setOnboardingDone(data?.onboardingCompleted ?? false);
+    const mount = async () => {
+      const data = await loadAppData();
+      setOnboardingDone(data.onboardingCompleted ?? false);
       setDataLoading(false);
-    });
-  }, [isAuthenticated]);
-
-  if (authLoading || dataLoading) {
+    };
+    mount();
+  }, [isAuthenticated])
+  
+  if (isLoading || onboardingDone === null || dataLoading) { 
     return (
       <View style={styles.loading}>
         <Text style={styles.brand}>SOMATICS</Text>
@@ -25,16 +26,15 @@ export default function Index() {
       </View>
     );
   }
+    if (!isAuthenticated) {
+        return <Redirect href="/(auth)/signup" />;
+    }
+    if (!onboardingDone) {
+        return <Redirect href="/onboarding" />;
+    }
+    return <Redirect href="/(tabs)" />;
+  
 
-  if (!isAuthenticated) {
-    return <Redirect href="/(auth)/login" />;
-  }
-
-  if (!onboardingDone) {
-    return <Redirect href="/onboarding" />;
-  }
-
-  return <Redirect href="/(tabs)" />;
 }
 
 const styles = StyleSheet.create({

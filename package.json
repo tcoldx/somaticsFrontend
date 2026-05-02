@@ -3,7 +3,9 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo/cli": "^54.0.10",
@@ -20,6 +22,7 @@
     "expo": "^54.0.21",
     "expo-blur": "~15.0.7",
     "expo-constants": "~18.0.9",
+    "expo-dev-client": "~6.0.21",
     "expo-font": "~14.0.8",
     "expo-haptics": "~15.0.7",
     "expo-image": "~3.0.10",

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,20 +10,26 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { Link } from 'expo-router';
-import { useAuth } from '@fastshot/auth';
+import { Link, useRouter} from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '@/lib/constants';
+import {useAuth} from '@fastshot/auth';
 
 export default function SignUpScreen() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { signUpWithEmail, isLoading, error, clearError, pendingEmailVerification } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
+  const {signUp, isAuthenticated, isLoading} = useAuth();
+  useEffect(() => {
+  if (isAuthenticated) {
+    router.replace('/onboarding');
+  }
+  }, [isAuthenticated])
   const handleSignUp = async () => {
+    // Basic validation
     if (!email.trim() || !password.trim()) {
       Alert.alert('Missing Info', 'Please fill in all fields.');
       return;
@@ -36,32 +42,37 @@ export default function SignUpScreen() {
       Alert.alert('Weak Password', 'Password must be at least 6 characters.');
       return;
     }
-    clearError?.();
-    await signUpWithEmail(email.trim(), password);
+
+    // Sign up using our AuthContext
+    try {
+    await signUp(email.trim(), password);
+    } catch (error: any) {
+      Alert.alert('Sign Up Failed', error.message || 'An error occurred during sign up.');
+    }
   };
 
-  if (pendingEmailVerification) {
-    return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <View style={styles.verifyContainer}>
-          <Text style={styles.verifyIcon}>📬</Text>
-          <Text style={styles.verifyTitle}>CHECK YOUR EMAIL</Text>
-          <Text style={styles.verifyText}>
-            We sent a verification link to{'\n'}
-            <Text style={styles.verifyEmail}>{email}</Text>
-          </Text>
-          <Text style={styles.verifySubtext}>
-            Click the link to activate your Somatics account and begin your journey.
-          </Text>
-          <Link href="/(auth)/login" asChild>
-            <TouchableOpacity style={styles.backToLoginBtn}>
-              <Text style={styles.backToLoginText}>BACK TO SIGN IN</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-      </View>
-    );
-  }
+  // if (pendingEmailVerification) {
+  //   return (
+  //     <View style={[styles.container, { paddingTop: insets.top }]}>
+  //       <View style={styles.verifyContainer}>
+  //         <Text style={styles.verifyIcon}>📬</Text>
+  //         <Text style={styles.verifyTitle}>CHECK YOUR EMAIL</Text>
+  //         <Text style={styles.verifyText}>
+  //           We sent a verification link to{'\n'}
+  //           <Text style={styles.verifyEmail}>{email}</Text>
+  //         </Text>
+  //         <Text style={styles.verifySubtext}>
+  //           Click the link to activate your Somatics account and begin your journey.
+  //         </Text>
+  //         <Link href="/(auth)/login" asChild>
+  //           <TouchableOpacity style={styles.backToLoginBtn}>
+  //             <Text style={styles.backToLoginText}>BACK TO SIGN IN</Text>
+  //           </TouchableOpacity>
+  //         </Link>
+  //       </View>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -87,7 +98,7 @@ export default function SignUpScreen() {
           {/* Header */}
           <View style={styles.headerSection}>
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>⚡ SOMATICS</Text>
+              <Text style={styles.badgeText}>SOMATICS</Text>
             </View>
             <Text style={styles.title}>CREATE{'\n'}ACCOUNT</Text>
             <Text style={styles.subtitle}>{"Begin your hero's journey"}</Text>
@@ -95,11 +106,11 @@ export default function SignUpScreen() {
 
           {/* Form */}
           <View style={styles.formContainer}>
-            {error && (
+            {/* {error && (
               <View style={styles.errorBanner}>
                 <Text style={styles.errorText}>⚠️  {error.message}</Text>
               </View>
-            )}
+            )} */}
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>EMAIL</Text>
@@ -112,7 +123,7 @@ export default function SignUpScreen() {
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoCorrect={false}
-                editable={!isLoading}
+                // editable={!isLoading}
               />
             </View>
 
@@ -125,7 +136,7 @@ export default function SignUpScreen() {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
-                editable={!isLoading}
+                // editable={!isLoading}
               />
             </View>
 
@@ -138,18 +149,18 @@ export default function SignUpScreen() {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry
-                editable={!isLoading}
+                // editable={!isLoading}
               />
             </View>
 
             <TouchableOpacity
-              style={[styles.primaryBtn, isLoading && styles.primaryBtnDisabled]}
+              style={[styles.primaryBtn]}
               onPress={handleSignUp}
-              disabled={isLoading}
+              // disabled={isLoading}
               activeOpacity={0.85}
             >
               <Text style={styles.primaryBtnText}>
-                {isLoading ? 'CREATING ACCOUNT...' : 'BEGIN YOUR QUEST  →'}
+                {isLoading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
               </Text>
             </TouchableOpacity>
 

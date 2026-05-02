@@ -65,11 +65,6 @@ export default function OnboardingWelcome() {
       <View style={styles.glowOrbBottom} />
 
       <View style={[styles.content, { paddingBottom: insets.bottom + 40 }]}>
-        {/* Badge */}
-        <Animated.View style={[styles.badge, subtitleStyle]}>
-          <Text style={styles.badgeText}>⚡  PERFORMANCE OS  ⚡</Text>
-        </Animated.View>
-
         {/* Title */}
         <Animated.View style={titleStyle}>
           <Text style={styles.titleLine1}>SOMA</Text>

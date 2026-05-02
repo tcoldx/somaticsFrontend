@@ -26,7 +26,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
-        <AuthProvider supabaseClient={supabase}>
+        <AuthProvider>
           <AdaptyInit />
           <StatusBar style="light" />
           <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>

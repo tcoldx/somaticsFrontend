@@ -16,7 +16,8 @@ import { COLORS } from '@/lib/constants';
 
 export default function ForgotPasswordScreen() {
   const insets = useSafeAreaInsets();
-  const { resetPassword, isLoading, error, clearError, pendingPasswordReset } = useAuth();
+  const { resetPassword, isLoading, pendingPasswordReset } = useAuth();
+  const [transition, setTransition] = useState<boolean>(false); // my new change to force a transition 
   const [email, setEmail] = useState('');
 
   const handleReset = async () => {
@@ -24,11 +25,12 @@ export default function ForgotPasswordScreen() {
       Alert.alert('Missing Email', 'Please enter your email address.');
       return;
     }
-    clearError?.();
+    setTransition(true); // new change here
+    // need to workout the UI to have them change password and get the redirect to say "continue in app if they click on the link in their email on web. and to automatically redirect back to the app if they are on mobile"
     await resetPassword(email.trim());
   };
 
-  if (pendingPasswordReset) {
+  if (pendingPasswordReset || transition) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.successContainer}>
@@ -69,11 +71,11 @@ export default function ForgotPasswordScreen() {
             </Text>
           </View>
 
-          {error && (
+          {/* {error && (
             <View style={styles.errorBanner}>
               <Text style={styles.errorText}>⚠️  {error.message}</Text>
             </View>
-          )}
+          )} */}
 
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
